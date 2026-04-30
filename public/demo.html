@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avori widget — demo storefront</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,system-ui,sans-serif;max-width:880px;margin:40px auto;padding:0 20px;color:#111}
+    h1{font-size:32px;margin-bottom:8px}
+    h2{font-size:20px;margin-top:48px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+    .product{border:1px solid #e4e4e7;border-radius:12px;padding:16px}
+    .product img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+    .inline-host{max-width:380px;margin:24px auto}
+    .controls{margin-top:8px;font-size:14px;color:#555}
+    .controls a{color:#7c3aed;cursor:pointer;text-decoration:underline}
+  </style>
+</head>
+<body>
+  <h1>Acme Coffee Co.</h1>
+  <p>Demo storefront — open the browser console to watch the widget log impressions/views/clicks if you wire up a logger.</p>
+
+  <h2>Inline widget</h2>
+  <p>Below: a 9:16 inline player embedded in a content section.</p>
+  <div class="inline-host">
+    <div
+      class="shop-video-widget"
+      data-brand-id="REPLACE_WITH_BRAND_ID"
+      data-mode="inline"></div>
+  </div>
+
+  <h2>Floating bubble</h2>
+  <p>Look at the bottom-right corner of the page.</p>
+  <div
+    class="shop-video-widget"
+    data-brand-id="REPLACE_WITH_BRAND_ID"
+    data-mode="floating"></div>
+
+  <h2>Feed mode</h2>
+  <p class="controls"><a id="open-feed">Tap to open vertical feed</a></p>
+  <div id="feed-host" style="display:none">
+    <div
+      class="shop-video-widget"
+      data-brand-id="REPLACE_WITH_BRAND_ID"
+      data-mode="feed"></div>
+  </div>
+
+  <h2>Some sample products</h2>
+  <div class="grid">
+    <div class="product">
+      <img src="https://picsum.photos/seed/p1/400" alt="">
+      <h3>Iced Latte Lip Balm</h3>
+      <p>$18.00</p>
+    </div>
+    <div class="product">
+      <img src="https://picsum.photos/seed/p2/400" alt="">
+      <h3>Espresso Body Mist</h3>
+      <p>$32.00</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('open-feed').addEventListener('click', () => {
+      document.getElementById('feed-host').style.display = 'block';
+      // Trigger the widget bootstrap for the just-revealed element
+      const node = document.querySelector('#feed-host .shop-video-widget');
+      if (node && !node.dataset.avInit && window.__avoriBoot) window.__avoriBoot();
+    });
+  </script>
+  <script src="/widget.js" async></script>
+</body>
+</html>

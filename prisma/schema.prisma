@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  BRAND
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum VideoStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum WidgetMode {
+  inline
+  floating
+  feed
+}
+
+enum EventType {
+  IMPRESSION
+  VIEW
+  TAG_CLICK
+  CTA_CLICK
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(BRAND)
+  brandId      String?
+  brand        Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([brandId])
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  domain    String?
+  disabled  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users          User[]
+  products       Product[]
+  videos         Video[]
+  widgetInstalls WidgetInstall[]
+  events         AnalyticsEvent[]
+}
+
+model Product {
+  id         String        @id @default(cuid())
+  brandId    String
+  brand      Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name       String
+  price      Decimal       @db.Decimal(10, 2)
+  imageUrl   String
+  productUrl String
+  sku        String?
+  status     ProductStatus @default(ACTIVE)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  tags   VideoProductTag[]
+  events AnalyticsEvent[]
+
+  @@index([brandId])
+  @@index([brandId, status])
+}
+
+model Video {
+  id           String      @id @default(cuid())
+  brandId      String
+  brand        Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  videoUrl     String
+  thumbnailUrl String?
+  status       VideoStatus @default(DRAFT)
+  disabled     Boolean     @default(false)
+  durationSec  Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  tags   VideoProductTag[]
+  events AnalyticsEvent[]
+
+  @@index([brandId])
+  @@index([brandId, status, disabled])
+}
+
+model VideoProductTag {
+  id        String   @id @default(cuid())
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  x         Float
+  y         Float
+  startTime Float    @default(0)
+  endTime   Float
+  createdAt DateTime @default(now())
+
+  @@index([videoId])
+  @@index([productId])
+}
+
+model WidgetInstall {
+  id          String     @id @default(cuid())
+  brandId     String
+  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  domain      String
+  mode        WidgetMode
+  firstSeenAt DateTime   @default(now())
+  lastSeenAt  DateTime   @default(now())
+
+  @@unique([brandId, domain, mode])
+  @@index([brandId])
+}
+
+model AnalyticsEvent {
+  id        String    @id @default(cuid())
+  brandId   String
+  brand     Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  videoId   String?
+  video     Video?    @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  productId String?
+  product   Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  type      EventType
+  domain    String?
+  ip        String?
+  ua        String?
+  createdAt DateTime  @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([brandId, type])
+  @@index([videoId])
+  @@index([productId])
+}
