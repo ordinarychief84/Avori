@@ -60,8 +60,8 @@ export function LogoMark({ className }: { className?: string }) {
         strokeLinecap="round"
         fill="none"
       />
-      <path d="M14 24h42l4 5H18z" fill="#3D5AFE" />
-      <path d="M14 34h42l4 5H18z" fill="currentColor" />
+      <path d="M14 24h42l4 5H18z" fill="#7C3AED" />
+      <path d="M14 34h42l4 5H18z" fill="currentColor" opacity="0.85" />
     </svg>
   );
 }

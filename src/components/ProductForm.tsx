@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input, Select, FormField } from '@/components/ui/Input';
 import { Card, CardBody, CardFooter } from '@/components/ui/Card';
 import ImageUploader from '@/components/ImageUploader';
+
+type TryOnCategory = 'NONE' | 'LIPSTICK' | 'LIP_GLOSS' | 'BLUSH' | 'EYESHADOW' | 'EYELINER';
 
 type ProductInput = {
   id?: string;
@@ -16,7 +19,19 @@ type ProductInput = {
   productUrl?: string;
   sku?: string | null;
   status?: 'ACTIVE' | 'INACTIVE';
+  tryOnEnabled?: boolean;
+  tryOnCategory?: TryOnCategory;
+  tryOnTint?: string | null;
 };
+
+const TRYON_CATEGORIES: { value: TryOnCategory; label: string }[] = [
+  { value: 'NONE', label: 'None' },
+  { value: 'LIPSTICK', label: 'Lipstick' },
+  { value: 'LIP_GLOSS', label: 'Lip gloss' },
+  { value: 'BLUSH', label: 'Blush' },
+  { value: 'EYESHADOW', label: 'Eyeshadow' },
+  { value: 'EYELINER', label: 'Eyeliner' },
+];
 
 export default function ProductForm({ initial }: { initial?: ProductInput }) {
   const router = useRouter();
@@ -28,6 +43,9 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
     productUrl: initial?.productUrl ?? '',
     sku: initial?.sku ?? '',
     status: (initial?.status ?? 'ACTIVE') as 'ACTIVE' | 'INACTIVE',
+    tryOnEnabled: initial?.tryOnEnabled ?? false,
+    tryOnCategory: (initial?.tryOnCategory ?? 'NONE') as TryOnCategory,
+    tryOnTint: initial?.tryOnTint ?? '#C44569',
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +69,9 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
         productUrl: form.productUrl,
         sku: form.sku || undefined,
         status: form.status,
+        tryOnEnabled: form.tryOnEnabled,
+        tryOnCategory: form.tryOnEnabled ? form.tryOnCategory : 'NONE',
+        tryOnTint: form.tryOnEnabled ? form.tryOnTint : null,
       }),
     });
     setBusy(false);
@@ -103,7 +124,11 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
               onChange={(url) => setForm({ ...form, imageUrl: url })}
             />
           </FormField>
-          <FormField label="Product URL" required hint="Where the CTA in the widget will send shoppers.">
+          <FormField
+            label="Product URL"
+            required
+            hint="Where the CTA in the widget will send shoppers."
+          >
             <Input
               type="url"
               value={form.productUrl}
@@ -123,9 +148,71 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
               <option value="INACTIVE">Inactive — hidden</option>
             </Select>
           </FormField>
+
+          {/* AI try-on */}
+          <div className="rounded-lg border border-border bg-bg/40 p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.tryOnEnabled}
+                onChange={(e) => setForm({ ...form, tryOnEnabled: e.target.checked })}
+                className="mt-1 h-4 w-4 cursor-pointer accent-accent"
+              />
+              <span className="flex-1">
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-fg">
+                  <Sparkles className="h-3.5 w-3.5 text-accent" />
+                  Enable AI Try-on
+                </span>
+                <span className="mt-1 block text-xs text-fg-muted">
+                  Adds a "Try on" button to this product's card in the widget. Shoppers see
+                  themselves wearing it via their webcam.
+                </span>
+              </span>
+            </label>
+
+            {form.tryOnEnabled && (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <FormField label="Category">
+                  <Select
+                    value={form.tryOnCategory}
+                    onChange={(e) =>
+                      setForm({ ...form, tryOnCategory: e.target.value as TryOnCategory })
+                    }
+                  >
+                    {TRYON_CATEGORIES.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+                <FormField label="Tint" hint="Color applied to the chosen face region.">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={form.tryOnTint}
+                      onChange={(e) => setForm({ ...form, tryOnTint: e.target.value })}
+                      className="h-10 w-12 cursor-pointer rounded-md border border-border bg-surface"
+                      aria-label="Tint color"
+                    />
+                    <Input
+                      value={form.tryOnTint}
+                      onChange={(e) => setForm({ ...form, tryOnTint: e.target.value })}
+                      placeholder="#C44569"
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                </FormField>
+              </div>
+            )}
+          </div>
         </CardBody>
         <CardFooter>
-          <Button type="button" variant="secondary" onClick={() => router.push('/dashboard/products')}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/dashboard/products')}
+          >
             Cancel
           </Button>
           <Button type="submit" loading={busy}>

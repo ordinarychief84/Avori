@@ -16,6 +16,7 @@ const config: Config = {
         accent: {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           hover: 'rgb(var(--accent-hover) / <alpha-value>)',
+          deep: 'rgb(var(--accent-deep) / <alpha-value>)',
           subtle: 'rgb(var(--accent-subtle) / <alpha-value>)',
         },
         success: 'rgb(var(--success) / <alpha-value>)',
@@ -37,7 +38,7 @@ const config: Config = {
       },
       boxShadow: {
         soft: '0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 1px 2px 0 rgb(0 0 0 / 0.4)',
-        glow: '0 0 0 1px rgb(61 90 254 / 0.4), 0 0 24px -4px rgb(61 90 254 / 0.4)',
+        glow: '0 0 0 1px rgb(124 58 237 / 0.4), 0 0 24px -4px rgb(124 58 237 / 0.4)',
         card: '0 1px 0 0 rgb(255 255 255 / 0.05) inset, 0 8px 24px -8px rgb(0 0 0 / 0.4)',
       },
       keyframes: {

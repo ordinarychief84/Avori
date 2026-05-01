@@ -33,7 +33,16 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
           where: { product: { status: 'ACTIVE' } },
           include: {
             product: {
-              select: { id: true, name: true, price: true, imageUrl: true, productUrl: true },
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                imageUrl: true,
+                productUrl: true,
+                tryOnEnabled: true,
+                tryOnCategory: true,
+                tryOnTint: true,
+              },
             },
           },
           orderBy: { startTime: 'asc' },
@@ -60,6 +69,13 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
           price: Number(t.product.price),
           imageUrl: absolutize(req, t.product.imageUrl),
           productUrl: t.product.productUrl,
+          tryOn:
+            t.product.tryOnEnabled && t.product.tryOnCategory !== 'NONE'
+              ? {
+                  category: t.product.tryOnCategory,
+                  tint: t.product.tryOnTint ?? '#C44569',
+                }
+              : null,
         },
       })),
     }));

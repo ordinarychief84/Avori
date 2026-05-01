@@ -21,6 +21,9 @@ export default async function EditProductPage({ params }: { params: { id: string
           productUrl: product.productUrl,
           sku: product.sku,
           status: product.status,
+          tryOnEnabled: product.tryOnEnabled,
+          tryOnCategory: product.tryOnCategory,
+          tryOnTint: product.tryOnTint,
         }}
       />
     </div>

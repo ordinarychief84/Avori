@@ -37,15 +37,17 @@ enum EventType {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         Role     @default(BRAND)
-  brandId      String?
-  brand        Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  name            String?
+  role            Role      @default(BRAND)
+  brandId         String?
+  brand           Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  phone           String?   @unique
+  phoneVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([brandId])
 }
@@ -66,18 +68,33 @@ model Brand {
   events         AnalyticsEvent[]
 }
 
+enum TryOnCategory {
+  NONE
+  LIPSTICK
+  LIP_GLOSS
+  BLUSH
+  EYESHADOW
+  EYELINER
+}
+
 model Product {
-  id         String        @id @default(cuid())
-  brandId    String
-  brand      Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  name       String
-  price      Decimal       @db.Decimal(10, 2)
-  imageUrl   String
-  productUrl String
-  sku        String?
-  status     ProductStatus @default(ACTIVE)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  brandId       String
+  brand         Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name          String
+  price         Decimal       @db.Decimal(10, 2)
+  imageUrl      String
+  productUrl    String
+  sku           String?
+  status        ProductStatus @default(ACTIVE)
+  // AI try-on. tryOnEnabled=true makes the widget render a "Try on" button
+  // on the product card. category guides which face region the tint applies
+  // to (lips, cheeks, eyelid, etc). tint is a hex color used to colorize.
+  tryOnEnabled  Boolean       @default(false)
+  tryOnCategory TryOnCategory @default(NONE)
+  tryOnTint     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   tags   VideoProductTag[]
   events AnalyticsEvent[]

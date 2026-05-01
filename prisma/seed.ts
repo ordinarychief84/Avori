@@ -45,7 +45,11 @@ async function main() {
   const products = await Promise.all([
     prisma.product.upsert({
       where: { id: 'seed-prod-1' },
-      update: {},
+      update: {
+        tryOnEnabled: true,
+        tryOnCategory: 'LIPSTICK',
+        tryOnTint: '#C44569',
+      },
       create: {
         id: 'seed-prod-1',
         brandId: brand.id,
@@ -55,6 +59,9 @@ async function main() {
         productUrl: 'https://example.com/products/iced-latte',
         sku: 'AV-IL-001',
         status: ProductStatus.ACTIVE,
+        tryOnEnabled: true,
+        tryOnCategory: 'LIPSTICK',
+        tryOnTint: '#C44569',
       },
     }),
     prisma.product.upsert({

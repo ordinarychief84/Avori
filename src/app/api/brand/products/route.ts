@@ -30,6 +30,9 @@ export async function POST(req: NextRequest) {
         productUrl: data.productUrl,
         sku: data.sku || null,
         status: data.status,
+        tryOnEnabled: data.tryOnEnabled ?? false,
+        tryOnCategory: data.tryOnCategory ?? 'NONE',
+        tryOnTint: data.tryOnTint ?? null,
       },
     });
     return ok({ product }, 201);

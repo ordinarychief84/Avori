@@ -20,6 +20,8 @@ export const signupSchema = z.object({
   domain: z.string().min(1).max(200).optional().or(z.literal('')),
 });
 
+const HEX_COLOR = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
+
 export const productSchema = z.object({
   name: z.string().min(1).max(200),
   price: z.number().nonnegative().max(1_000_000),
@@ -29,6 +31,16 @@ export const productSchema = z.object({
   productUrl: z.string().url(),
   sku: z.string().max(80).optional().or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
+  // AI try-on
+  tryOnEnabled: z.boolean().optional(),
+  tryOnCategory: z
+    .enum(['NONE', 'LIPSTICK', 'LIP_GLOSS', 'BLUSH', 'EYESHADOW', 'EYELINER'])
+    .optional(),
+  tryOnTint: z
+    .string()
+    .regex(HEX_COLOR, 'Tint must be a hex color like #C44569')
+    .nullable()
+    .optional(),
 });
 
 export const productPatchSchema = productSchema.partial();
