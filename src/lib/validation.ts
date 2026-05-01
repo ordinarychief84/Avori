@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+// Accepts either a full URL (https://cdn.example.com/x.jpg) or an
+// app-relative absolute path returned by /api/brand/upload (/uploads/...).
+// Used for asset fields where the user can paste a CDN URL OR upload
+// through the dashboard's uploader.
+const urlOrAssetPath = z
+  .string()
+  .min(1)
+  .refine(
+    (s) => /^https?:\/\//.test(s) || s.startsWith('/'),
+    'Must be a full URL or an absolute path starting with /'
+  );
+
 export const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(128),
@@ -11,7 +23,9 @@ export const signupSchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(1).max(200),
   price: z.number().nonnegative().max(1_000_000),
-  imageUrl: z.string().url(),
+  // Image can be uploaded (relative /uploads/...) or pasted from a CDN.
+  imageUrl: urlOrAssetPath,
+  // Product URL is an external destination — must be a full URL.
   productUrl: z.string().url(),
   sku: z.string().max(80).optional().or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
@@ -22,8 +36,8 @@ export const productPatchSchema = productSchema.partial();
 export const videoSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(2000).optional().or(z.literal('')),
-  videoUrl: z.string().url(),
-  thumbnailUrl: z.string().url().optional().or(z.literal('')),
+  videoUrl: urlOrAssetPath,
+  thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
   status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).default('DRAFT'),
   durationSec: z.number().int().nonnegative().optional(),
 });

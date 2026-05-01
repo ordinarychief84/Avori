@@ -3,6 +3,18 @@ import { prisma } from '@/lib/prisma';
 import { fail, ok } from '@/lib/http';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
 
+// The widget runs on a CUSTOMER site, not on Avori's origin. Relative paths
+// (e.g. /uploads/images/...) returned by the storage layer would resolve to
+// the customer's domain, breaking video/image loads. Absolutize before
+// sending. The base origin is preferentially NEXT_PUBLIC_APP_URL (so it
+// works behind reverse proxies), falling back to the request URL's origin.
+function absolutize(req: NextRequest, value: string | null): string | null {
+  if (!value) return value;
+  if (/^https?:\/\//.test(value)) return value;
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+  return `${base}${value.startsWith('/') ? '' : '/'}${value}`;
+}
+
 export async function GET(req: NextRequest, { params }: { params: { brandId: string } }) {
   try {
     const ip = clientIp(req);
@@ -33,8 +45,8 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
       id: v.id,
       title: v.title,
       description: v.description,
-      videoUrl: v.videoUrl,
-      thumbnailUrl: v.thumbnailUrl,
+      videoUrl: absolutize(req, v.videoUrl),
+      thumbnailUrl: absolutize(req, v.thumbnailUrl),
       durationSec: v.durationSec,
       tags: v.tags.map((t) => ({
         id: t.id,
@@ -46,7 +58,7 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
           id: t.product.id,
           name: t.product.name,
           price: Number(t.product.price),
-          imageUrl: t.product.imageUrl,
+          imageUrl: absolutize(req, t.product.imageUrl),
           productUrl: t.product.productUrl,
         },
       })),
