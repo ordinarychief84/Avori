@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role, ProductStatus, VideoStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -16,7 +16,7 @@ async function main() {
       email: adminEmail,
       passwordHash,
       name: 'Avori Admin',
-      role: 'ADMIN',
+      role: Role.ADMIN,
     },
   });
 
@@ -37,7 +37,7 @@ async function main() {
       email: brandEmail,
       passwordHash,
       name: 'Demo Brand Owner',
-      role: 'BRAND',
+      role: Role.BRAND,
       brandId: brand.id,
     },
   });
@@ -54,7 +54,7 @@ async function main() {
         imageUrl: 'https://picsum.photos/seed/iced-latte/400/400',
         productUrl: 'https://example.com/products/iced-latte',
         sku: 'AV-IL-001',
-        status: 'ACTIVE',
+        status: ProductStatus.ACTIVE,
       },
     }),
     prisma.product.upsert({
@@ -68,7 +68,7 @@ async function main() {
         imageUrl: 'https://picsum.photos/seed/espresso/400/400',
         productUrl: 'https://example.com/products/espresso-mist',
         sku: 'AV-EM-002',
-        status: 'ACTIVE',
+        status: ProductStatus.ACTIVE,
       },
     }),
     prisma.product.upsert({
@@ -82,7 +82,7 @@ async function main() {
         imageUrl: 'https://picsum.photos/seed/matcha/400/400',
         productUrl: 'https://example.com/products/matcha-cream',
         sku: 'AV-MC-003',
-        status: 'ACTIVE',
+        status: ProductStatus.ACTIVE,
       },
     }),
   ]);
@@ -100,7 +100,7 @@ async function main() {
       description: 'A dreamy iced-latte morning. Tap the dots to shop.',
       videoUrl: sampleVideoUrl,
       thumbnailUrl: 'https://picsum.photos/seed/avori-vid/720/1280',
-      status: 'ACTIVE',
+      status: VideoStatus.ACTIVE,
       durationSec: 15,
     },
   });
