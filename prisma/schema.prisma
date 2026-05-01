@@ -1,47 +1,29 @@
+// SQLite for local preview. To switch to Postgres:
+//   1. Set provider = "postgresql"
+//   2. Set DATABASE_URL to a Postgres connection string
+//   3. Convert string fields back to enums (see git history for original)
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  BRAND
-}
-
-enum ProductStatus {
-  ACTIVE
-  INACTIVE
-}
-
-enum VideoStatus {
-  DRAFT
-  ACTIVE
-  INACTIVE
-}
-
-enum WidgetMode {
-  inline
-  floating
-  feed
-}
-
-enum EventType {
-  IMPRESSION
-  VIEW
-  TAG_CLICK
-  CTA_CLICK
-}
+// String enums — allowed values:
+//   Role:          "ADMIN" | "BRAND"
+//   ProductStatus: "ACTIVE" | "INACTIVE"
+//   VideoStatus:   "DRAFT" | "ACTIVE" | "INACTIVE"
+//   WidgetMode:    "inline" | "floating" | "feed"
+//   EventType:     "IMPRESSION" | "VIEW" | "TAG_CLICK" | "CTA_CLICK"
 
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String?
-  role         Role     @default(BRAND)
+  role         String   @default("BRAND")
   brandId      String?
   brand        Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
   createdAt    DateTime @default(now())
@@ -67,17 +49,17 @@ model Brand {
 }
 
 model Product {
-  id         String        @id @default(cuid())
+  id         String   @id @default(cuid())
   brandId    String
-  brand      Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand      Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
   name       String
-  price      Decimal       @db.Decimal(10, 2)
+  price      Float
   imageUrl   String
   productUrl String
   sku        String?
-  status     ProductStatus @default(ACTIVE)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   tags   VideoProductTag[]
   events AnalyticsEvent[]
@@ -87,18 +69,18 @@ model Product {
 }
 
 model Video {
-  id           String      @id @default(cuid())
+  id           String   @id @default(cuid())
   brandId      String
-  brand        Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand        Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
   title        String
   description  String?
   videoUrl     String
   thumbnailUrl String?
-  status       VideoStatus @default(DRAFT)
-  disabled     Boolean     @default(false)
+  status       String   @default("DRAFT")
+  disabled     Boolean  @default(false)
   durationSec  Int?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   tags   VideoProductTag[]
   events AnalyticsEvent[]
@@ -124,31 +106,31 @@ model VideoProductTag {
 }
 
 model WidgetInstall {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   brandId     String
-  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
   domain      String
-  mode        WidgetMode
-  firstSeenAt DateTime   @default(now())
-  lastSeenAt  DateTime   @default(now())
+  mode        String
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
 
   @@unique([brandId, domain, mode])
   @@index([brandId])
 }
 
 model AnalyticsEvent {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   brandId   String
-  brand     Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
   videoId   String?
-  video     Video?    @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  video     Video?   @relation(fields: [videoId], references: [id], onDelete: SetNull)
   productId String?
-  product   Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
-  type      EventType
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  type      String
   domain    String?
   ip        String?
   ua        String?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([brandId, createdAt])
   @@index([brandId, type])
