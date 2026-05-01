@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     url: '/',
     siteName: 'Avori',
     type: 'website',
+    images: [{ url: '/brand/logo-mark.svg', width: 64, height: 64, alt: 'Avori' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Avori',
+    description: 'Shoppable video for any storefront.',
   },
 };
 
@@ -40,12 +46,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Toaster
           position="bottom-right"
-          theme="dark"
+          theme="light"
           toastOptions={{
             style: {
-              background: 'rgb(18 26 47)',
-              border: '1px solid rgb(30 41 70)',
-              color: 'rgb(248 250 252)',
+              background: 'rgb(255 255 255)',
+              border: '1px solid rgb(229 231 235)',
+              color: 'rgb(13 13 18)',
+              boxShadow: '0 8px 24px -12px rgb(13 13 18 / 0.10)',
             },
           }}
         />

@@ -2,9 +2,11 @@ import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
 import { authConfig } from './auth.config';
+import { rateLimit } from './ratelimit';
 
 declare module 'next-auth' {
   interface Session {
@@ -21,6 +23,14 @@ const credentialsSchema = z.object({
   password: z.string().min(8),
 });
 
+// Precomputed bcrypt hash of a random secret — used to spend the same CPU
+// time on missing-account login attempts as on real ones, so an attacker
+// can't enumerate accounts via response timing.
+const DUMMY_HASH = bcrypt.hashSync(
+  `dummy-${Math.random()}-${Date.now()}`,
+  12
+);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
@@ -33,8 +43,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
+
+        // Throttle by IP+email so a single attacker can't brute-force a target
+        // and a single shared IP (office/NAT) can't lock everyone out.
+        const ip =
+          headers().get('x-forwarded-for')?.split(',')[0]?.trim() ||
+          headers().get('x-real-ip') ||
+          'unknown';
+        const { ok: allowed } = rateLimit(`login:${ip}:${email.toLowerCase()}`, 10);
+        if (!allowed) return null;
+
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
+        if (!user) {
+          // Equalize timing — always run a bcrypt round so absent vs present
+          // accounts can't be distinguished by response time.
+          await bcrypt.compare(password, DUMMY_HASH);
+          return null;
+        }
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
         return {

@@ -21,14 +21,25 @@ export async function PATCH(
 ) {
   try {
     const { brandId } = await requireBrand();
-    await ownTag(brandId, params.id, params.tagId);
+    const current = await ownTag(brandId, params.id, params.tagId);
     const data = tagPatchSchema.parse(await req.json());
-    if (
-      data.startTime !== undefined &&
-      data.endTime !== undefined &&
-      data.endTime <= data.startTime
-    ) {
+    // Validate the *resulting* time window, not just whether both fields were
+    // sent in this patch. A patch that only changes endTime to 0 should still
+    // fail when compared against the existing startTime.
+    const startTime = data.startTime ?? current.startTime;
+    const endTime = data.endTime ?? current.endTime;
+    if (endTime <= startTime) {
       throw new HttpError(400, 'endTime must be greater than startTime');
+    }
+    // If productId is being patched, re-verify it belongs to this brand —
+    // otherwise an attacker could repoint a tag at another brand's product.
+    if (data.productId && data.productId !== current.productId) {
+      const product = await prisma.product.findUnique({
+        where: { id: data.productId },
+      });
+      if (!product || product.brandId !== brandId) {
+        throw new HttpError(404, 'Product not found');
+      }
     }
     const tag = await prisma.videoProductTag.update({
       where: { id: params.tagId },

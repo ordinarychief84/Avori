@@ -39,7 +39,7 @@ type Feed = { brand: { id: string; name: string; slug: string } | null; videos: 
 const STYLE_ID = 'av-style';
 const STYLES = `
 .av-root,.av-root *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,system-ui,sans-serif}
-.av-root{--av-card-bg:#fff;--av-card-fg:#0a0a0a;--av-card-muted:#666;--av-accent:#7C3AED;--av-accent-deep:#4C1D95;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(0,0,0,.18);--av-bubble-shadow:0 8px 24px rgba(0,0,0,.25)}
+.av-root{--av-card-bg:#F3F4F6;--av-card-fg:#0D0D12;--av-card-muted:#6B7280;--av-accent:#7C3AED;--av-accent-deep:#4C1D95;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(13,13,18,.12);--av-bubble-shadow:0 8px 24px rgba(13,13,18,.18)}
 .av-root[data-theme="dark"]{--av-card-bg:#16161E;--av-card-fg:#F3F4F6;--av-card-muted:#D1D5DB;--av-accent:#7C3AED;--av-accent-deep:#4C1D95;--av-cta-fg:#fff;--av-shadow:0 -12px 40px rgba(0,0,0,.5);--av-bubble-shadow:0 12px 32px rgba(0,0,0,.5)}
 .av-stage{position:relative;width:100%;aspect-ratio:9/16;background:#000;overflow:hidden;border-radius:12px;color:#fff}
 .av-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
@@ -382,7 +382,14 @@ function openTryOn(
   onClose: () => void
 ) {
   if (!product.tryOn) return;
-  const tryOn = product.tryOn;
+  // Defence-in-depth: even though the API enforces a strict hex regex, never
+  // interpolate the tint string straight into HTML/CSS — a future code path or
+  // a compromised DB row could deliver `red;background:url(javascript:...)`.
+  // We re-check the format here and fall back to a safe brand default.
+  const tint = /^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(product.tryOn.tint)
+    ? product.tryOn.tint
+    : '#7C3AED';
+  const tryOn = { category: product.tryOn.category, tint };
 
   ensureStyles();
   const root = document.createElement('div');
@@ -410,14 +417,20 @@ function openTryOn(
         </div>
       </div>
       <div class="footer">
-        <span class="swatch" style="background:${tryOn.tint}"></span>
-        <span>Applying <strong>${tryOn.tint}</strong> to your <strong>${categoryLabel(
-          tryOn.category
-        )}</strong>.</span>
+        <span class="swatch" aria-hidden="true"></span>
+        <span>Applying <strong class="hex"></strong> to your <strong class="region"></strong>.</span>
       </div>
     </div>
   `;
   document.body.appendChild(root);
+  // Set tint-derived content via DOM APIs so the validated string still can't
+  // turn into markup or a CSS expression.
+  const swatchEl = root.querySelector('.swatch') as HTMLElement;
+  swatchEl.style.background = tint;
+  (root.querySelector('.hex') as HTMLElement).textContent = tint;
+  (root.querySelector('.region') as HTMLElement).textContent = categoryLabel(
+    tryOn.category
+  );
 
   const video = root.querySelector('video') as HTMLVideoElement;
   const canvas = root.querySelector('canvas') as HTMLCanvasElement;

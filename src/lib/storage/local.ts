@@ -27,8 +27,12 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   async delete(key: string): Promise<void> {
-    if (key.includes('..')) return;
-    const abs = path.resolve(this.root, key);
+    // Hardened path containment: resolve both the upload root and the target,
+    // then ensure the target sits inside the root. Defends against `..`,
+    // absolute paths, and any normalization tricks slipping through a substring check.
+    const absRoot = path.resolve(this.root);
+    const abs = path.resolve(absRoot, key);
+    if (abs !== absRoot && !abs.startsWith(absRoot + path.sep)) return;
     try {
       await unlink(abs);
     } catch {

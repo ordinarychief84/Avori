@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
     if (existing) throw new HttpError(409, "Couldn't create account — try logging in");
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
+    const passwordHash = await bcrypt.hash(data.password, 12);
     const baseSlug = slugify(data.brandName) || 'brand';
 
     const result = await prisma.$transaction(async (tx) => {

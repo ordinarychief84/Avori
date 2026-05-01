@@ -4,24 +4,24 @@
 
 /*
  * Palette (provided): #0D0D12 #6B7280 #D1D5DB #E5E7EB #F3F4F6 #7C3AED #4C1D95
- * Layered to give surface elevation on the dark canvas.
+ * Light theme — the canvas is the lightest gray so white cards lift on it.
  */
 :root {
-  --bg: 13 13 18;            /* #0D0D12 — canvas */
-  --surface: 22 22 30;       /* card bg lifted from canvas */
-  --surface-2: 32 32 44;     /* hover / nested card lift */
-  --border: 46 46 60;
-  --border-strong: 70 70 92;
-  --fg: 243 244 246;         /* #F3F4F6 */
-  --fg-muted: 209 213 219;   /* #D1D5DB */
-  --fg-subtle: 107 114 128;  /* #6B7280 */
-  --accent: 124 58 237;      /* #7C3AED */
-  --accent-hover: 139 92 246;
-  --accent-deep: 76 29 149;  /* #4C1D95 */
-  --accent-subtle: 38 18 84;
-  --success: 34 197 94;
-  --warning: 234 179 8;
-  --danger: 239 68 68;
+  --bg: 243 244 246;          /* #F3F4F6 — page canvas */
+  --surface: 255 255 255;     /* white card lifted on the canvas */
+  --surface-2: 229 231 235;   /* #E5E7EB — pressed / nested */
+  --border: 229 231 235;      /* #E5E7EB — hairline */
+  --border-strong: 209 213 219;/* #D1D5DB — focused / divider */
+  --fg: 13 13 18;             /* #0D0D12 — primary text */
+  --fg-muted: 107 114 128;    /* #6B7280 — secondary */
+  --fg-subtle: 156 163 175;   /* #9CA3AF — placeholder (palette #D1D5DB is too light for text) */
+  --accent: 124 58 237;       /* #7C3AED */
+  --accent-hover: 109 40 217; /* #6D28D9 — between #7C3AED and #4C1D95 */
+  --accent-deep: 76 29 149;   /* #4C1D95 */
+  --accent-subtle: 245 243 255;/* lavender tint for selected pills, hover rows */
+  --success: 22 163 74;       /* #16A34A — readable on white */
+  --warning: 202 138 4;       /* #CA8A04 */
+  --danger: 220 38 38;        /* #DC2626 */
 }
 
 html,
@@ -35,12 +35,12 @@ body {
 
 body {
   background-image:
-    radial-gradient(1200px 500px at 80% -10%, rgb(124 58 237 / 0.10), transparent 60%),
-    radial-gradient(900px 400px at -10% 10%, rgb(76 29 149 / 0.08), transparent 60%);
+    radial-gradient(1200px 500px at 80% -10%, rgb(124 58 237 / 0.06), transparent 60%),
+    radial-gradient(900px 400px at -10% 10%, rgb(124 58 237 / 0.04), transparent 60%);
 }
 
 ::selection {
-  background: rgb(var(--accent) / 0.4);
+  background: rgb(var(--accent) / 0.18);
   color: rgb(var(--fg));
 }
 
@@ -48,14 +48,18 @@ body {
   width: 10px;
   height: 10px;
 }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--border-strong) / 0.6);
+  background: rgb(var(--border-strong));
   border-radius: 8px;
-  border: 2px solid transparent;
+  border: 2px solid rgb(var(--bg));
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--border-strong));
+  background: rgb(var(--fg-subtle));
+  border: 2px solid rgb(var(--bg));
   background-clip: padding-box;
 }
 
@@ -72,23 +76,23 @@ body {
 
 @layer utilities {
   .glass {
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0));
-    backdrop-filter: blur(8px);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.4));
+    backdrop-filter: blur(10px);
   }
   .skeleton {
     background: linear-gradient(
       90deg,
-      rgb(var(--surface)) 0%,
-      rgb(var(--surface-2)) 50%,
-      rgb(var(--surface)) 100%
+      rgb(var(--surface-2)) 0%,
+      rgb(var(--bg)) 50%,
+      rgb(var(--surface-2)) 100%
     );
     background-size: 1000px 100%;
     animation: shimmer 1.6s linear infinite;
   }
   .grid-radial {
     background-image:
-      linear-gradient(rgb(var(--border) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--border) / 0.4) 1px, transparent 1px);
+      linear-gradient(rgb(var(--border-strong) / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--border-strong) / 0.5) 1px, transparent 1px);
     background-size: 32px 32px;
     mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black, transparent);
   }
