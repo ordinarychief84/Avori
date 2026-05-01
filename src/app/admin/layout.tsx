@@ -1,14 +1,8 @@
 import { redirect } from 'next/navigation';
-import { Building2, Film, Package, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { auth, signOut } from '@/lib/auth';
 import AuthSessionProvider from '@/components/SessionProvider';
-import { AppShell, type NavItem } from '@/components/AppShell';
-
-const NAV: NavItem[] = [
-  { href: '/admin', label: 'Brands', icon: Building2 },
-  { href: '/admin/videos', label: 'Videos', icon: Film },
-  { href: '/admin/products', label: 'Products', icon: Package },
-];
+import { AppShell } from '@/components/AppShell';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -23,7 +17,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <AuthSessionProvider>
       <AppShell
-        nav={NAV}
         brandName="Avori — Admin"
         email={session.user.email ?? ''}
         role="ADMIN"

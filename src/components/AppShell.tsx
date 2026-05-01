@@ -3,26 +3,48 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown, LogOut } from 'lucide-react';
+import {
+  Menu,
+  X,
+  ChevronDown,
+  LogOut,
+  LayoutDashboard,
+  Package,
+  Film,
+  BarChart3,
+  Code2,
+  Building2,
+} from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/cn';
 
-export type NavItem = {
+type NavItem = {
   href: string;
   label: string;
   icon: React.ElementType;
-  badge?: string;
 };
 
+const BRAND_NAV: NavItem[] = [
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/products', label: 'Products', icon: Package },
+  { href: '/dashboard/videos', label: 'Videos', icon: Film },
+  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/dashboard/embed', label: 'Embed', icon: Code2 },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { href: '/admin', label: 'Brands', icon: Building2 },
+  { href: '/admin/videos', label: 'Videos', icon: Film },
+  { href: '/admin/products', label: 'Products', icon: Package },
+];
+
 export function AppShell({
-  nav,
   brandName,
   email,
   role,
   signOutAction,
   children,
 }: {
-  nav: NavItem[];
   brandName: string;
   email: string;
   role: 'BRAND' | 'ADMIN';
@@ -30,10 +52,14 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const nav = role === 'ADMIN' ? ADMIN_NAV : BRAND_NAV;
+  const home = role === 'ADMIN' ? '/admin' : '/dashboard';
+
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
       <Sidebar
         nav={nav}
+        home={home}
         brandName={brandName}
         email={email}
         role={role}
@@ -42,7 +68,7 @@ export function AppShell({
       />
 
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-bg/80 px-4 backdrop-blur lg:hidden">
-        <Link href={role === 'ADMIN' ? '/admin' : '/dashboard'}>
+        <Link href={home}>
           <Logo size="sm" />
         </Link>
         <button
@@ -62,6 +88,7 @@ export function AppShell({
           />
           <Sidebar
             nav={nav}
+            home={home}
             brandName={brandName}
             email={email}
             role={role}
@@ -82,6 +109,7 @@ export function AppShell({
 
 function Sidebar({
   nav,
+  home,
   brandName,
   email,
   role,
@@ -91,6 +119,7 @@ function Sidebar({
   onClose,
 }: {
   nav: NavItem[];
+  home: string;
   brandName: string;
   email: string;
   role: 'BRAND' | 'ADMIN';
@@ -103,11 +132,7 @@ function Sidebar({
   return (
     <aside className={cn('flex h-full flex-col border-r border-border bg-bg', className)}>
       <div className="flex items-center justify-between px-5 py-5">
-        <Link
-          href={role === 'ADMIN' ? '/admin' : '/dashboard'}
-          aria-label="Avori home"
-          onClick={onNavigate}
-        >
+        <Link href={home} aria-label="Avori home" onClick={onNavigate}>
           <Logo size="md" />
         </Link>
         {onClose && (
@@ -148,20 +173,12 @@ function Sidebar({
             >
               <n.icon className={cn('h-4 w-4', active ? 'text-accent' : '')} />
               <span className="flex-1">{n.label}</span>
-              {n.badge && (
-                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-2xs font-medium text-accent">
-                  {n.badge}
-                </span>
-              )}
             </Link>
           );
         })}
       </nav>
 
-      <form
-        action={signOutAction}
-        className="border-t border-border px-3 py-3"
-      >
+      <form action={signOutAction} className="border-t border-border px-3 py-3">
         <button
           type="submit"
           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-fg-muted transition-colors hover:bg-surface hover:text-fg"
