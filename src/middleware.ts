@@ -1,20 +1,12 @@
 import NextAuth from 'next-auth';
 import { authConfig } from '@/lib/auth.config';
 
+// Single source of truth for route gating: the `authorized` callback in
+// authConfig. Auth.js redirects unauthenticated users to /login automatically
+// when `authorized` returns false. The admin role check also lives there.
 export const { auth: middleware } = NextAuth(authConfig);
+export default middleware;
 
 export const config = {
   matcher: ['/dashboard/:path*', '/admin/:path*'],
 };
-
-export default middleware((req) => {
-  if (!req.auth?.user) {
-    const path = req.nextUrl.pathname;
-    if (path.startsWith('/dashboard') || path.startsWith('/admin')) {
-      const url = req.nextUrl.clone();
-      url.pathname = '/login';
-      url.searchParams.set('callbackUrl', path);
-      return Response.redirect(url);
-    }
-  }
-});

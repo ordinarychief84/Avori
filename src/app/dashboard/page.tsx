@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, Eye, MousePointerClick, Sparkles, Package, Film, BarChart3 } from 'lucide-react';
-import { auth } from '@/lib/auth';
+import { pageBrandSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/AppShell';
 
 export default async function DashboardOverview() {
-  const session = await auth();
-  const brandId = session!.user.brandId!;
+  const { brandId } = await pageBrandSession();
 
   const [productCount, activeProductCount, videoCount, activeVideoCount, brand, eventCounts] =
     await Promise.all([

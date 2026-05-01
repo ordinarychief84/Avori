@@ -45,6 +45,9 @@ export const eventSchema = z.object({
   videoId: z.string().min(1).optional(),
   productId: z.string().min(1).optional(),
   type: z.enum(['IMPRESSION', 'VIEW', 'TAG_CLICK', 'CTA_CLICK']),
+  // `domain` is intentionally NOT validated here — the server derives it from
+  // the request Origin / Referer header. Clients may still send a `domain`
+  // field for forward compat; it is ignored.
   domain: z.string().max(200).optional(),
   mode: z.enum(['inline', 'floating', 'feed']).optional(),
 });

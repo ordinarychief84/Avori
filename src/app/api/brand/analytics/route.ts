@@ -69,7 +69,8 @@ export async function GET() {
           name: product?.name ?? 'Deleted product',
           ctaClicks: row._count._all,
           tagClicks,
-          ctr: tagClicks > 0 ? +(row._count._all / tagClicks).toFixed(4) : 0,
+          // Conversion from tag click to CTA click (NOT a view-based CTR).
+          tagToCta: tagClicks > 0 ? +(row._count._all / tagClicks).toFixed(4) : 0,
         };
       })
     );

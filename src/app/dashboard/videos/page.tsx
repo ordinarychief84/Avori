@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Plus, Film, Tag } from 'lucide-react';
-import { auth } from '@/lib/auth';
+import { pageBrandSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -10,8 +10,7 @@ import { PageHeader } from '@/components/AppShell';
 import RowDelete from '@/components/RowDelete';
 
 export default async function VideosPage() {
-  const session = await auth();
-  const brandId = session!.user.brandId!;
+  const { brandId } = await pageBrandSession();
   const videos = await prisma.video.findMany({
     where: { brandId },
     orderBy: { createdAt: 'desc' },

@@ -49,12 +49,20 @@ export default function SignupPage() {
       setLoading(false);
       return;
     }
-    await signIn('credentials', {
+    const signInRes = await signIn('credentials', {
       email: form.email,
       password: form.password,
       redirect: false,
     });
     setLoading(false);
+    if (signInRes?.error) {
+      setError('Account created but sign-in failed. Please log in manually.');
+      toast.error('Sign-in failed', {
+        description: 'Your account was created — log in to continue.',
+      });
+      router.push(`/login?email=${encodeURIComponent(form.email)}`);
+      return;
+    }
     toast.success('Welcome to Avori');
     router.push('/dashboard?onboarding=1');
     router.refresh();

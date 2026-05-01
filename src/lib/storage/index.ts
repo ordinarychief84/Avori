@@ -8,7 +8,7 @@ export interface PutResult {
 }
 
 export interface StorageProvider {
-  put(file: File, kind: StorageKind): Promise<PutResult>;
+  put(buffer: Buffer, opts: { kind: StorageKind; mime: string; ext: string }): Promise<PutResult>;
   delete(key: string): Promise<void>;
 }
 
@@ -32,30 +32,15 @@ export function storage(): StorageProvider {
   }
 }
 
-const VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
-const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const VIDEO_MIMES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
+const IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
-export function validateFile(file: File, kind: StorageKind): void {
-  const maxBytes =
-    kind === 'video'
-      ? Number(process.env.MAX_VIDEO_BYTES ?? 200_000_000)
-      : Number(process.env.MAX_IMAGE_BYTES ?? 10_000_000);
-  if (file.size > maxBytes) throw new Error(`File too large (max ${maxBytes} bytes)`);
-  const allowed = kind === 'video' ? VIDEO_TYPES : IMAGE_TYPES;
-  if (!allowed.has(file.type)) throw new Error(`Unsupported file type: ${file.type}`);
+export function maxBytesFor(kind: StorageKind): number {
+  return kind === 'video'
+    ? Number(process.env.MAX_VIDEO_BYTES ?? 200_000_000)
+    : Number(process.env.MAX_IMAGE_BYTES ?? 10_000_000);
 }
 
-export function safeExtension(file: File): string {
-  const fromName = file.name.match(/\.([a-z0-9]{1,8})$/i)?.[1]?.toLowerCase();
-  if (fromName) return fromName;
-  const map: Record<string, string> = {
-    'video/mp4': 'mp4',
-    'video/webm': 'webm',
-    'video/quicktime': 'mov',
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/webp': 'webp',
-    'image/gif': 'gif',
-  };
-  return map[file.type] ?? 'bin';
+export function isAllowedMime(kind: StorageKind, mime: string): boolean {
+  return kind === 'video' ? VIDEO_MIMES.has(mime) : IMAGE_MIMES.has(mime);
 }

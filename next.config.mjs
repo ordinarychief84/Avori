@@ -24,7 +24,11 @@ const nextConfig = {
       },
       {
         source: '/uploads/:path*',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Content-Security-Policy', value: "default-src 'none'; sandbox" },
+        ],
       },
     ];
   },

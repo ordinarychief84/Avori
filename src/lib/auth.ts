@@ -2,6 +2,7 @@ import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
 import { authConfig } from './auth.config';
 
@@ -40,7 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name ?? null,
-          role: user.role as 'ADMIN' | 'BRAND',
+          role: user.role,
           brandId: user.brandId,
         };
       },
@@ -70,4 +71,19 @@ export async function requireAdmin() {
   if (!session?.user) throw new HttpError(401, 'Unauthorized');
   if (session.user.role !== 'ADMIN') throw new HttpError(403, 'Forbidden');
   return { userId: session.user.id };
+}
+
+// For server pages under /dashboard. Belt-and-suspenders behind middleware:
+// if a streaming/race lets a request slip through middleware, redirect here
+// instead of crashing on a non-null assertion.
+export async function pageBrandSession() {
+  const session = await auth();
+  if (!session?.user) redirect('/login');
+  if (session.user.role === 'ADMIN') redirect('/admin');
+  if (session.user.role !== 'BRAND' || !session.user.brandId) redirect('/login');
+  return {
+    userId: session.user.id,
+    brandId: session.user.brandId,
+    email: session.user.email ?? '',
+  };
 }

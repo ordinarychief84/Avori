@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { pageBrandSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import VideoTagEditor from '@/components/VideoTagEditor';
 
 export default async function VideoEditPage({ params }: { params: { id: string } }) {
-  const session = await auth();
-  const brandId = session!.user.brandId!;
+  const { brandId } = await pageBrandSession();
   const [video, products] = await Promise.all([
     prisma.video.findUnique({
       where: { id: params.id },
@@ -31,7 +30,7 @@ export default async function VideoEditPage({ params }: { params: { id: string }
         description: video.description ?? '',
         videoUrl: video.videoUrl,
         thumbnailUrl: video.thumbnailUrl ?? '',
-        status: video.status as 'DRAFT' | 'ACTIVE' | 'INACTIVE',
+        status: video.status,
         tags: video.tags.map((t) => ({
           id: t.id,
           productId: t.productId,

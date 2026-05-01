@@ -1,13 +1,12 @@
 import { Eye, MousePointerClick, Sparkles, BarChart3 } from 'lucide-react';
-import { auth } from '@/lib/auth';
+import { pageBrandSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/AppShell';
 
 export default async function AnalyticsPage() {
-  const session = await auth();
-  const brandId = session!.user.brandId!;
+  const { brandId } = await pageBrandSession();
 
   const counts = await prisma.analyticsEvent.groupBy({
     by: ['type'],
