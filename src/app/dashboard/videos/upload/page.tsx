@@ -1,41 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Upload, FileVideo, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { Input, Textarea, Select, FormField } from '@/components/ui/Input';
+import { Card, CardBody, CardFooter } from '@/components/ui/Card';
+import { PageHeader } from '@/components/AppShell';
 import ImageUploader from '@/components/ImageUploader';
 
 export default function UploadVideoPage() {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [status, setStatus] = useState<'DRAFT' | 'ACTIVE' | 'INACTIVE'>('DRAFT');
+  const [progress, setProgress] = useState<'idle' | 'uploading' | 'uploaded'>('idle');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState<string | null>(null);
 
   const uploadVideo = async (file: File) => {
-    setError(null);
-    setProgress('Uploading…');
+    setProgress('uploading');
     const fd = new FormData();
     fd.append('file', file);
     fd.append('kind', 'video');
     const res = await fetch('/api/brand/upload', { method: 'POST', body: fd });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? 'Upload failed');
-      setProgress(null);
+      toast.error('Upload failed', { description: j.error });
+      setProgress('idle');
       return;
     }
     const j = await res.json();
     setVideoUrl(j.url);
-    setProgress('Uploaded');
+    setProgress('uploaded');
+    toast.success('Video uploaded');
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0];
+    if (f) uploadVideo(f);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setBusy(true);
     const res = await fetch('/api/brand/videos', {
       method: 'POST',
@@ -51,97 +62,142 @@ export default function UploadVideoPage() {
     setBusy(false);
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      setError(j.error ?? 'Save failed');
+      toast.error('Save failed', { description: j.error });
       return;
     }
     const j = await res.json();
+    toast.success('Video saved');
     router.push(`/dashboard/videos/${j.video.id}`);
     router.refresh();
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Upload video</h1>
-      <form onSubmit={onSubmit} className="card max-w-2xl space-y-5 p-6">
-        <div>
-          <label className="label">Video file (vertical, MP4/WebM/MOV)</label>
-          <div className="mt-1 flex items-center gap-3">
-            <label className="btn-secondary cursor-pointer">
-              {videoUrl ? 'Replace file' : 'Choose file'}
-              <input
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                className="hidden"
+    <div className="space-y-8">
+      <PageHeader
+        title="Upload video"
+        description="Vertical 9:16 works best. MP4, WebM, or MOV up to 200MB."
+      />
+      <Card className="max-w-3xl">
+        <form onSubmit={onSubmit}>
+          <CardBody className="space-y-6">
+            <FormField label="Video file" required>
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={onDrop}
+                className="rounded-lg border border-dashed border-border bg-surface/50 p-6 text-center transition-colors hover:border-accent/40"
+              >
+                {progress === 'uploaded' ? (
+                  <div className="space-y-3">
+                    <div className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-success/15 text-success">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm font-medium text-fg">Uploaded successfully</p>
+                    <video
+                      src={videoUrl}
+                      controls
+                      muted
+                      playsInline
+                      className="mx-auto max-h-72 rounded-md border border-border"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      Replace file
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-accent-subtle text-accent">
+                      <FileVideo className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-fg">
+                        Drag & drop, or click to choose
+                      </p>
+                      <p className="mt-0.5 text-xs text-fg-muted">
+                        Vertical 9:16 · MP4, WebM, MOV · ≤ 200MB
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      loading={progress === 'uploading'}
+                      leftIcon={<Upload className="h-4 w-4" />}
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      Choose file
+                    </Button>
+                  </div>
+                )}
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadVideo(f);
+                    e.target.value = '';
+                  }}
+                />
+              </div>
+              <Input
+                placeholder="…or paste a video URL"
+                value={videoUrl}
                 onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) uploadVideo(f);
+                  setVideoUrl(e.target.value);
+                  setProgress(e.target.value ? 'uploaded' : 'idle');
                 }}
+                className="mt-3"
               />
-            </label>
-            {progress && <span className="text-sm text-zinc-500">{progress}</span>}
-          </div>
-          <input
-            className="input mt-2"
-            placeholder="…or paste a video URL"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-          />
-          {videoUrl && (
-            <video
-              src={videoUrl}
-              className="mt-3 max-h-64 w-auto rounded border border-zinc-200"
-              controls
-              muted
-              playsInline
-            />
-          )}
-        </div>
+            </FormField>
 
-        <div>
-          <label className="label">Title</label>
-          <input
-            className="input mt-1"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="label">Description (optional)</label>
-          <textarea
-            className="input mt-1 min-h-[80px]"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="label">Thumbnail (optional)</label>
-          <ImageUploader value={thumbnailUrl} onChange={setThumbnailUrl} />
-        </div>
-
-        <div>
-          <label className="label">Status</label>
-          <select
-            className="input mt-1"
-            value={status}
-            onChange={(e) => setStatus(e.target.value as 'DRAFT' | 'ACTIVE' | 'INACTIVE')}
-          >
-            <option value="DRAFT">Draft (only you can see)</option>
-            <option value="ACTIVE">Active (visible in widget)</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
-        </div>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <div className="flex gap-3">
-          <button className="btn-primary" type="submit" disabled={busy || !videoUrl || !title}>
-            {busy ? 'Saving…' : 'Save & continue to tagging'}
-          </button>
-        </div>
-      </form>
+            <FormField label="Title" required>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                placeholder="Spring drop · Iced Latte launch"
+              />
+            </FormField>
+            <FormField label="Description" hint="Shown as a caption inside the widget.">
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="A dreamy iced-latte morning. Tap the dots to shop."
+              />
+            </FormField>
+            <FormField label="Thumbnail" hint="Optional. We'll use the first frame if you skip this.">
+              <ImageUploader value={thumbnailUrl} onChange={setThumbnailUrl} />
+            </FormField>
+            <FormField label="Status">
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as 'DRAFT' | 'ACTIVE' | 'INACTIVE')}
+              >
+                <option value="DRAFT">Draft — only you can see this</option>
+                <option value="ACTIVE">Active — appears in widget</option>
+                <option value="INACTIVE">Inactive — hidden but kept</option>
+              </Select>
+            </FormField>
+          </CardBody>
+          <CardFooter>
+            <Button type="button" variant="secondary" onClick={() => router.push('/dashboard/videos')}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              loading={busy}
+              disabled={!videoUrl || !title}
+            >
+              Save & continue to tagging
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }

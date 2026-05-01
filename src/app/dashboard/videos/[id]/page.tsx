@@ -31,7 +31,7 @@ export default async function VideoEditPage({ params }: { params: { id: string }
         description: video.description ?? '',
         videoUrl: video.videoUrl,
         thumbnailUrl: video.thumbnailUrl ?? '',
-        status: video.status,
+        status: video.status as 'DRAFT' | 'ACTIVE' | 'INACTIVE',
         tags: video.tags.map((t) => ({
           id: t.id,
           productId: t.productId,

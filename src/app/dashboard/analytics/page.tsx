@@ -1,5 +1,9 @@
+import { Eye, MousePointerClick, Sparkles, BarChart3 } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/AppShell';
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -62,81 +66,126 @@ export default async function AnalyticsPage() {
     })
   );
 
+  const hasData = totals.impressions + totals.views + totals.tagClicks + totals.ctaClicks > 0;
+  const ctr = totals.views > 0 ? (totals.ctaClicks / totals.views) * 100 : 0;
+
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
+      <PageHeader
+        title="Analytics"
+        description="Impressions, views, and conversion across every embedded widget."
+      />
 
-      <div className="grid gap-4 sm:grid-cols-4">
-        <Stat label="Impressions" value={totals.impressions} />
-        <Stat label="Video views" value={totals.views} />
-        <Stat label="Tag clicks" value={totals.tagClicks} />
-        <Stat label="CTA clicks" value={totals.ctaClicks} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Impressions" value={totals.impressions} icon={Eye} />
+        <Stat label="Video views" value={totals.views} icon={Sparkles} />
+        <Stat label="Tag clicks" value={totals.tagClicks} icon={MousePointerClick} />
+        <Stat
+          label="CTA clicks"
+          value={totals.ctaClicks}
+          icon={BarChart3}
+          hint={`${ctr.toFixed(1)}% CTR`}
+        />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="card p-6">
-          <h2 className="font-semibold">Top videos</h2>
-          {topVideos.length === 0 ? (
-            <p className="mt-2 text-sm text-zinc-500">No data yet.</p>
-          ) : (
-            <table className="mt-4 w-full text-sm">
-              <thead className="text-left text-xs uppercase text-zinc-500">
-                <tr>
-                  <th>Title</th>
-                  <th>Views</th>
-                  <th>CTA</th>
-                  <th>CTR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topVideos.map((v, i) => (
-                  <tr key={i} className="border-t border-zinc-100">
-                    <td className="py-2">{v.title}</td>
-                    <td>{v.views}</td>
-                    <td>{v.ctaClicks}</td>
-                    <td>{v.ctr}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+      {!hasData ? (
+        <EmptyState
+          icon={BarChart3}
+          title="No analytics yet"
+          description="Once your widget loads on a customer-facing page, impressions and views will start streaming in here."
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Top videos</CardTitle>
+            </CardHeader>
+            <CardBody>
+              {topVideos.length === 0 ? (
+                <p className="text-sm text-fg-muted">No view data yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-2xs uppercase tracking-wide text-fg-subtle">
+                      <th className="py-2 font-normal">Title</th>
+                      <th className="py-2 font-normal text-right">Views</th>
+                      <th className="py-2 font-normal text-right">CTA</th>
+                      <th className="py-2 font-normal text-right">CTR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topVideos.map((v, i) => (
+                      <tr key={i} className="border-b border-border/60 last:border-0">
+                        <td className="py-2.5 text-fg">{v.title}</td>
+                        <td className="py-2.5 text-right text-fg-muted">{v.views}</td>
+                        <td className="py-2.5 text-right text-fg-muted">{v.ctaClicks}</td>
+                        <td className="py-2.5 text-right font-mono text-2xs text-accent">
+                          {v.ctr}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </CardBody>
+          </Card>
 
-        <div className="card p-6">
-          <h2 className="font-semibold">Top products</h2>
-          {topProducts.length === 0 ? (
-            <p className="mt-2 text-sm text-zinc-500">No data yet.</p>
-          ) : (
-            <table className="mt-4 w-full text-sm">
-              <thead className="text-left text-xs uppercase text-zinc-500">
-                <tr>
-                  <th>Product</th>
-                  <th>Tag clicks</th>
-                  <th>CTA clicks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topProducts.map((p, i) => (
-                  <tr key={i} className="border-t border-zinc-100">
-                    <td className="py-2">{p.name}</td>
-                    <td>{p.tagClicks}</td>
-                    <td>{p.ctaClicks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top products</CardTitle>
+            </CardHeader>
+            <CardBody>
+              {topProducts.length === 0 ? (
+                <p className="text-sm text-fg-muted">No conversion data yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-2xs uppercase tracking-wide text-fg-subtle">
+                      <th className="py-2 font-normal">Product</th>
+                      <th className="py-2 font-normal text-right">Tag clicks</th>
+                      <th className="py-2 font-normal text-right">CTA clicks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topProducts.map((p, i) => (
+                      <tr key={i} className="border-b border-border/60 last:border-0">
+                        <td className="py-2.5 text-fg">{p.name}</td>
+                        <td className="py-2.5 text-right text-fg-muted">{p.tagClicks}</td>
+                        <td className="py-2.5 text-right text-fg-muted">{p.ctaClicks}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </CardBody>
+          </Card>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({
+  label,
+  value,
+  hint,
+  icon: Icon,
+}: {
+  label: string;
+  value: number | string;
+  hint?: string;
+  icon: React.ElementType;
+}) {
   return (
-    <div className="card p-5">
-      <div className="text-xs uppercase tracking-wide text-zinc-500">{label}</div>
-      <div className="mt-2 text-3xl font-semibold">{value}</div>
-    </div>
+    <Card>
+      <CardBody>
+        <div className="flex items-center justify-between">
+          <span className="text-2xs uppercase tracking-[0.2em] text-fg-subtle">{label}</span>
+          <Icon className="h-4 w-4 text-fg-subtle" />
+        </div>
+        <div className="mt-3 text-3xl font-semibold tracking-tight text-fg">{value}</div>
+        {hint && <div className="mt-1 text-xs text-fg-subtle">{hint}</div>}
+      </CardBody>
+    </Card>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
 
 export default function ToggleDisabled({
   endpoint,
@@ -15,9 +17,10 @@ export default function ToggleDisabled({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   return (
-    <button
-      className={disabled ? 'btn-secondary' : 'btn-danger'}
-      disabled={busy}
+    <Button
+      size="sm"
+      variant={disabled ? 'secondary' : 'danger'}
+      loading={busy}
       onClick={async () => {
         setBusy(true);
         const res = await fetch(endpoint, {
@@ -27,13 +30,14 @@ export default function ToggleDisabled({
         });
         setBusy(false);
         if (!res.ok) {
-          alert('Failed');
+          toast.error('Update failed');
           return;
         }
+        toast.success(disabled ? 'Enabled' : 'Disabled');
         router.refresh();
       }}
     >
-      {busy ? '…' : label}
-    </button>
+      {label}
+    </Button>
   );
 }
