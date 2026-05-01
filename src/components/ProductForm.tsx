@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ImageUploader from './ImageUploader';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { Input, Select, FormField } from '@/components/ui/Input';
+import { Card, CardBody, CardFooter } from '@/components/ui/Card';
+import ImageUploader from '@/components/ImageUploader';
 
 type ProductInput = {
   id?: string;
@@ -25,12 +29,16 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
     sku: initial?.sku ?? '',
     status: (initial?.status ?? 'ACTIVE') as 'ACTIVE' | 'INACTIVE',
   });
-  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!form.imageUrl) {
+      setError('Please add a product image.');
+      return;
+    }
     setBusy(true);
     const url = isEdit ? `/api/brand/products/${initial!.id}` : '/api/brand/products';
     const res = await fetch(url, {
@@ -49,92 +57,82 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       setError(j.error ?? 'Save failed');
+      toast.error('Save failed', { description: j.error });
       return;
     }
+    toast.success(isEdit ? 'Product updated' : 'Product created');
     router.push('/dashboard/products');
     router.refresh();
   };
 
   return (
-    <form onSubmit={onSubmit} className="card max-w-2xl space-y-5 p-6">
-      <Field label="Name">
-        <input
-          className="input"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          required
-        />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Price (USD)">
-          <input
-            className="input"
-            type="number"
-            step="0.01"
-            min="0"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            required
-          />
-        </Field>
-        <Field label="SKU (optional)">
-          <input
-            className="input"
-            value={form.sku ?? ''}
-            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-          />
-        </Field>
-      </div>
-      <Field label="Product image">
-        <ImageUploader
-          value={form.imageUrl}
-          onChange={(url) => setForm({ ...form, imageUrl: url })}
-        />
-      </Field>
-      <Field label="Product URL">
-        <input
-          className="input"
-          type="url"
-          placeholder="https://shop.example.com/products/iced-latte"
-          value={form.productUrl}
-          onChange={(e) => setForm({ ...form, productUrl: e.target.value })}
-          required
-        />
-      </Field>
-      <Field label="Status">
-        <select
-          className="input"
-          value={form.status}
-          onChange={(e) =>
-            setForm({ ...form, status: e.target.value as 'ACTIVE' | 'INACTIVE' })
-          }
-        >
-          <option value="ACTIVE">Active (visible in widget)</option>
-          <option value="INACTIVE">Inactive (hidden)</option>
-        </select>
-      </Field>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <div className="flex gap-3">
-        <button className="btn-primary" type="submit" disabled={busy}>
-          {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Create product'}
-        </button>
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={() => router.push('/dashboard/products')}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="label">{label}</label>
-      <div className="mt-1">{children}</div>
-    </div>
+    <Card className="max-w-2xl">
+      <form onSubmit={onSubmit}>
+        <CardBody className="space-y-5">
+          <FormField label="Name" required>
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+              placeholder="Iced Latte Lip Balm"
+            />
+          </FormField>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <FormField label="Price (USD)" required>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                required
+                placeholder="18.00"
+              />
+            </FormField>
+            <FormField label="SKU" hint="Optional">
+              <Input
+                value={form.sku ?? ''}
+                onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                placeholder="AV-IL-001"
+              />
+            </FormField>
+          </div>
+          <FormField label="Product image" required error={error ?? undefined}>
+            <ImageUploader
+              value={form.imageUrl}
+              onChange={(url) => setForm({ ...form, imageUrl: url })}
+            />
+          </FormField>
+          <FormField label="Product URL" required hint="Where the CTA in the widget will send shoppers.">
+            <Input
+              type="url"
+              value={form.productUrl}
+              onChange={(e) => setForm({ ...form, productUrl: e.target.value })}
+              required
+              placeholder="https://shop.example.com/products/iced-latte"
+            />
+          </FormField>
+          <FormField label="Status">
+            <Select
+              value={form.status}
+              onChange={(e) =>
+                setForm({ ...form, status: e.target.value as 'ACTIVE' | 'INACTIVE' })
+              }
+            >
+              <option value="ACTIVE">Active — visible inside the widget</option>
+              <option value="INACTIVE">Inactive — hidden</option>
+            </Select>
+          </FormField>
+        </CardBody>
+        <CardFooter>
+          <Button type="button" variant="secondary" onClick={() => router.push('/dashboard/products')}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={busy}>
+            {isEdit ? 'Save changes' : 'Create product'}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

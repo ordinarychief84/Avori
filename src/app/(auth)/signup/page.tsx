@@ -4,18 +4,34 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/Button';
+import { Input, FormField } from '@/components/ui/Input';
+
+type Step = 'account' | 'brand';
 
 export default function SignupPage() {
   const router = useRouter();
+  const [step, setStep] = useState<Step>('account');
   const [form, setForm] = useState({
+    email: '',
+    password: '',
     name: '',
     brandName: '',
     domain: '',
-    email: '',
-    password: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const onAccountNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (form.password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    setStep('brand');
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +45,7 @@ export default function SignupPage() {
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       setError(j.error ?? 'Signup failed');
+      toast.error("Couldn't create your account", { description: j.error });
       setLoading(false);
       return;
     }
@@ -38,76 +55,98 @@ export default function SignupPage() {
       redirect: false,
     });
     setLoading(false);
-    router.push('/dashboard');
+    toast.success('Welcome to Avori');
+    router.push('/dashboard?onboarding=1');
     router.refresh();
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
-      <Link href="/" className="mb-8 text-xl font-bold">
-        Avori
-      </Link>
-      <h1 className="text-2xl font-semibold">Create your brand</h1>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
-        <div>
-          <label className="label">Brand name</label>
-          <input
-            className="input mt-1"
-            value={form.brandName}
-            onChange={(e) => setForm({ ...form, brandName: e.target.value })}
+    <div>
+      <div className="flex items-center gap-2 text-2xs uppercase tracking-[0.2em] text-fg-subtle">
+        Step {step === 'account' ? '1' : '2'} of 2
+      </div>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+        {step === 'account' ? 'Create your account' : 'Set up your brand'}
+      </h1>
+      <p className="mt-1 text-sm text-fg-muted">
+        {step === 'account'
+          ? 'You can change everything later.'
+          : 'This is the brand profile your widget will display.'}
+      </p>
+
+      {step === 'account' && (
+        <form onSubmit={onAccountNext} className="mt-8 space-y-4">
+          <FormField label="Your name">
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              autoComplete="name"
+            />
+          </FormField>
+          <FormField label="Email" required>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              autoComplete="email"
+              required
+            />
+          </FormField>
+          <FormField
+            label="Password"
             required
-          />
-        </div>
-        <div>
-          <label className="label">Website domain (optional)</label>
-          <input
-            className="input mt-1"
-            placeholder="shop.example.com"
-            value={form.domain}
-            onChange={(e) => setForm({ ...form, domain: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="label">Your name</label>
-          <input
-            className="input mt-1"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="label">Email</label>
-          <input
-            className="input mt-1"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label className="label">Password</label>
-          <input
-            className="input mt-1"
-            type="password"
-            minLength={8}
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            required
-          />
-          <p className="mt-1 text-xs text-zinc-500">At least 8 characters.</p>
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button className="btn-primary w-full" type="submit" disabled={loading}>
-          {loading ? 'Creating…' : 'Create account'}
-        </button>
-      </form>
-      <p className="mt-6 text-sm text-zinc-600">
+            hint="At least 8 characters."
+            error={error ?? undefined}
+          >
+            <Input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </FormField>
+          <Button type="submit" className="w-full">
+            Continue
+          </Button>
+        </form>
+      )}
+
+      {step === 'brand' && (
+        <form onSubmit={onSubmit} className="mt-8 space-y-4">
+          <FormField label="Brand name" required>
+            <Input
+              value={form.brandName}
+              onChange={(e) => setForm({ ...form, brandName: e.target.value })}
+              required
+            />
+          </FormField>
+          <FormField label="Website domain" hint="Optional. We'll match analytics installs to this.">
+            <Input
+              value={form.domain}
+              onChange={(e) => setForm({ ...form, domain: e.target.value })}
+              placeholder="shop.example.com"
+            />
+          </FormField>
+          {error && <p className="text-xs text-danger">{error}</p>}
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => setStep('account')}>
+              Back
+            </Button>
+            <Button type="submit" className="flex-1" loading={loading}>
+              Create brand
+            </Button>
+          </div>
+        </form>
+      )}
+
+      <p className="mt-6 text-sm text-fg-muted">
         Already have an account?{' '}
-        <Link className="text-brand-600 hover:underline" href="/login">
+        <Link href="/login" className="font-medium text-accent hover:text-accent-hover">
           Log in
         </Link>
       </p>
-    </main>
+    </div>
   );
 }
