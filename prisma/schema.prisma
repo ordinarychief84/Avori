@@ -1117,6 +1117,10 @@ enum IntegrationProvider {
   BIGCOMMERCE
   MAGENTO
   CUSTOM
+  GOOGLE
+  KLAVIYO
+  META
+  ATTENTIVE
 }
 
 model Integration {
@@ -1132,6 +1136,8 @@ model Integration {
   lastSyncAt  DateTime?
   // Per-resource sync cursors.
   syncState   Json?
+  // Provider-specific settings (pixel id, measurement id, list id, ...).
+  config      Json?
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
 
@@ -1192,6 +1198,19 @@ model AiMessage {
   createdAt      DateTime       @default(now())
 
   @@index([conversationId, createdAt])
+}
+
+// Messages from the public marketing-site contact form (platform-level,
+// not brand-scoped).
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  topic     String?
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model AiInsight {

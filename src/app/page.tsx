@@ -27,13 +27,17 @@ import {
   Webhook,
   Zap,
 } from 'lucide-react';
-import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
+import {
+  MarketingHeader,
+  MarketingFooter,
+  SectionHeading,
+} from '@/components/marketing/SiteChrome';
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-bg text-fg">
-      <Header />
+      <MarketingHeader />
       <main>
         <Hero />
         <LogoStrip />
@@ -45,48 +49,8 @@ export default function LandingPage() {
         <Testimonials />
         <FinalCta />
       </main>
-      <Footer />
+      <MarketingFooter />
     </div>
-  );
-}
-
-/* ---------------------------------------------------------------- header */
-
-function Header() {
-  return (
-    <header className="glass sticky top-0 z-50 border-b border-border">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6">
-        <Link href="/" aria-label="Avori home" className="shrink-0">
-          <Logo size="md" />
-        </Link>
-        <nav className="hidden items-center gap-7 text-sm text-fg-muted md:flex">
-          <a href="#platform" className="transition-colors hover:text-fg">
-            Platform
-          </a>
-          <a href="#integrations" className="transition-colors hover:text-fg">
-            Integrations
-          </a>
-          <a href="#developers" className="transition-colors hover:text-fg">
-            Developers
-          </a>
-          <a href="#security" className="transition-colors hover:text-fg">
-            Security
-          </a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <Link href="/login">
-            <Button variant="ghost" size="sm">
-              Log in
-            </Button>
-          </Link>
-          <Link href="/signup">
-            <Button size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-              Get started free
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -233,23 +197,6 @@ function StatsBand() {
 
 /* ---------------------------------------------------------------- platform */
 
-function SectionHeading({
-  eyebrow,
-  title,
-  sub,
-}: {
-  eyebrow: string;
-  title: string;
-  sub?: string;
-}) {
-  return (
-    <div className="mx-auto max-w-2xl text-center">
-      <div className="text-2xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
-      {sub && <p className="mt-4 text-lg leading-relaxed text-fg-muted">{sub}</p>}
-    </div>
-  );
-}
 
 function FeatureRow({
   eyebrow,
@@ -940,76 +887,3 @@ function FinalCta() {
   );
 }
 
-/* ------------------------------------------------------------------ footer */
-
-function Footer() {
-  const columns: { heading: string; links: { label: string; href: string }[] }[] = [
-    {
-      heading: 'Platform',
-      links: [
-        { label: 'Reviews & UGC', href: '#platform' },
-        { label: 'Shoppable Video', href: '#platform' },
-        { label: 'AI Shade Analyzer', href: '#platform' },
-        { label: 'Loyalty & Referrals', href: '#platform' },
-        { label: 'Bundles & Upsells', href: '#platform' },
-        { label: 'Analytics & AI', href: '#platform' },
-      ],
-    },
-    {
-      heading: 'Developers',
-      links: [
-        { label: 'REST API', href: '#developers' },
-        { label: 'Webhooks', href: '#developers' },
-        { label: 'Widget SDK', href: '#developers' },
-        { label: 'Integrations', href: '#integrations' },
-      ],
-    },
-    {
-      heading: 'Company',
-      links: [
-        { label: 'Log in', href: '/login' },
-        { label: 'Create account', href: '/signup' },
-        { label: 'Security', href: '#security' },
-        { label: 'Contact', href: 'mailto:hello@avori.com' },
-      ],
-    },
-  ];
-  return (
-    <footer className="border-t border-border bg-surface/60">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.2fr_repeat(3,1fr)]">
-        <div>
-          <Logo size="md" />
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-fg-muted">
-            One platform. Every growth tool. The commerce experience layer for modern ecommerce
-            brands.
-          </p>
-        </div>
-        {columns.map((col) => (
-          <div key={col.heading}>
-            <div className="text-2xs font-semibold uppercase tracking-[0.18em] text-fg-subtle">
-              {col.heading}
-            </div>
-            <ul className="mt-3 space-y-2">
-              {col.links.map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    className="text-sm text-fg-muted transition-colors hover:text-fg"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-6 py-5 text-xs text-fg-subtle">
-          <span>© {new Date().getFullYear()} Avori. All rights reserved.</span>
-          <span>Built beauty-first. Extensible everywhere.</span>
-        </div>
-      </div>
-    </footer>
-  );
-}

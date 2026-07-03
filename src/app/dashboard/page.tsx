@@ -69,7 +69,9 @@ export default async function DashboardOverview() {
     prisma.integration.findFirst({ where: { brandId, provider: 'SHOPIFY' } }),
   ]);
 
-  const needsSetup = orderAgg._count === 0 && hasApiKey === 0 && integration?.status !== 'CONNECTED';
+  const onboarded = !!(brand?.settings as { onboarded?: boolean } | null)?.onboarded;
+  const needsSetup =
+    !onboarded && orderAgg._count === 0 && hasApiKey === 0 && integration?.status !== 'CONNECTED';
 
   const modules = [
     { href: '/dashboard/reviews', icon: Star, label: 'Reviews', value: `${approvedReviews} live`, alert: pendingReviews > 0 ? `${pendingReviews} pending` : null },
@@ -91,13 +93,13 @@ export default async function DashboardOverview() {
         <Card className="border-accent/30 bg-accent-subtle/40">
           <CardBody className="flex flex-wrap items-center justify-between gap-3 text-sm">
             <div>
-              <span className="font-medium text-fg">Connect your store to go live.</span>{' '}
+              <span className="font-medium text-fg">Finish setting up your workspace.</span>{' '}
               <span className="text-fg-muted">
-                Link Shopify or create an API key so orders start flowing into Avori.
+                Five guided steps: profile, catalog, orders, first module, team.
               </span>
             </div>
-            <Link href="/dashboard/settings" className="inline-flex items-center gap-1 font-medium text-accent hover:underline">
-              Open settings <ArrowUpRight className="h-4 w-4" />
+            <Link href="/dashboard/onboarding" className="inline-flex items-center gap-1 font-medium text-accent hover:underline">
+              Open the setup guide <ArrowUpRight className="h-4 w-4" />
             </Link>
           </CardBody>
         </Card>

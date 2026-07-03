@@ -55,6 +55,7 @@ export default function EntityDialog({
   triggerIcon = 'plus',
   submitLabel = 'Save',
   wide = false,
+  extra,
 }: {
   title: string;
   description?: string;
@@ -68,6 +69,8 @@ export default function EntityDialog({
   triggerIcon?: 'plus' | 'pencil' | 'none';
   submitLabel?: string;
   wide?: boolean;
+  // Constant fields merged into every submission (e.g. { provider: 'KLAVIYO' }).
+  extra?: Record<string, unknown>;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -83,7 +86,7 @@ export default function EntityDialog({
   };
 
   const submit = async () => {
-    const payload: Record<string, unknown> = {};
+    const payload: Record<string, unknown> = { ...(extra ?? {}) };
     for (const f of fields) {
       const coerced = coerce(f, valueOf(f));
       if (coerced !== undefined) payload[f.name] = coerced;

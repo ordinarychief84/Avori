@@ -25,6 +25,7 @@ export async function PATCH(req: NextRequest) {
       ...(settings.reviewAutoPublishMinRating !== undefined
         ? { reviewAutoPublishMinRating: settings.reviewAutoPublishMinRating }
         : {}),
+      ...(settings.onboarded !== undefined ? { onboarded: settings.onboarded } : {}),
     };
 
     const updated = await prisma.brand.update({

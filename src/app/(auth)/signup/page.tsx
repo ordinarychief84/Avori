@@ -64,7 +64,7 @@ export default function SignupPage() {
       return;
     }
     toast.success('Welcome to Avori');
-    router.push('/dashboard?onboarding=1');
+    router.push('/dashboard/onboarding');
     router.refresh();
   };
 

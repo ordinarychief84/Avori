@@ -6,6 +6,7 @@ import { emitWebhook } from './webhooks';
 import { earnForOrder } from './loyalty';
 import { recordReferralConversion } from './referrals';
 import { enqueueJob } from './jobs';
+import { forwardToDestinations } from './connectors/destinations';
 
 export type IngestOrderInput = {
   email: string;
@@ -202,6 +203,22 @@ export async function ingestOrder(brandId: string, input: IngestOrderInput) {
   } catch (e) {
     console.error('review request scheduling failed', e);
   }
+
+  // Marketing destinations (GA4, Klaviyo, Meta, Attentive) — fire and forget.
+  void forwardToDestinations(brandId, {
+    kind: 'order_created',
+    email,
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    total,
+    currency: order.currency,
+    items: order.items.map((i) => ({
+      name: i.name,
+      sku: i.sku,
+      quantity: i.quantity,
+      price: Number(i.price),
+    })),
+  });
 
   await track({
     brandId,

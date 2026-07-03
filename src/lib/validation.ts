@@ -430,6 +430,8 @@ export const brandSettingsSchema = z.object({
   reviewRequestDelayDays: z.number().int().min(1).max(60).optional(),
   reviewAutoPublishMinRating: z.number().int().min(1).max(6).optional(),
   currency: z.string().length(3).optional(),
+  // Set true when the onboarding wizard completes (hides setup prompts).
+  onboarded: z.boolean().optional(),
 });
 
 // ---------------------------------------------------------------------------

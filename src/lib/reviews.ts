@@ -4,6 +4,7 @@ import { track } from './events';
 import { emitWebhook } from './webhooks';
 import { getProgram, ensureMember, addPoints } from './loyalty';
 import { brandSettings } from './orders';
+import { forwardToDestinations } from './connectors/destinations';
 
 // Keep the denormalized rating stats on Product in sync with approved reviews.
 export async function recomputeProductRating(productId: string): Promise<void> {
@@ -112,6 +113,17 @@ export async function submitReview(
     rating: input.rating,
     status,
     verified,
+  });
+
+  const productName = await prisma.product.findUnique({
+    where: { id: input.productId },
+    select: { name: true },
+  });
+  void forwardToDestinations(brandId, {
+    kind: 'review_submitted',
+    email,
+    productName: productName?.name ?? 'Product',
+    rating: input.rating,
   });
 
   return review;

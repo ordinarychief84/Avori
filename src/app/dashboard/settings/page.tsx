@@ -38,7 +38,53 @@ export default async function SettingsPage({
   const wooIntegration = await prisma.integration.findFirst({
     where: { brandId, provider: 'WOOCOMMERCE' },
   });
+  const marketing = await prisma.integration.findMany({
+    where: { brandId, provider: { in: ['GOOGLE', 'KLAVIYO', 'META', 'ATTENTIVE'] } },
+  });
+  const marketingByProvider = new Map(marketing.map((m) => [m.provider, m]));
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+
+  const destinationDefs: Array<{
+    provider: 'GOOGLE' | 'KLAVIYO' | 'META' | 'ATTENTIVE';
+    name: string;
+    blurb: string;
+    fields: Parameters<typeof EntityDialog>[0]['fields'];
+  }> = [
+    {
+      provider: 'GOOGLE',
+      name: 'Google Analytics 4',
+      blurb: 'Purchases, signups and review events via the Measurement Protocol.',
+      fields: [
+        { name: 'measurementId', label: 'Measurement ID', type: 'text', required: true, placeholder: 'G-XXXXXXXXXX' },
+        { name: 'accessToken', label: 'API secret', type: 'text', required: true, hint: 'GA4 Admin → Data streams → Measurement Protocol API secrets' },
+      ],
+    },
+    {
+      provider: 'KLAVIYO',
+      name: 'Klaviyo',
+      blurb: 'Orders, signups and reviews become Klaviyo events with profiles.',
+      fields: [
+        { name: 'accessToken', label: 'Private API key', type: 'text', required: true, placeholder: 'pk_…', hint: 'Klaviyo → Settings → API keys' },
+      ],
+    },
+    {
+      provider: 'META',
+      name: 'Meta (Facebook & Instagram)',
+      blurb: 'Server-side Conversions API: Purchase and CompleteRegistration events.',
+      fields: [
+        { name: 'pixelId', label: 'Pixel ID', type: 'text', required: true },
+        { name: 'accessToken', label: 'Conversions API token', type: 'text', required: true, hint: 'Events Manager → Settings → Generate access token' },
+      ],
+    },
+    {
+      provider: 'ATTENTIVE',
+      name: 'Attentive',
+      blurb: 'Custom events for SMS journeys (orders, signups, reviews).',
+      fields: [
+        { name: 'accessToken', label: 'API key', type: 'text', required: true, hint: 'Attentive → Marketplace → Create a private app' },
+      ],
+    },
+  ];
   const isOwner = me?.brandRole === 'OWNER';
 
   return (
@@ -146,6 +192,62 @@ export default async function SettingsPage({
               />
             </div>
           </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Marketing destinations</CardTitle>
+          <CardDescription>
+            Push orders, signups and review events server-side to your marketing stack. Connected
+            destinations receive events automatically from every order source (API, Shopify, Woo).
+          </CardDescription>
+        </CardHeader>
+        <CardBody className="space-y-3">
+          {destinationDefs.map((d) => {
+            const conn = marketingByProvider.get(d.provider);
+            const connected = conn?.status === 'CONNECTED';
+            return (
+              <div
+                key={d.provider}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface-2/40 p-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2 text-sm font-medium text-fg">
+                    {d.name}
+                    <Badge tone={connected ? 'success' : 'neutral'}>
+                      {connected ? 'connected' : 'not connected'}
+                    </Badge>
+                  </div>
+                  <div className="mt-0.5 text-xs text-fg-muted">{d.blurb}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {connected && (
+                    <RowAction
+                      endpoint="/api/integrations/marketing"
+                      method="DELETE"
+                      body={{ provider: d.provider }}
+                      label="Disconnect"
+                      variant="danger"
+                      successMessage="Disconnected"
+                    />
+                  )}
+                  <EntityDialog
+                    title={connected ? `Update ${d.name}` : `Connect ${d.name}`}
+                    description={d.blurb}
+                    endpoint="/api/integrations/marketing"
+                    triggerLabel={connected ? 'Reconfigure' : 'Connect'}
+                    triggerVariant={connected ? 'secondary' : 'primary'}
+                    triggerSize="sm"
+                    triggerIcon="none"
+                    submitLabel="Verify & connect"
+                    extra={{ provider: d.provider }}
+                    fields={d.fields}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </CardBody>
       </Card>
 
