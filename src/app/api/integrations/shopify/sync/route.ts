@@ -1,0 +1,14 @@
+import { requireBrand } from '@/lib/auth';
+import { fail, ok } from '@/lib/http';
+import { runShopifySync } from '@/lib/connectors/shopify';
+
+// Manual "Sync now" from the integrations settings page.
+export async function POST() {
+  try {
+    const { brandId } = await requireBrand();
+    const result = await runShopifySync(brandId);
+    return ok({ result });
+  } catch (e) {
+    return fail(e);
+  }
+}

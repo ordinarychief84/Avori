@@ -12,6 +12,21 @@ enum Role {
   BRAND
 }
 
+// Team-level permissions inside a brand workspace. OWNER can manage billing,
+// team, API keys and destructive settings; MANAGER can run every module;
+// STAFF is read/moderate only where enforced.
+enum BrandRole {
+  OWNER
+  MANAGER
+  STAFF
+}
+
+enum Plan {
+  FREE
+  GROWTH
+  PRO
+}
+
 enum ProductStatus {
   ACTIVE
   INACTIVE
@@ -34,6 +49,21 @@ enum EventType {
   VIEW
   TAG_CLICK
   CTA_CLICK
+  QUIZ_VIEW
+  QUIZ_START
+  QUIZ_COMPLETE
+  REVIEW_SUBMIT
+  UPSELL_IMPRESSION
+  UPSELL_CLICK
+  UPSELL_CONVERSION
+  BUNDLE_IMPRESSION
+  BUNDLE_CLICK
+  REFERRAL_CLICK
+  GIFT_UNLOCKED
+  SOCIAL_CLICK
+  SHADE_ANALYSIS
+  SURVEY_SUBMIT
+  ORDER_CREATED
 }
 
 model User {
@@ -42,6 +72,7 @@ model User {
   passwordHash    String
   name            String?
   role            Role      @default(BRAND)
+  brandRole       BrandRole @default(OWNER)
   brandId         String?
   brand           Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
   phone           String?   @unique
@@ -53,19 +84,55 @@ model User {
 }
 
 model Brand {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  domain    String?
-  disabled  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  domain           String?
+  disabled         Boolean  @default(false)
+  plan             Plan     @default(FREE)
+  currency         String   @default("USD")
+  stripeCustomerId String?
+  // Misc module settings (review auto-publish threshold, request delay days,
+  // widget theme, etc.) — see settingsSchema in src/lib/validation.ts.
+  settings         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   users          User[]
   products       Product[]
   videos         Video[]
   widgetInstalls WidgetInstall[]
   events         AnalyticsEvent[]
+
+  customers        Customer[]
+  orders           Order[]
+  reviews          Review[]
+  questions        ProductQuestion[]
+  loyaltyProgram   LoyaltyProgram?
+  loyaltyMembers   LoyaltyMember[]
+  rewards          Reward[]
+  redemptions      RewardRedemption[]
+  creditAccounts   CreditAccount[]
+  giftCards        GiftCard[]
+  referralProgram  ReferralProgram?
+  referrals        Referral[]
+  quizzes          Quiz[]
+  quizResponses    QuizResponse[]
+  surveys          Survey[]
+  surveyResponses  SurveyResponse[]
+  bundles          Bundle[]
+  discounts        DiscountCampaign[]
+  giftCampaigns    GiftCampaign[]
+  upsells          UpsellOffer[]
+  socialAccounts   SocialAccount[]
+  socialPosts      SocialPost[]
+  shadeProfiles    ShadeProfile[]
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
+  auditLogs        AuditLog[]
+  integrations     Integration[]
+  aiConversations  AiConversation[]
+  aiInsights       AiInsight[]
 }
 
 enum TryOnCategory {
@@ -93,11 +160,25 @@ model Product {
   tryOnEnabled  Boolean       @default(false)
   tryOnCategory TryOnCategory @default(NONE)
   tryOnTint     String?
+  // Shade-analysis matching: which skin tones / undertones this product
+  // suits. Free-form lowercase tokens, e.g. ["fair","light"] / ["cool"].
+  shadeTones    String[]      @default([])
+  undertones    String[]      @default([])
+  // Denormalized review stats, maintained on moderation transitions.
+  reviewsCount  Int           @default(0)
+  ratingAvg     Decimal?      @db.Decimal(3, 2)
+  // Cached AI review summary (regenerated on demand).
+  aiReviewSummary   String?
+  aiReviewSummaryAt DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  tags   VideoProductTag[]
-  events AnalyticsEvent[]
+  tags       VideoProductTag[]
+  events     AnalyticsEvent[]
+  reviews    Review[]
+  questions  ProductQuestion[]
+  orderItems OrderItem[]
+  bundleItems BundleItem[]
 
   @@index([brandId])
   @@index([brandId, status])
@@ -162,6 +243,11 @@ model AnalyticsEvent {
   productId String?
   product   Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
   type      EventType
+  // Generic module reference for non-video events (quiz, upsell, bundle,
+  // referral, ...). refType is a lowercase entity name, refId its id.
+  refType   String?
+  refId     String?
+  meta      Json?
   domain    String?
   ip        String?
   ua        String?
@@ -169,6 +255,951 @@ model AnalyticsEvent {
 
   @@index([brandId, createdAt])
   @@index([brandId, type])
+  @@index([brandId, refType, refId])
   @@index([videoId])
   @@index([productId])
+}
+
+// ---------------------------------------------------------------------------
+// Customers & Orders — the unified customer database every module shares.
+// ---------------------------------------------------------------------------
+
+model Customer {
+  id               String    @id @default(cuid())
+  brandId          String
+  brand            Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  email            String
+  firstName        String?
+  lastName         String?
+  phone            String?
+  acceptsMarketing Boolean   @default(false)
+  tags             String[]  @default([])
+  // Where this customer record came from: manual | api | shopify | quiz |
+  // review | referral | widget
+  source           String    @default("manual")
+  externalId       String?
+  birthday         DateTime?
+  notes            String?
+  // Denormalized purchase stats, maintained by the order ingest pipeline.
+  ordersCount      Int       @default(0)
+  totalSpent       Decimal   @default(0) @db.Decimal(12, 2)
+  lastOrderAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  orders          Order[]
+  reviews         Review[]
+  loyaltyMember   LoyaltyMember?
+  creditAccount   CreditAccount?
+  referrals       Referral[]
+  shadeProfiles   ShadeProfile[]
+  quizResponses   QuizResponse[]
+  surveyResponses SurveyResponse[]
+
+  @@unique([brandId, email])
+  @@index([brandId, createdAt])
+  @@index([brandId, lastOrderAt])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FULFILLED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  brandId       String
+  brand         Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderNumber   String
+  externalId    String?
+  status        OrderStatus @default(PAID)
+  currency      String      @default("USD")
+  subtotal      Decimal     @db.Decimal(12, 2)
+  discountTotal Decimal     @default(0) @db.Decimal(12, 2)
+  total         Decimal     @db.Decimal(12, 2)
+  discountCodes String[]    @default([])
+  // shopify | api | manual
+  source        String      @default("manual")
+  placedAt      DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@unique([brandId, orderNumber])
+  @@index([brandId, placedAt])
+  @@index([brandId, status])
+  @@index([customerId])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name      String
+  sku       String?
+  quantity  Int      @default(1)
+  price     Decimal  @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// ---------------------------------------------------------------------------
+// Reviews & Q&A
+// ---------------------------------------------------------------------------
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+model Review {
+  id          String       @id @default(cuid())
+  brandId     String
+  brand       Brand        @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderId     String?
+  authorName  String
+  authorEmail String?
+  rating      Int
+  title       String?
+  body        String
+  status      ReviewStatus @default(PENDING)
+  // True when the review is linked to a real order for this product.
+  verified    Boolean      @default(false)
+  mediaUrls   String[]     @default([])
+  helpfulCount Int         @default(0)
+  reply       String?
+  repliedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([brandId, status, createdAt])
+  @@index([productId, status])
+  @@index([customerId])
+}
+
+enum QnaStatus {
+  PENDING
+  PUBLISHED
+  HIDDEN
+}
+
+model ProductQuestion {
+  id         String    @id @default(cuid())
+  brandId    String
+  brand      Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  authorName String?
+  authorEmail String?
+  body       String
+  status     QnaStatus @default(PENDING)
+  answer     String?
+  answeredAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([brandId, status])
+  @@index([productId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Loyalty, rewards, store credit & gift cards
+// ---------------------------------------------------------------------------
+
+model LoyaltyProgram {
+  id          String  @id @default(cuid())
+  brandId     String  @unique
+  brand       Brand   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  enabled     Boolean @default(false)
+  pointsName  String  @default("Points")
+  // Points earned per 1 unit of currency spent.
+  earnRate    Decimal @default(1) @db.Decimal(8, 2)
+  // Points required for 1 unit of currency when redeeming.
+  redeemRate  Int     @default(100)
+  signupBonus Int     @default(0)
+  reviewBonus Int     @default(0)
+  birthdayBonus Int   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tiers LoyaltyTier[]
+}
+
+model LoyaltyTier {
+  id         String  @id @default(cuid())
+  programId  String
+  program    LoyaltyProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  name       String
+  // Lifetime points threshold to enter this tier.
+  minPoints  Int
+  multiplier Decimal @default(1) @db.Decimal(4, 2)
+  perks      String?
+  sort       Int     @default(0)
+
+  members LoyaltyMember[]
+
+  @@index([programId])
+}
+
+model LoyaltyMember {
+  id             String   @id @default(cuid())
+  brandId        String
+  brand          Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  customerId     String   @unique
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  points         Int      @default(0)
+  lifetimePoints Int      @default(0)
+  tierId         String?
+  tier           LoyaltyTier? @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  // Year the birthday bonus was last granted, to grant at most once a year.
+  birthdayRewardedYear Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  transactions PointsTransaction[]
+
+  @@index([brandId, points])
+}
+
+enum PointsTxType {
+  EARN
+  REDEEM
+  ADJUST
+  EXPIRE
+  SIGNUP
+  REVIEW
+  BIRTHDAY
+  REFERRAL
+}
+
+model PointsTransaction {
+  id        String       @id @default(cuid())
+  brandId   String
+  memberId  String
+  member    LoyaltyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  type      PointsTxType
+  // Signed: positive earns, negative redemptions/expiry.
+  points    Int
+  reason    String?
+  orderId   String?
+  createdAt DateTime     @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([memberId, createdAt])
+}
+
+enum RewardType {
+  DISCOUNT_PERCENT
+  DISCOUNT_FIXED
+  STORE_CREDIT
+  FREE_PRODUCT
+  FREE_SHIPPING
+}
+
+model Reward {
+  id         String     @id @default(cuid())
+  brandId    String
+  brand      Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name       String
+  type       RewardType
+  pointsCost Int
+  // Meaning depends on type: percent off, fixed amount off, credit amount.
+  value      Decimal    @default(0) @db.Decimal(10, 2)
+  productId  String?
+  active     Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+
+  redemptions RewardRedemption[]
+
+  @@index([brandId, active])
+}
+
+model RewardRedemption {
+  id          String   @id @default(cuid())
+  brandId     String
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  rewardId    String
+  reward      Reward   @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  memberId    String
+  customerId  String
+  pointsSpent Int
+  // One-time code the storefront honors (validated via /api/v1/discounts/validate).
+  code        String
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@unique([brandId, code])
+  @@index([brandId, createdAt])
+  @@index([memberId])
+}
+
+model CreditAccount {
+  id         String   @id @default(cuid())
+  brandId    String
+  brand      Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  customerId String   @unique
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  balance    Decimal  @default(0) @db.Decimal(12, 2)
+  updatedAt  DateTime @updatedAt
+
+  transactions CreditTransaction[]
+
+  @@index([brandId])
+}
+
+enum CreditTxType {
+  ISSUE
+  REDEEM
+  ADJUST
+  REFUND
+  EXPIRE
+}
+
+model CreditTransaction {
+  id        String       @id @default(cuid())
+  brandId   String
+  accountId String
+  account   CreditAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  type      CreditTxType
+  // Signed: positive issues credit, negative spends it.
+  amount    Decimal      @db.Decimal(12, 2)
+  reason    String?
+  orderId   String?
+  createdAt DateTime     @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([accountId, createdAt])
+}
+
+enum GiftCardStatus {
+  ACTIVE
+  DISABLED
+}
+
+model GiftCard {
+  id             String         @id @default(cuid())
+  brandId        String
+  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  code           String
+  initialValue   Decimal        @db.Decimal(12, 2)
+  balance        Decimal        @db.Decimal(12, 2)
+  currency       String         @default("USD")
+  status         GiftCardStatus @default(ACTIVE)
+  recipientEmail String?
+  note           String?
+  expiresAt      DateTime?
+  createdAt      DateTime       @default(now())
+
+  transactions GiftCardTransaction[]
+
+  @@unique([brandId, code])
+  @@index([brandId, status])
+}
+
+model GiftCardTransaction {
+  id         String   @id @default(cuid())
+  giftCardId String
+  giftCard   GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  // Signed: negative spends balance, positive refunds it.
+  amount     Decimal  @db.Decimal(12, 2)
+  orderId    String?
+  createdAt  DateTime @default(now())
+
+  @@index([giftCardId])
+}
+
+// ---------------------------------------------------------------------------
+// Referral program
+// ---------------------------------------------------------------------------
+
+model ReferralProgram {
+  id                 String  @id @default(cuid())
+  brandId            String  @unique
+  brand              Brand   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  enabled            Boolean @default(false)
+  // Reward for the referrer once the referee's first order lands.
+  referrerPoints     Int     @default(0)
+  referrerCredit     Decimal @default(0) @db.Decimal(10, 2)
+  // Discount the referee gets on their first order (percent).
+  refereeDiscountPct Int     @default(10)
+  updatedAt          DateTime @updatedAt
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  brandId     String
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  code        String
+  clicks      Int      @default(0)
+  signups     Int      @default(0)
+  conversions Int      @default(0)
+  revenue     Decimal  @default(0) @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+
+  events ReferralEvent[]
+
+  @@unique([brandId, code])
+  @@index([brandId])
+  @@index([customerId])
+}
+
+enum ReferralEventType {
+  CLICK
+  SIGNUP
+  CONVERSION
+  REWARD
+}
+
+model ReferralEvent {
+  id          String            @id @default(cuid())
+  brandId     String
+  referralId  String
+  referral    Referral          @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  type        ReferralEventType
+  refereeEmail String?
+  orderId     String?
+  ip          String?
+  // Fraud protection: self-referrals and same-IP conversions get flagged
+  // instead of rewarded.
+  flagged     Boolean           @default(false)
+  flagReason  String?
+  createdAt   DateTime          @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([referralId])
+}
+
+// ---------------------------------------------------------------------------
+// Product quiz
+// ---------------------------------------------------------------------------
+
+enum QuizStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  brandId     String
+  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String
+  description String?
+  status      QuizStatus @default(DRAFT)
+  leadCapture Boolean    @default(true)
+  // Theme + result page copy, free-form.
+  config      Json?
+  views       Int        @default(0)
+  starts      Int        @default(0)
+  completions Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  questions QuizQuestion[]
+  responses QuizResponse[]
+
+  @@unique([brandId, slug])
+  @@index([brandId, status])
+}
+
+enum QuizQuestionType {
+  SINGLE_CHOICE
+  MULTI_CHOICE
+  TEXT
+}
+
+model QuizQuestion {
+  id       String           @id @default(cuid())
+  quizId   String
+  quiz     Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  sort     Int              @default(0)
+  type     QuizQuestionType @default(SINGLE_CHOICE)
+  prompt   String
+  helpText String?
+  // Array of options: { id, label, imageUrl?, productIds: string[],
+  // tags: string[], nextQuestionId?: string | null }. `nextQuestionId`
+  // implements conditional branching; null falls through to the next
+  // question by sort order. `productIds`/`tags` feed recommendations.
+  options  Json             @default("[]")
+
+  @@index([quizId, sort])
+}
+
+model QuizResponse {
+  id                    String    @id @default(cuid())
+  brandId               String
+  brand                 Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  quizId                String
+  quiz                  Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  customerId            String?
+  customer              Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email                 String?
+  // { questionId: optionId | optionId[] | text }
+  answers               Json
+  recommendedProductIds String[]  @default([])
+  completedAt           DateTime?
+  createdAt             DateTime  @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([quizId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Surveys
+// ---------------------------------------------------------------------------
+
+enum SurveyType {
+  NPS
+  CSAT
+  POST_PURCHASE
+  EXIT
+  CUSTOM
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
+model Survey {
+  id             String         @id @default(cuid())
+  brandId        String
+  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  title          String
+  type           SurveyType     @default(CUSTOM)
+  status         CampaignStatus @default(DRAFT)
+  question       String
+  followUp       String?
+  responsesCount Int            @default(0)
+  aiSummary      String?
+  aiSummaryAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  responses SurveyResponse[]
+
+  @@index([brandId, status])
+}
+
+model SurveyResponse {
+  id         String    @id @default(cuid())
+  brandId    String
+  brand      Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  surveyId   String
+  survey     Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email      String?
+  orderId    String?
+  // 0-10 for NPS, 1-5 for CSAT, null for free-text surveys.
+  score      Int?
+  answer     String?
+  createdAt  DateTime  @default(now())
+
+  @@index([brandId, createdAt])
+  @@index([surveyId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Bundles, discounts, free gifts, upsells
+// ---------------------------------------------------------------------------
+
+enum BundleType {
+  FBT
+  BXGY
+  MIX_MATCH
+  VOLUME
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+model Bundle {
+  id           String         @id @default(cuid())
+  brandId      String
+  brand        Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name         String
+  type         BundleType
+  status       CampaignStatus @default(DRAFT)
+  discountType DiscountType   @default(PERCENT)
+  discountValue Decimal       @default(0) @db.Decimal(10, 2)
+  // Type-specific settings: { buyQty, getQty } for BXGY, { minItems } for
+  // MIX_MATCH, { tiers: [{qty, pct}] } for VOLUME.
+  config       Json?
+  impressions  Int            @default(0)
+  conversions  Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  items BundleItem[]
+
+  @@index([brandId, status])
+}
+
+enum BundleItemRole {
+  ANY
+  TRIGGER
+  REWARD
+}
+
+model BundleItem {
+  id        String         @id @default(cuid())
+  bundleId  String
+  bundle    Bundle         @relation(fields: [bundleId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  role      BundleItemRole @default(ANY)
+  quantity  Int            @default(1)
+
+  @@index([bundleId])
+  @@index([productId])
+}
+
+model DiscountCampaign {
+  id               String         @id @default(cuid())
+  brandId          String
+  brand            Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name             String
+  // null code = automatic discount applied by cart rules.
+  code             String?
+  type             DiscountType   @default(PERCENT)
+  value            Decimal        @db.Decimal(10, 2)
+  minSubtotal      Decimal?       @db.Decimal(12, 2)
+  status           CampaignStatus @default(DRAFT)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  usageLimit       Int?
+  usageCount       Int            @default(0)
+  perCustomerLimit Int?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([brandId, code])
+  @@index([brandId, status])
+}
+
+enum GiftTriggerType {
+  CART_VALUE
+  PRODUCT_IN_CART
+}
+
+model GiftCampaign {
+  id               String          @id @default(cuid())
+  brandId          String
+  brand            Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name             String
+  status           CampaignStatus  @default(DRAFT)
+  trigger          GiftTriggerType @default(CART_VALUE)
+  thresholdAmount  Decimal?        @db.Decimal(12, 2)
+  triggerProductId String?
+  giftProductIds   String[]        @default([])
+  // true lets the shopper pick one of the gift products; false grants the
+  // first in-stock gift automatically.
+  chooseGift       Boolean         @default(false)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  unlockedCount    Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([brandId, status])
+}
+
+enum UpsellPlacement {
+  PRODUCT_PAGE
+  CART
+  CHECKOUT
+  POST_PURCHASE
+}
+
+model UpsellOffer {
+  id                String          @id @default(cuid())
+  brandId           String
+  brand             Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name              String
+  placement         UpsellPlacement @default(PRODUCT_PAGE)
+  status            CampaignStatus  @default(DRAFT)
+  // Empty = offer shows for every product at this placement.
+  triggerProductIds String[]        @default([])
+  offerProductIds   String[]        @default([])
+  headline          String?
+  description       String?
+  discountPct       Int?
+  priority          Int             @default(0)
+  impressions       Int             @default(0)
+  clicks            Int             @default(0)
+  conversions       Int             @default(0)
+  revenue           Decimal         @default(0) @db.Decimal(12, 2)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([brandId, status, placement])
+}
+
+// ---------------------------------------------------------------------------
+// Instagram & social feed
+// ---------------------------------------------------------------------------
+
+enum SocialSource {
+  MANUAL
+  INSTAGRAM
+  TIKTOK
+}
+
+enum IntegrationStatus {
+  PENDING
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+model SocialAccount {
+  id          String            @id @default(cuid())
+  brandId     String
+  brand       Brand             @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  provider    SocialSource
+  username    String?
+  status      IntegrationStatus @default(DISCONNECTED)
+  accessToken String?
+  expiresAt   DateTime?
+  lastSyncAt  DateTime?
+  createdAt   DateTime          @default(now())
+
+  @@unique([brandId, provider])
+}
+
+model SocialPost {
+  id           String       @id @default(cuid())
+  brandId      String
+  brand        Brand        @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  source       SocialSource @default(MANUAL)
+  externalId   String?
+  mediaUrl     String
+  // IMAGE | VIDEO
+  mediaType    String       @default("IMAGE")
+  thumbnailUrl String?
+  caption      String?
+  permalink    String?
+  productIds   String[]     @default([])
+  visible      Boolean      @default(true)
+  sort         Int          @default(0)
+  postedAt     DateTime?
+  createdAt    DateTime     @default(now())
+
+  @@index([brandId, visible, sort])
+}
+
+// ---------------------------------------------------------------------------
+// Shade analysis
+// ---------------------------------------------------------------------------
+
+model ShadeProfile {
+  id                    String    @id @default(cuid())
+  brandId               String
+  brand                 Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  customerId            String?
+  customer              Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  email                 String?
+  imageUrl              String?
+  skinTone              String?
+  undertone             String?
+  lipTone               String?
+  hairColor             String?
+  eyeColor              String?
+  season                String?
+  // Full structured AI analysis payload.
+  analysis              Json?
+  recommendedProductIds String[]  @default([])
+  source                String    @default("widget")
+  createdAt             DateTime  @default(now())
+
+  @@index([brandId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Platform infrastructure: API keys, webhooks, audit log, integrations, jobs
+// ---------------------------------------------------------------------------
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  brandId    String
+  brand      Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name       String
+  // First 12 chars of the key, shown in the dashboard for identification.
+  prefix     String
+  // sha256 of the full key — the plaintext key is shown once at creation.
+  hashedKey  String    @unique
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([brandId])
+}
+
+model WebhookEndpoint {
+  id        String   @id @default(cuid())
+  brandId   String
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  url       String
+  // HMAC signing secret for X-Avori-Signature.
+  secret    String
+  // Subscribed topics, e.g. "order.created", "review.approved". Empty = all.
+  topics    String[] @default([])
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  deliveries WebhookDelivery[]
+
+  @@index([brandId])
+}
+
+model WebhookDelivery {
+  id            String    @id @default(cuid())
+  endpointId    String
+  endpoint      WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  topic         String
+  payload       Json
+  responseCode  Int?
+  attempts      Int       @default(0)
+  deliveredAt   DateTime?
+  nextAttemptAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([endpointId, createdAt])
+  @@index([deliveredAt, nextAttemptAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  brandId   String
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  userId    String?
+  userEmail String?
+  // dot-separated verb, e.g. "review.approve", "apikey.create"
+  action    String
+  entity    String
+  entityId  String?
+  meta      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([brandId, createdAt])
+}
+
+enum IntegrationProvider {
+  SHOPIFY
+  WOOCOMMERCE
+  BIGCOMMERCE
+  MAGENTO
+  CUSTOM
+}
+
+model Integration {
+  id          String              @id @default(cuid())
+  brandId     String
+  brand       Brand               @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  provider    IntegrationProvider
+  status      IntegrationStatus   @default(PENDING)
+  // e.g. my-store.myshopify.com
+  shopDomain  String?
+  accessToken String?
+  scopes      String?
+  lastSyncAt  DateTime?
+  // Per-resource sync cursors.
+  syncState   Json?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@unique([brandId, provider])
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
+model Job {
+  id          String    @id @default(cuid())
+  brandId     String?
+  // e.g. "review_request", "webhook_delivery", "shopify_sync", "ai_insights"
+  type        String
+  payload     Json?
+  status      JobStatus @default(PENDING)
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  runAt       DateTime  @default(now())
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  lastError   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([status, runAt])
+  @@index([brandId, type])
+}
+
+// ---------------------------------------------------------------------------
+// AI layer
+// ---------------------------------------------------------------------------
+
+model AiConversation {
+  id        String   @id @default(cuid())
+  brandId   String
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  userId    String?
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages AiMessage[]
+
+  @@index([brandId, updatedAt])
+}
+
+model AiMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  // user | assistant
+  role           String
+  content        String
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model AiInsight {
+  id        String   @id @default(cuid())
+  brandId   String
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  // e.g. "revenue", "churn_risk", "bundle_opportunity", "review_gap"
+  kind      String
+  title     String
+  body      String
+  data      Json?
+  createdAt DateTime @default(now())
+
+  @@index([brandId, createdAt])
 }

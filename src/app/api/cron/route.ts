@@ -1,0 +1,29 @@
+import { NextRequest } from 'next/server';
+import { ok } from '@/lib/http';
+import { runPendingJobs, enqueueJob } from '@/lib/jobs';
+import { retryDueWebhooks } from '@/lib/webhooks';
+import { prisma } from '@/lib/prisma';
+
+export const maxDuration = 60;
+
+// Serverless-friendly job tick. Point a scheduler (Vercel Cron, GitHub
+// Actions, crontab curl) at this route every few minutes. Locally,
+// `npm run worker` loops the same work.
+export async function GET(req: NextRequest) {
+  const secret = process.env.CRON_SECRET;
+  if (secret) {
+    const header = req.headers.get('authorization');
+    if (header !== `Bearer ${secret}`) return new Response('unauthorized', { status: 401 });
+  }
+
+  // Ensure the daily birthday-rewards job exists (idempotent per day).
+  const today = new Date().toISOString().slice(0, 10);
+  const existing = await prisma.job.findFirst({
+    where: { type: 'birthday_rewards', createdAt: { gte: new Date(`${today}T00:00:00Z`) } },
+  });
+  if (!existing) await enqueueJob('birthday_rewards');
+
+  const jobs = await runPendingJobs(25);
+  const webhooks = await retryDueWebhooks(25);
+  return ok({ jobs, webhooksRetried: webhooks });
+}
