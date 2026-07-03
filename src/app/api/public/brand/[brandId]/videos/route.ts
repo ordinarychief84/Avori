@@ -24,9 +24,19 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
     const brand = await prisma.brand.findUnique({ where: { id: params.brandId } });
     if (!brand || brand.disabled) return ok({ brand: null, videos: [] });
 
+    // Optional placement targeting: ?productId=... returns global videos
+    // plus videos targeted at that product page, in playlist order.
+    const productId = new URL(req.url).searchParams.get('productId');
     const videos = await prisma.video.findMany({
-      where: { brandId: params.brandId, status: 'ACTIVE', disabled: false },
-      orderBy: { createdAt: 'desc' },
+      where: {
+        brandId: params.brandId,
+        status: 'ACTIVE',
+        disabled: false,
+        ...(productId
+          ? { OR: [{ targetProductIds: { isEmpty: true } }, { targetProductIds: { has: productId } }] }
+          : {}),
+      },
+      orderBy: [{ sort: 'asc' }, { createdAt: 'desc' }],
       take: 50,
       include: {
         tags: {

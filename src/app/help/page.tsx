@@ -12,7 +12,7 @@ import {
 import { helpArticles, helpCategories, productFaq } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Help Center — Avori',
+  title: 'Help Center | Avori',
   description: 'Setup guides, module how-tos and answers for the Avori platform.',
 };
 
@@ -32,10 +32,10 @@ export default function HelpPage() {
           eyebrow="Help Center"
           title={
             <>
-              How can we <span className="text-gradient-teal">help?</span>
+              How can we <span className="text-gradient-brand">help?</span>
             </>
           }
-          sub="Guides for every module and connector. Can’t find it? Contact us — a human answers."
+          sub="Guides for every module and connector. Can’t find it? Contact us, a human answers."
         />
 
         <section className="mx-auto max-w-7xl px-6 py-16">
@@ -89,7 +89,7 @@ export default function HelpPage() {
           </div>
         </section>
 
-        <CtaBand title="Still stuck?" sub="Send us a message — support is a topic on the contact form." />
+        <CtaBand title="Still stuck?" sub="Send us a message, support is a topic on the contact form." />
       </main>
       <MarketingFooter />
     </div>

@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       data: { brandId, name: data.name, prefix, hashedKey },
     });
     await audit({ brandId, userId, action: 'apikey.create', entity: 'apiKey', entityId: apiKey.id });
-    // The plaintext key is returned exactly once — only its hash is stored.
+    // The plaintext key is returned exactly once, only its hash is stored.
     return ok({ apiKey: { id: apiKey.id, name: apiKey.name, prefix: apiKey.prefix }, key }, 201);
   } catch (e) {
     return fail(e);

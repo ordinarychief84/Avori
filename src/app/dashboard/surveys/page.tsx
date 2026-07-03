@@ -57,7 +57,7 @@ export default async function SurveysPage() {
         <EmptyState
           icon={ClipboardList}
           title="No surveys yet"
-          description="Responses arrive from POST /api/v1/surveys/:id/respond — from your post-checkout page, emails, or exit intents."
+          description="Responses arrive from POST /api/v1/surveys/:id/respond, from your post-checkout page, emails, or exit intents."
         />
       ) : (
         <Card className="overflow-hidden">

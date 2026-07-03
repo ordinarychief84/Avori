@@ -17,7 +17,7 @@ export default function ContactForm() {
         <CheckCircle2 className="mx-auto h-8 w-8 text-success" />
         <h3 className="mt-3 font-semibold text-fg">Message received</h3>
         <p className="mt-1 text-sm text-fg-muted">
-          Thanks, {form.name.split(' ')[0] || 'friend'} — we’ll get back to you at {form.email}.
+          Thanks, {form.name.split(' ')[0] || 'friend'}, we’ll get back to you at {form.email}.
         </p>
       </div>
     );
@@ -37,7 +37,7 @@ export default function ContactForm() {
         setBusy(false);
         if (!res.ok) {
           const data = await res.json().catch(() => null);
-          toast.error(data?.error ?? 'Could not send — try again');
+          toast.error(data?.error ?? 'Could not send, try again');
           return;
         }
         setSent(true);

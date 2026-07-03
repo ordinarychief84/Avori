@@ -153,8 +153,8 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
                 setForm({ ...form, status: e.target.value as 'ACTIVE' | 'INACTIVE' })
               }
             >
-              <option value="ACTIVE">Active — visible inside the widget</option>
-              <option value="INACTIVE">Inactive — hidden</option>
+              <option value="ACTIVE">Active, visible inside the widget</option>
+              <option value="INACTIVE">Inactive, hidden</option>
             </Select>
           </FormField>
 

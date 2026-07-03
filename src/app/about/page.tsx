@@ -9,16 +9,16 @@ import {
 } from '@/components/marketing/SiteChrome';
 
 export const metadata: Metadata = {
-  title: 'About — Avori',
+  title: 'About | Avori',
   description:
-    'Avori is the all-in-one commerce experience platform: one dashboard, one customer database, one AI layer — built to end app sprawl for ecommerce brands.',
+    'Avori is the all-in-one commerce experience platform: one dashboard, one customer database, one AI layer, built to end app sprawl for ecommerce brands.',
 };
 
 const values = [
   {
     icon: Layers,
     title: 'All-in-One',
-    copy: 'Everything you need in one platform. One login, one customer database, one bill — not fifteen apps duct-taped together.',
+    copy: 'Everything you need in one platform. One login, one customer database, one bill, not fifteen apps duct-taped together.',
   },
   {
     icon: TrendingUp,
@@ -28,7 +28,7 @@ const values = [
   {
     icon: HeartHandshake,
     title: 'Customer First',
-    copy: 'Shoppers get experiences that feel personal — shade matching, honest reviews, rewards that actually reward. Merchants get customers who come back.',
+    copy: 'Shoppers get experiences that feel personal, shade matching, honest reviews, rewards that actually reward. Merchants get customers who come back.',
   },
   {
     icon: ShieldCheck,
@@ -48,10 +48,10 @@ export default function AboutPage() {
             <>
               We’re ending
               <br />
-              <span className="text-gradient-teal">app sprawl</span> in ecommerce.
+              <span className="text-gradient-brand">app sprawl</span> in ecommerce.
             </>
           }
-          sub="Avori is the all-in-one commerce experience platform built to help online stores increase sales, engage customers, and build loyalty — without the chaos of multiple apps."
+          sub="Avori is the all-in-one commerce experience platform built to help online stores increase sales, engage customers, and build loyalty, without the chaos of multiple apps."
         />
 
         <section className="mx-auto max-w-3xl px-6 py-16">
@@ -59,12 +59,12 @@ export default function AboutPage() {
             <p>
               Every growing store hits the same wall. Reviews live in one app, loyalty in another,
               quizzes in a third, video in a fourth. Each has its own login, its own bill, its own
-              copy of your customers — and none of them talk to each other. The stack that was
+              copy of your customers, and none of them talk to each other. The stack that was
               supposed to grow the store starts slowing it down.
             </p>
             <p>
               Avori started as a shoppable-video tool for beauty brands. Working with merchants, we
-              kept hearing the same thing: the problem wasn’t any single tool — it was the seams
+              kept hearing the same thing: the problem wasn’t any single tool, it was the seams
               between them. So we rebuilt the whole customer experience layer as one system:{' '}
               <span className="font-semibold text-fg">
                 one dashboard, one customer database, one analytics engine, one AI layer
@@ -72,7 +72,7 @@ export default function AboutPage() {
               powering every feature.
             </p>
             <p>
-              We build beauty-first — shade matching, try-on, UGC — because beauty is where customer
+              We build beauty-first, shade matching, try-on, UGC, because beauty is where customer
               experience is most demanding. But the platform is industry-agnostic by design:
               anything a fashion, wellness or lifestyle brand needs from a growth stack, Avori does
               from the same unified core.

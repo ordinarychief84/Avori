@@ -46,6 +46,15 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                 variant={t.status === 'CANCELLED' || t.status === 'REFUNDED' ? 'danger' : 'secondary'}
               />
             ))}
+            {order.customer && order.status !== 'REFUNDED' && order.status !== 'CANCELLED' && (
+              <RowAction
+                endpoint={`/api/brand/orders/${order.id}/refund-credit`}
+                method="POST"
+                label="Refund to store credit"
+                variant="danger"
+                successMessage="Refunded as store credit"
+              />
+            )}
           </div>
         }
       />

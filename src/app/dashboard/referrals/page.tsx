@@ -43,8 +43,29 @@ export default async function ReferralsPage() {
     <div className="space-y-8">
       <PageHeader
         title="Referral Program"
-        description="Reward customers for bringing friends — with self-referral and repeat-IP fraud protection built in."
+        description="Customer, employee and influencer advocacy with self-referral and repeat-IP fraud protection built in."
         actions={
+          <>
+          <EntityDialog
+            title="Issue a referral code"
+            description="Give a code to a customer, an employee or an influencer. Advocates get a tagged customer record so their results stay trackable."
+            endpoint="/api/brand/referrals"
+            triggerLabel="Issue code"
+            fields={[
+              { name: 'email', label: 'Email', type: 'text', required: true, placeholder: 'advocate@brand.com' },
+              { name: 'name', label: 'Name', type: 'text', placeholder: 'Maya Chen' },
+              {
+                name: 'kind',
+                label: 'Advocate type',
+                type: 'select',
+                options: [
+                  { value: 'CUSTOMER', label: 'Customer' },
+                  { value: 'EMPLOYEE', label: 'Employee' },
+                  { value: 'INFLUENCER', label: 'Influencer' },
+                ],
+              },
+            ]}
+          />
           <EntityDialog
             title="Program settings"
             endpoint="/api/brand/referrals/program"
@@ -60,11 +81,12 @@ export default async function ReferralsPage() {
             }}
             fields={[
               { name: 'enabled', label: 'Program', type: 'toggle', placeholder: 'Referral program enabled' },
-              { name: 'referrerPoints', label: 'Referrer reward — loyalty points', type: 'number', hint: 'Requires loyalty program enabled' },
-              { name: 'referrerCredit', label: 'Referrer reward — store credit ($)', type: 'number', step: '0.01' },
+              { name: 'referrerPoints', label: 'Referrer reward, loyalty points', type: 'number', hint: 'Requires loyalty program enabled' },
+              { name: 'referrerCredit', label: 'Referrer reward, store credit ($)', type: 'number', step: '0.01' },
               { name: 'refereeDiscountPct', label: 'Friend discount on first order (%)', type: 'number', min: 0, max: 100 },
             ]}
           />
+          </>
         }
       />
 
@@ -87,6 +109,7 @@ export default async function ReferralsPage() {
             <thead>
               <tr className="border-b border-border bg-surface-2/40 text-left text-2xs uppercase tracking-[0.15em] text-fg-subtle">
                 <th className="px-5 py-3">Referrer</th>
+                <th className="px-5 py-3">Type</th>
                 <th className="px-5 py-3">Code</th>
                 <th className="px-5 py-3">Clicks</th>
                 <th className="px-5 py-3">Conversions</th>
@@ -100,6 +123,11 @@ export default async function ReferralsPage() {
                     <Link href={`/dashboard/customers/${r.customerId}`} className="font-medium text-fg hover:text-accent">
                       {customerName(r.customer)}
                     </Link>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <Badge tone={r.kind === 'CUSTOMER' ? 'neutral' : 'accent'}>
+                      {r.kind.toLowerCase()}
+                    </Badge>
                   </td>
                   <td className="px-5 py-3.5">
                     <CopyField value={r.code} />
@@ -117,7 +145,7 @@ export default async function ReferralsPage() {
       {flagged.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Fraud protection — flagged conversions</CardTitle>
+            <CardTitle>Fraud protection, flagged conversions</CardTitle>
           </CardHeader>
           <CardBody className="p-0">
             <table className="w-full text-sm">

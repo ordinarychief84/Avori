@@ -20,7 +20,7 @@ export function Logo({ variant = 'full', size = 'md', className }: LogoProps) {
       {variant === 'full' && (
         <span className={cn('font-bold tracking-tight text-fg leading-none', s.text)}>
           avor
-          {/* Dotless ı (U+0131) so the natural tittle doesn't compete with the purple dot. */}
+          {/* Dotless ı (U+0131) so the natural tittle doesn't compete with the brand dot. */}
           <span className="relative inline-block">
             {'ı'}
             <span
@@ -64,9 +64,9 @@ export function LogoMark({ className }: { className?: string }) {
         fill="none"
       />
       {/* Upper bar: seafoam parallelogram */}
-      <path d="M16 26h36l4 6H20z" fill="#2DD4BF" />
+      <path d="M16 26h36l4 6H20z" fill="#55D455" />
       {/* Lower bar: ocean-teal parallelogram */}
-      <path d="M16 36h36l4 6H20z" fill="#0F766E" />
+      <path d="M16 36h36l4 6H20z" fill="#009B00" />
     </svg>
   );
 }

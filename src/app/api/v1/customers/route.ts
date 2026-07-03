@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Upsert by email — the integration-friendly way to sync customers in.
+// Upsert by email, the integration-friendly way to sync customers in.
 export async function POST(req: NextRequest) {
   try {
     const { brandId } = await requireApiKey(req);

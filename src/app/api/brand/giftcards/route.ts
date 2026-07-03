@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const data = giftCardCreateSchema.parse(await req.json());
     const brand = await prisma.brand.findUnique({ where: { id: brandId }, select: { currency: true } });
 
-    // Retry on the (brandId, code) unique constraint — collisions are rare.
+    // Retry on the (brandId, code) unique constraint, collisions are rare.
     let giftCard = null;
     for (let i = 0; i < 3 && !giftCard; i++) {
       try {

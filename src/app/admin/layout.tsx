@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <AuthSessionProvider>
       <AppShell
-        brandName="Avori — Admin"
+        brandName="Avori, Admin"
         email={session.user.email ?? ''}
         role="ADMIN"
         signOutAction={handleSignOut}

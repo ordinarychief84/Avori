@@ -12,7 +12,7 @@ import { fmtMoney, fmtDate } from '@/lib/format';
 
 const discountFields: FieldSpec[] = [
   { name: 'name', label: 'Campaign name', type: 'text', required: true, placeholder: 'Summer sale' },
-  { name: 'code', label: 'Code', type: 'text', placeholder: 'SUMMER20 — leave empty for automatic discounts', hint: 'Automatic discounts apply by cart rules instead of a code' },
+  { name: 'code', label: 'Code', type: 'text', placeholder: 'SUMMER20, leave empty for automatic discounts', hint: 'Automatic discounts apply by cart rules instead of a code' },
   {
     name: 'type',
     label: 'Type',
@@ -51,7 +51,7 @@ export default async function DiscountsPage() {
     <div className="space-y-8">
       <PageHeader
         title="Discount Campaigns"
-        description="Coupon codes, automatic discounts, scheduled promotions and flash sales — validated by the storefront through one API."
+        description="Coupon codes, automatic discounts, scheduled promotions and flash sales, validated by the storefront through one API."
         actions={
           <EntityDialog
             title="New discount"

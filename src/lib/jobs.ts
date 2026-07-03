@@ -31,7 +31,7 @@ const handlers: Record<string, (job: JobRecord) => Promise<void>> = {
   },
 
   // "Sends" the post-purchase review request. Email transport is an
-  // integration point — until one is configured this logs the send and
+  // integration point, until one is configured this logs the send and
   // records it in the audit trail so the dashboard shows activity.
   review_request: async (job) => {
     const p = (job.payload ?? {}) as { brandId?: string; orderId?: string; customerId?: string };
@@ -100,7 +100,7 @@ export async function runPendingJobs(limit = 20): Promise<{ ran: number; failed:
   let ran = 0;
   let failed = 0;
   for (const job of due) {
-    // Atomic claim — skip if another runner got here first.
+    // Atomic claim, skip if another runner got here first.
     const claimed = await prisma.job.updateMany({
       where: { id: job.id, status: 'PENDING' },
       data: { status: 'RUNNING', startedAt: new Date(), attempts: { increment: 1 } },

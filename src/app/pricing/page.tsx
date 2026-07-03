@@ -13,7 +13,7 @@ import {
 import { plans, pricingFaq } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Pricing — Avori',
+  title: 'Pricing | Avori',
   description:
     'Simple plans for the whole platform: reviews, video, AI shade analysis, loyalty, referrals, bundles and more. Free during early access.',
 };
@@ -29,10 +29,10 @@ export default function PricingPage() {
             <>
               One subscription.
               <br />
-              <span className="text-gradient-teal">Every module included.</span>
+              <span className="text-gradient-brand">Every module included.</span>
             </>
           }
-          sub="Stop paying per app. Every Avori plan includes the entire platform — plans scale with order volume, not with how many tools you dare to turn on."
+          sub="Stop paying per app. Every Avori plan includes the entire platform, plans scale with order volume, not with how many tools you dare to turn on."
         />
 
         <section className="mx-auto max-w-7xl px-6 py-14">
@@ -40,7 +40,7 @@ export default function PricingPage() {
             <Sparkles className="h-5 w-5 shrink-0 text-accent" />
             <span>
               <span className="font-semibold">Early access:</span> every workspace gets the full
-              platform free today. Plans below apply when billing launches — with 30 days notice.
+              platform free today. Plans below apply when billing launches, with 30 days notice.
             </span>
           </div>
 
@@ -114,7 +114,7 @@ export default function PricingPage() {
 
         <CtaBand
           title="Start free. Grow when you do."
-          sub="Launch the whole platform today — pick a plan only when billing begins."
+          sub="Launch the whole platform today, pick a plan only when billing begins."
         />
       </main>
       <MarketingFooter />

@@ -11,18 +11,19 @@ import {
 } from '@/components/marketing/SiteChrome';
 
 export const metadata: Metadata = {
-  title: 'Design Guide — Avori',
+  title: 'Design Guide | Avori',
   description: 'Avori brand guidelines: logo, color palette, typography, components and voice.',
 };
 
 const COLORS = [
-  ['Midnight', '#111827', 'Primary text, dark surfaces'],
-  ['Ocean Teal', '#0F766E', 'Primary actions, accents'],
-  ['Seafoam', '#2DD4BF', 'Highlights, gradients'],
-  ['Warm White', '#FAFAF8', 'Page canvas'],
-  ['Cloud', '#F3F4F6', 'Nested surfaces'],
-  ['Stone', '#D6D3D1', 'Strong borders'],
-  ['Success', '#16A34A', 'Positive states'],
+  ['Ink', '#0D0D0D', 'Primary text, dark bands'],
+  ['Brand Green', '#009B00', 'Primary actions, accents'],
+  ['Bright Green', '#55D455', 'Gradients, highlights'],
+  ['Mint', '#E7F7E7', 'Pills, hover rows'],
+  ['White', '#FFFFFF', 'Page canvas and cards'],
+  ['Gray', '#4A4A4A', 'Secondary text'],
+  ['Hairline', '#E3E3E3', 'Borders, dividers'],
+  ['Success', '#15803D', 'Positive states'],
   ['Warning', '#D97706', 'Caution states'],
   ['Error', '#DC2626', 'Destructive states'],
 ];
@@ -38,10 +39,10 @@ export default function BrandPage() {
             <>
               The Avori
               <br />
-              <span className="text-gradient-teal">brand system</span>
+              <span className="text-gradient-brand">brand system</span>
             </>
           }
-          sub="One platform. Every growth tool. — how Avori looks, sounds and behaves across every surface."
+          sub="How Avori looks, sounds and behaves across every surface."
         />
 
         {/* Logo */}
@@ -106,13 +107,13 @@ export default function BrandPage() {
         <section className="mx-auto max-w-7xl px-6 py-16">
           <SectionHeading eyebrow="Typography" title="Inter, everywhere" />
           <div className="mx-auto mt-10 max-w-3xl space-y-4 rounded-xl border border-border bg-surface p-8 shadow-soft">
-            <div className="text-5xl font-bold tracking-tight">Aa — Bold headlines</div>
+            <div className="text-5xl font-bold tracking-tight">Aa · Bold headlines</div>
             <div className="text-2xl font-semibold tracking-tight text-fg">
               SemiBold section titles
             </div>
             <div className="text-base text-fg">Regular body copy for reading comfort.</div>
             <div className="text-sm text-fg-muted">Muted secondary text for support lines.</div>
-            <div className="font-mono text-sm text-fg">JetBrains Mono for code — avk_key_…</div>
+            <div className="font-mono text-sm text-fg">JetBrains Mono for code: avk_key_</div>
             <p className="border-t border-border pt-4 text-sm leading-relaxed text-fg-muted">
               Clean, modern and highly readable typography that reflects clarity and confidence.
               Headlines are tight (-1.5% letter-spacing); labels use wide uppercase tracking.

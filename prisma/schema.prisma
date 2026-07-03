@@ -199,6 +199,10 @@ model Video {
   status       VideoStatus @default(DRAFT)
   disabled     Boolean     @default(false)
   durationSec  Int?
+  // Placement targeting: empty = every page; otherwise only product pages
+  // whose productId is listed. `sort` orders the playlist.
+  targetProductIds String[] @default([])
+  sort         Int         @default(0)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -437,6 +441,8 @@ model LoyaltyProgram {
   signupBonus Int     @default(0)
   reviewBonus Int     @default(0)
   birthdayBonus Int   @default(0)
+  // Percent of each paid order returned as store credit (0 = off).
+  cashbackPct Decimal @default(0) @db.Decimal(5, 2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -570,6 +576,7 @@ enum CreditTxType {
   REDEEM
   ADJUST
   REFUND
+  CASHBACK
   EXPIRE
 }
 
@@ -643,10 +650,17 @@ model ReferralProgram {
   updatedAt          DateTime @updatedAt
 }
 
+enum ReferralKind {
+  CUSTOMER
+  EMPLOYEE
+  INFLUENCER
+}
+
 model Referral {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   brandId     String
-  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand       Brand        @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  kind        ReferralKind @default(CUSTOMER)
   customerId  String
   customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   code        String

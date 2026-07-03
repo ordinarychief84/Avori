@@ -5,10 +5,11 @@ import { shadeAnalyzeSchema } from '@/lib/validation';
 import { fail, ok } from '@/lib/http';
 import { analyzeShadeImage, matchProductsForShade } from '@/lib/ai';
 import { track } from '@/lib/events';
+import { forwardToDestinations } from '@/lib/connectors/destinations';
 
 export const maxDuration = 60;
 
-// Dashboard tester for the shade analyzer — same pipeline as the public
+// Dashboard tester for the shade analyzer, same pipeline as the public
 // /api/v1/shade/analyze endpoint, but session-authenticated so merchants
 // can verify the computer vision before wiring up their storefront.
 export async function POST(req: NextRequest) {
@@ -16,7 +17,9 @@ export async function POST(req: NextRequest) {
     const { brandId } = await requireBrand();
     const data = shadeAnalyzeSchema.parse(await req.json());
 
+    const email = data.email?.trim().toLowerCase() || null;
     const analysis = await analyzeShadeImage(data.imageBase64, data.mediaType);
+    const fullAnalysis = { ...analysis, ...(data.intake ? { intake: data.intake } : {}) };
     const productIds = await matchProductsForShade(brandId, analysis);
     const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
     const byId = new Map(products.map((p) => [p.id, p]));
@@ -24,19 +27,27 @@ export async function POST(req: NextRequest) {
     const profile = await prisma.shadeProfile.create({
       data: {
         brandId,
-        email: data.email?.toLowerCase() || null,
+        email,
         skinTone: analysis.skinTone,
         undertone: analysis.undertone,
         lipTone: analysis.lipTone,
         hairColor: analysis.hairColor,
         eyeColor: analysis.eyeColor,
         season: analysis.season,
-        analysis: JSON.parse(JSON.stringify(analysis)),
+        analysis: JSON.parse(JSON.stringify(fullAnalysis)),
         recommendedProductIds: productIds,
         source: 'dashboard',
       },
     });
     await track({ brandId, type: 'SHADE_ANALYSIS', refType: 'shade', refId: profile.id });
+    void forwardToDestinations(brandId, {
+      kind: 'shade_profile',
+      email,
+      skinTone: analysis.skinTone,
+      undertone: analysis.undertone,
+      season: analysis.season,
+      matches: productIds.length,
+    });
 
     return ok({
       profileId: profile.id,

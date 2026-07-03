@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
     const brand = await prisma.brand.findUnique({ where: { id: params.brandId } });
     if (!brand || brand.disabled) return ok({ reviews: [], summary: null });
 
-    const [product, reviews, questions] = await Promise.all([
+    const [product, reviews, questions, breakdownRows] = await Promise.all([
       prisma.product.findFirst({
         where: { id: productId, brandId: brand.id, status: 'ACTIVE' },
         select: { reviewsCount: true, ratingAvg: true, aiReviewSummary: true },
@@ -48,6 +48,11 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
         take: 20,
         select: { id: true, body: true, authorName: true, answer: true, answeredAt: true },
       }),
+      prisma.review.groupBy({
+        by: ['rating'],
+        where: { brandId: brand.id, productId, status: 'APPROVED' },
+        _count: true,
+      }),
     ]);
     if (!product) return ok({ reviews: [], summary: null });
 
@@ -56,6 +61,10 @@ export async function GET(req: NextRequest, { params }: { params: { brandId: str
         count: product.reviewsCount,
         ratingAvg: product.ratingAvg !== null ? Number(product.ratingAvg) : null,
         aiSummary: product.aiReviewSummary,
+        breakdown: [5, 4, 3, 2, 1].map((rating) => ({
+          rating,
+          count: breakdownRows.find((b) => b.rating === rating)?._count ?? 0,
+        })),
       },
       reviews,
       questions,

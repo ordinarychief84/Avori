@@ -30,10 +30,21 @@ export default async function ReviewsPage({
   const tab = TABS.some((t) => t.key === searchParams.tab) ? searchParams.tab! : 'pending';
   const settings = (await brandSettings(brandId)) ?? {};
 
-  const [pendingCount, approvedCount, avg, questions, reviews] = await Promise.all([
+  const [pendingCount, approvedCount, avg, breakdown, mediaReviews, questions, reviews] = await Promise.all([
     prisma.review.count({ where: { brandId, status: 'PENDING' } }),
     prisma.review.count({ where: { brandId, status: 'APPROVED' } }),
     prisma.review.aggregate({ where: { brandId, status: 'APPROVED' }, _avg: { rating: true } }),
+    prisma.review.groupBy({
+      by: ['rating'],
+      where: { brandId, status: 'APPROVED' },
+      _count: true,
+    }),
+    prisma.review.findMany({
+      where: { brandId, status: 'APPROVED', mediaUrls: { isEmpty: false } },
+      orderBy: { createdAt: 'desc' },
+      take: 12,
+      select: { id: true, mediaUrls: true, rating: true, authorName: true },
+    }),
     tab === 'questions'
       ? prisma.productQuestion.findMany({
           where: { brandId },
@@ -102,14 +113,62 @@ export default async function ReviewsPage({
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1.4fr]">
         <Stat label="Awaiting moderation" value={pendingCount} />
         <Stat label="Published" value={approvedCount} />
-        <Stat
-          label="Average rating"
-          value={avg._avg.rating !== null ? avg._avg.rating.toFixed(2) : '—'}
-        />
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-2xs uppercase tracking-[0.15em] text-fg-subtle">
+              Rating breakdown
+            </span>
+            <span className="text-sm font-bold text-fg">
+              {avg._avg.rating !== null ? `${avg._avg.rating.toFixed(2)} avg` : '—'}
+            </span>
+          </div>
+          <div className="mt-2 space-y-1">
+            {[5, 4, 3, 2, 1].map((r) => {
+              const count = breakdown.find((b) => b.rating === r)?._count ?? 0;
+              const pct = approvedCount > 0 ? Math.round((count / approvedCount) * 100) : 0;
+              return (
+                <div key={r} className="flex items-center gap-2 text-2xs text-fg-muted">
+                  <span className="w-5 shrink-0 text-right font-medium text-fg">{r}★</span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2">
+                    <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="w-8 shrink-0">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </div>
+
+      {mediaReviews.length > 0 && (
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-2xs uppercase tracking-[0.15em] text-fg-subtle">
+              Customer photo gallery
+            </span>
+            <span className="text-2xs text-fg-subtle">
+              Served to your widget with each product's reviews
+            </span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {mediaReviews.flatMap((r) =>
+              r.mediaUrls.slice(0, 2).map((url, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={`${r.id}-${i}`}
+                  src={url}
+                  alt={`Photo by ${r.authorName}`}
+                  title={`${r.rating}★ by ${r.authorName}`}
+                  className="h-20 w-20 shrink-0 rounded-md object-cover ring-1 ring-border"
+                />
+              ))
+            )}
+          </div>
+        </Card>
+      )}
 
       <div className="flex gap-1 border-b border-border">
         {TABS.map((t) => (

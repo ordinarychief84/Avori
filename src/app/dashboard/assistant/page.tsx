@@ -19,7 +19,7 @@ export default async function AssistantPage() {
     <div className="space-y-8">
       <PageHeader
         title="AI Assistant"
-        description="Your commerce copilot — answers from live store data and stored insights."
+        description="Your commerce copilot, answers from live store data and stored insights."
       />
 
       {!aiEnabled() ? (

@@ -35,7 +35,7 @@ export default async function OrdersPage() {
     <div className="space-y-8">
       <PageHeader
         title="Orders"
-        description="Orders flow in from Shopify, the REST API, or manual entry — and power loyalty, referrals and review requests."
+        description="Orders flow in from Shopify, the REST API, or manual entry, and power loyalty, referrals and review requests."
       />
 
       <div className="grid gap-4 sm:grid-cols-3">

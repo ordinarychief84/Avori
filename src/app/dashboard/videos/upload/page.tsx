@@ -178,9 +178,9 @@ export default function UploadVideoPage() {
                 value={status}
                 onChange={(e) => setStatus(e.target.value as 'DRAFT' | 'ACTIVE' | 'INACTIVE')}
               >
-                <option value="DRAFT">Draft — only you can see this</option>
-                <option value="ACTIVE">Active — appears in widget</option>
-                <option value="INACTIVE">Inactive — hidden but kept</option>
+                <option value="DRAFT">Draft, only you can see this</option>
+                <option value="ACTIVE">Active, appears in widget</option>
+                <option value="INACTIVE">Inactive, hidden but kept</option>
               </Select>
             </FormField>
           </CardBody>

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Input, Select } from '@/components/ui/Input';
 import { cn } from '@/lib/cn';
 
 type Analysis = {
@@ -33,7 +34,7 @@ type Step = 'capture' | 'preview' | 'analyzing' | 'results';
 
 const MAX_EDGE = 1024;
 
-// Downscale to keep the request small and strip EXIF — returns raw base64
+// Downscale to keep the request small and strip EXIF, returns raw base64
 // (no data: prefix) plus the media type actually encoded.
 async function toJpegBase64(source: CanvasImageSource, width: number, height: number) {
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
@@ -53,6 +54,8 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [cameraOn, setCameraOn] = useState(false);
+  const [intake, setIntake] = useState({ skinType: '', finish: '' });
+  const [email, setEmail] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -80,7 +83,7 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
         }
       });
     } catch {
-      toast.error('Camera unavailable — check browser permissions, or upload a photo instead.');
+      toast.error('Camera unavailable, check browser permissions, or upload a photo instead.');
     }
   };
 
@@ -124,7 +127,19 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
       const res = await fetch('/api/brand/shade/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: photo.base64, mediaType: photo.mediaType }),
+        body: JSON.stringify({
+          imageBase64: photo.base64,
+          mediaType: photo.mediaType,
+          ...(email.trim() ? { email: email.trim() } : {}),
+          ...(intake.skinType || intake.finish
+            ? {
+                intake: {
+                  ...(intake.skinType ? { skinType: intake.skinType } : {}),
+                  ...(intake.finish ? { finish: intake.finish } : {}),
+                },
+              }
+            : {}),
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? 'Analysis failed');
@@ -264,7 +279,7 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                   </h4>
                   {recommendations.length === 0 ? (
                     <p className="mt-2 text-sm text-fg-muted">
-                      No catalog matches yet — tag shade tones on your products to power recommendations.
+                      No catalog matches yet, tag shade tones on your products to power recommendations.
                     </p>
                   ) : (
                     <div className="mt-2 space-y-2">
@@ -298,6 +313,39 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                     except the resulting color profile.
                   </p>
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Select
+                    value={intake.skinType}
+                    disabled={step === 'analyzing'}
+                    onChange={(e) => setIntake((v) => ({ ...v, skinType: e.target.value }))}
+                  >
+                    <option value="">Skin type (optional)</option>
+                    {['dry', 'oily', 'combination', 'sensitive', 'normal'].map((t) => (
+                      <option key={t} value={t}>
+                        {t[0].toUpperCase() + t.slice(1)}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    value={intake.finish}
+                    disabled={step === 'analyzing'}
+                    onChange={(e) => setIntake((v) => ({ ...v, finish: e.target.value }))}
+                  >
+                    <option value="">Preferred finish (optional)</option>
+                    {['matte', 'natural', 'dewy'].map((t) => (
+                      <option key={t} value={t}>
+                        {t[0].toUpperCase() + t.slice(1)}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                <Input
+                  type="email"
+                  placeholder="Email the results (optional, saves to the customer profile)"
+                  value={email}
+                  disabled={step === 'analyzing'}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
                 <div className="flex gap-2">
                   <Button onClick={analyze} loading={step === 'analyzing'} leftIcon={<Sparkles className="h-4 w-4" />}>
                     Analyze shades
@@ -317,9 +365,9 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
               <div className="flex h-full flex-col justify-center gap-3">
                 <h3 className="text-sm font-semibold text-fg">How it works</h3>
                 <ol className="space-y-2 text-sm text-fg-muted">
-                  <li>1 — Take a selfie or upload a clear, well-lit photo.</li>
-                  <li>2 — Claude vision reads skin tone, undertone, lip tone, hair and eye color.</li>
-                  <li>3 — Avori matches the profile against products tagged with shade tones.</li>
+                  <li>1, Take a selfie or upload a clear, well-lit photo.</li>
+                  <li>2, Claude vision reads skin tone, undertone, lip tone, hair and eye color.</li>
+                  <li>3 | Avori matches the profile against products tagged with shade tones.</li>
                 </ol>
                 <p className="text-xs text-fg-subtle">
                   Same engine your storefront calls via POST /api/v1/shade/analyze.

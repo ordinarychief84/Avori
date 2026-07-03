@@ -135,11 +135,9 @@ export function MarketingFooter() {
     {
       heading: 'Platform',
       links: [
-        { label: 'Reviews & UGC', href: '/#platform' },
-        { label: 'Shoppable Video', href: '/#platform' },
-        { label: 'AI Shade Analyzer', href: '/#platform' },
-        { label: 'Loyalty & Referrals', href: '/#platform' },
-        { label: 'Bundles & Upsells', href: '/#platform' },
+        { label: 'All modules', href: '/#platform' },
+        { label: 'Integrations', href: '/#integrations' },
+        { label: 'Security', href: '/#security' },
         { label: 'Pricing', href: '/pricing' },
       ],
     },
@@ -149,8 +147,7 @@ export function MarketingFooter() {
         { label: 'Help Center', href: '/help' },
         { label: 'Developer Hub', href: '/docs' },
         { label: 'Design Guide', href: '/brand' },
-        { label: 'Integrations', href: '/#integrations' },
-        { label: 'Security', href: '/#security' },
+        { label: 'Contact', href: '/contact' },
       ],
     },
     {
@@ -158,7 +155,6 @@ export function MarketingFooter() {
       links: [
         { label: 'About', href: '/about' },
         { label: 'Customers', href: '/customers' },
-        { label: 'Contact', href: '/contact' },
         { label: 'Log in', href: '/login' },
         { label: 'Create account', href: '/signup' },
       ],
@@ -194,7 +190,14 @@ export function MarketingFooter() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-6 py-5 text-xs text-fg-subtle">
           <span>© {new Date().getFullYear()} Avori. All rights reserved.</span>
-          <span>Built beauty-first. Extensible everywhere.</span>
+          <span className="flex gap-4">
+            <Link href="/privacy" className="hover:text-fg">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-fg">
+              Terms
+            </Link>
+          </span>
         </div>
       </div>
     </footer>

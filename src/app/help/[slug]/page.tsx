@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const article = helpArticles.find((a) => a.slug === params.slug);
-  return { title: article ? `${article.title} — Avori Help` : 'Help — Avori' };
+  return { title: article ? `${article.title} | Avori Help` : 'Help | Avori' };
 }
 
 export default function HelpArticlePage({ params }: { params: { slug: string } }) {

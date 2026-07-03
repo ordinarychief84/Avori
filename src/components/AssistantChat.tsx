@@ -61,7 +61,7 @@ export default function AssistantChat({
             <div>
               <p className="font-medium text-fg">Ask anything about your store</p>
               <p className="mt-1 text-sm text-fg-muted">
-                Grounded in your live data — revenue, customers, reviews, loyalty and more.
+                Grounded in your live data, revenue, customers, reviews, loyalty and more.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-2">

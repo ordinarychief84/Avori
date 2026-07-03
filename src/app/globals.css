@@ -3,27 +3,24 @@
 @tailwind utilities;
 
 /*
- * Avori brand palette:
- *   Midnight #111827 · Ocean Teal #0F766E · Seafoam #2DD4BF
- *   Warm White #FAFAF8 · Cloud #F3F4F6 · Stone #D6D3D1
- *   Success #16A34A · Warning #D97706 · Error #DC2626
- * Light theme — warm-white canvas, white cards, teal accents.
+ * Avori palette (Gladly-inspired): white canvas, near-black ink, vivid
+ * green primary #009B00, mint tint #CDEFCD, #E3E3E3 hairlines.
  */
 :root {
-  --bg: 250 250 248;            /* #FAFAF8 warm white — page canvas */
-  --surface: 255 255 255;       /* white card lifted on the canvas */
-  --surface-2: 243 244 246;     /* #F3F4F6 cloud — pressed / nested */
-  --border: 231 229 228;        /* stone-200 hairline */
-  --border-strong: 214 211 209; /* #D6D3D1 stone — focused / divider */
-  --fg: 17 24 39;               /* #111827 midnight — primary text */
-  --fg-muted: 87 83 78;         /* stone-600 — secondary */
-  --fg-subtle: 168 162 158;     /* stone-400 — placeholder */
-  --accent: 15 118 110;         /* #0F766E ocean teal */
-  --accent-hover: 17 94 89;     /* teal-800 */
-  --accent-deep: 19 78 74;      /* teal-900 */
-  --accent-bright: 45 212 191;  /* #2DD4BF seafoam */
-  --accent-subtle: 240 253 250; /* teal-50 tint for selected pills, hover rows */
-  --success: 22 163 74;         /* #16A34A */
+  --bg: 255 255 255;            /* white page canvas */
+  --surface: 255 255 255;       /* cards separate via border + shadow */
+  --surface-2: 245 245 245;     /* #F5F5F5 pressed / nested */
+  --border: 227 227 227;        /* #E3E3E3 hairline */
+  --border-strong: 205 205 205; /* #CDCDCD focused / divider */
+  --fg: 13 13 13;               /* #0D0D0D ink */
+  --fg-muted: 74 74 74;         /* #4A4A4A secondary */
+  --fg-subtle: 138 138 138;     /* #8A8A8A placeholder */
+  --accent: 0 155 0;            /* #009B00 vivid green */
+  --accent-hover: 0 128 0;      /* #008000 */
+  --accent-deep: 0 100 0;       /* #006400 */
+  --accent-bright: 85 212 85;   /* #55D455 lighter green for gradients */
+  --accent-subtle: 231 247 231; /* #E7F7E7 mint tint for pills, hover rows */
+  --success: 21 128 61;         /* #15803D distinct from accent */
   --warning: 217 119 6;         /* #D97706 */
   --danger: 220 38 38;          /* #DC2626 */
 }
@@ -39,8 +36,8 @@ body {
 
 body {
   background-image:
-    radial-gradient(1200px 500px at 80% -10%, rgb(45 212 191 / 0.07), transparent 60%),
-    radial-gradient(900px 400px at -10% 10%, rgb(15 118 110 / 0.05), transparent 60%);
+    radial-gradient(1200px 500px at 80% -10%, rgb(0 155 0 / 0.05), transparent 60%),
+    radial-gradient(900px 400px at -10% 10%, rgb(205 239 205 / 0.35), transparent 60%);
 }
 
 ::selection {
@@ -101,16 +98,16 @@ body {
     mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black, transparent);
   }
   /* Marketing accents */
-  .text-gradient-teal {
-    background: linear-gradient(92deg, rgb(var(--accent)) 0%, rgb(var(--accent-bright)) 100%);
+  .text-gradient-brand {
+    background: linear-gradient(92deg, rgb(var(--accent-deep)) 0%, rgb(var(--accent)) 65%, rgb(var(--accent-bright)) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   .band-midnight {
     background:
-      radial-gradient(900px 400px at 85% -20%, rgb(45 212 191 / 0.16), transparent 60%),
-      radial-gradient(700px 300px at 5% 110%, rgb(15 118 110 / 0.25), transparent 60%),
-      #111827;
+      radial-gradient(900px 400px at 85% -20%, rgb(0 155 0 / 0.22), transparent 60%),
+      radial-gradient(700px 300px at 5% 110%, rgb(85 212 85 / 0.12), transparent 60%),
+      #0d0d0d;
   }
 }

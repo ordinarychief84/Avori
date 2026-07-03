@@ -5,7 +5,7 @@ import { retryDueWebhooks } from '@/lib/webhooks';
 import { prisma } from '@/lib/prisma';
 
 export const maxDuration = 60;
-// Never execute at build time — this route touches the job queue.
+// Never execute at build time, this route touches the job queue.
 export const dynamic = 'force-dynamic';
 
 // Serverless-friendly job tick. Point a scheduler (Vercel Cron, GitHub

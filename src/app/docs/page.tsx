@@ -9,7 +9,7 @@ import {
 } from '@/components/marketing/SiteChrome';
 
 export const metadata: Metadata = {
-  title: 'Developer Hub — Avori',
+  title: 'Developer Hub | Avori',
   description:
     'Everything to build on Avori: REST API, authentication, webhooks in both directions, and the embeddable widget SDK.',
 };
@@ -56,7 +56,7 @@ const NAV = [
 const ENDPOINTS: Array<[string, string, string]> = [
   ['GET', '/api/v1/products', 'Active catalog with review stats + AI summaries'],
   ['GET · POST', '/api/v1/customers', 'Look up by email · upsert customers'],
-  ['POST', '/api/v1/orders', 'Ingest an order — triggers loyalty, referrals, review requests, analytics, destinations'],
+  ['POST', '/api/v1/orders', 'Ingest an order, triggers loyalty, referrals, review requests, analytics, destinations'],
   ['GET · POST', '/api/v1/reviews', 'Approved reviews by product · submit a review'],
   ['GET · POST', '/api/v1/loyalty', 'Balance, tier, history & rewards by email · redeem a reward'],
   ['POST', '/api/v1/discounts/validate', 'Validate any code: discount, reward or gift card'],
@@ -83,10 +83,10 @@ export default function DocsPage() {
             <>
               Build on Avori like you’d
               <br />
-              <span className="text-gradient-teal">build on Stripe.</span>
+              <span className="text-gradient-brand">build on Stripe.</span>
             </>
           }
-          sub="Everything the dashboard does, the API does. Bearer keys, predictable JSON, cursor pagination, signed webhooks — and a widget when you don’t want to build UI."
+          sub="Everything the dashboard does, the API does. Bearer keys, predictable JSON, cursor pagination, signed webhooks, and a widget when you don’t want to build UI."
         />
 
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[200px_1fr]">
@@ -132,13 +132,13 @@ export default function DocsPage() {
               <p>
                 Private endpoints under <code className="font-mono text-xs text-fg">/api/v1/*</code>{' '}
                 authenticate with a bearer API key scoped to your workspace. Keys are stored as
-                SHA-256 hashes — treat them like passwords and rotate from Settings any time.
+                SHA-256 hashes, treat them like passwords and rotate from Settings any time.
               </p>
               <Code>{`Authorization: Bearer avk_your_key_here`}</Code>
               <p>
                 Keep keys server-side. For browser-embedded surfaces use the widget endpoints under{' '}
                 <code className="font-mono text-xs text-fg">/api/public/brand/&#123;brandId&#125;/…</code>{' '}
-                — CORS-open, rate-limited per IP, and restricted to published content.
+               , CORS-open, rate-limited per IP, and restricted to published content.
               </p>
             </DocSection>
 
@@ -170,7 +170,7 @@ export default function DocsPage() {
               </div>
             </DocSection>
 
-            <DocSection id="webhooks" icon={Webhook} title="Webhooks — both directions">
+            <DocSection id="webhooks" icon={Webhook} title="Webhooks in both directions">
               <p>
                 <span className="font-medium text-fg">Outbound:</span> register endpoints in
                 Settings → Webhooks and subscribe to topics like{' '}
@@ -178,7 +178,7 @@ export default function DocsPage() {
                 <code className="font-mono text-xs text-fg">order.updated</code>,{' '}
                 <code className="font-mono text-xs text-fg">review.created</code> and{' '}
                 <code className="font-mono text-xs text-fg">review.approved</code>. Every delivery is
-                signed and retried with backoff (1, 4, 9, 16 minutes; 5 attempts) — delivery logs are
+                signed and retried with backoff (1, 4, 9, 16 minutes; 5 attempts), delivery logs are
                 visible per endpoint.
               </p>
               <Code>{`X-Avori-Topic: order.created
@@ -191,7 +191,7 @@ const ok = crypto.timingSafeEqual(
     .update(rawBody).digest("hex"), "hex"));`}</Code>
               <p>
                 <span className="font-medium text-fg">Inbound:</span> Avori receives and verifies
-                platform webhooks — Shopify at{' '}
+                platform webhooks, Shopify at{' '}
                 <code className="font-mono text-xs text-fg">/api/integrations/shopify/webhooks</code>{' '}
                 (HMAC base64) and WooCommerce at{' '}
                 <code className="font-mono text-xs text-fg">/api/integrations/woocommerce/webhooks</code>{' '}
@@ -230,7 +230,7 @@ const ok = crypto.timingSafeEqual(
                 <Link href="/contact" className="font-semibold text-accent hover:text-accent-hover">
                   Tell us
                 </Link>{' '}
-                — the API grows with real integrations.
+               , the API grows with real integrations.
               </p>
             </DocSection>
           </div>

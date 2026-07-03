@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     // Note: avoid revealing whether an email is registered. Same generic error
     // for "exists" and validation failure further down.
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) throw new HttpError(409, "Couldn't create account — try logging in");
+    if (existing) throw new HttpError(409, "Couldn't create account, try logging in");
 
     const passwordHash = await bcrypt.hash(data.password, 12);
     const baseSlug = slugify(data.brandName) || 'brand';
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
       // Unique constraint races (slug or email)
-      return fail(new HttpError(409, "Couldn't create account — try logging in"));
+      return fail(new HttpError(409, "Couldn't create account, try logging in"));
     }
     return fail(e);
   }

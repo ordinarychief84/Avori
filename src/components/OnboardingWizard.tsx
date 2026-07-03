@@ -33,7 +33,7 @@ export default function OnboardingWizard({ state }: { state: StepState }) {
       icon: Building2,
       done: state.profileComplete,
       title: 'Complete your workspace profile',
-      copy: 'Set your store name, primary domain and currency — they appear on widgets and receipts.',
+      copy: 'Set your store name, primary domain and currency, they appear on widgets and receipts.',
       action: { label: 'Open settings', href: '/dashboard/settings' },
     },
     {
@@ -56,7 +56,7 @@ export default function OnboardingWizard({ state }: { state: StepState }) {
       icon: Rocket,
       done: false,
       title: 'Launch your first module',
-      copy: 'Reviews is the fastest win — or start with the shade analyzer, a quiz or loyalty.',
+      copy: 'Reviews is the fastest win, or start with the shade analyzer, a quiz or loyalty.',
       action: { label: 'Reviews', href: '/dashboard/reviews' },
       secondary: { label: 'Shade Studio', href: '/dashboard/shade' },
     },
@@ -78,7 +78,7 @@ export default function OnboardingWizard({ state }: { state: StepState }) {
     });
     setFinishing(false);
     if (!res.ok) {
-      toast.error('Could not save — try again');
+      toast.error('Could not save, try again');
       return;
     }
     toast.success('You’re all set');
@@ -128,7 +128,7 @@ export default function OnboardingWizard({ state }: { state: StepState }) {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface-2/40 p-5">
         <p className="text-sm text-fg-muted">
-          Explore at your own pace — you can finish this checklist anytime.
+          Explore at your own pace, you can finish this checklist anytime.
         </p>
         <div className="flex items-center gap-2">
           <Link href="/dashboard">

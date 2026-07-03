@@ -1,6 +1,6 @@
 // Magic-byte sniffer for the file types Avori accepts.
 // Returns the canonical MIME for the bytes, or null if not recognized.
-// Never trust the client-reported `file.type` — always run this on the server.
+// Never trust the client-reported `file.type`, always run this on the server.
 
 export type SniffedMime =
   | 'video/mp4'

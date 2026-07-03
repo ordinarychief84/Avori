@@ -38,9 +38,9 @@ const config: Config = {
         xl: '1rem',
       },
       boxShadow: {
-        soft: '0 1px 2px 0 rgb(17 24 39 / 0.04), 0 1px 1px 0 rgb(17 24 39 / 0.06)',
-        glow: '0 0 0 1px rgb(15 118 110 / 0.35), 0 0 24px -4px rgb(45 212 191 / 0.45)',
-        card: '0 1px 2px 0 rgb(17 24 39 / 0.04), 0 8px 24px -12px rgb(17 24 39 / 0.10)',
+        soft: '0 1px 2px 0 rgb(13 13 13 / 0.04), 0 1px 1px 0 rgb(13 13 13 / 0.06)',
+        glow: '0 0 0 1px rgb(0 155 0 / 0.30), 0 0 24px -4px rgb(85 212 85 / 0.40)',
+        card: '0 1px 2px 0 rgb(13 13 13 / 0.04), 0 8px 24px -12px rgb(13 13 13 / 0.10)',
       },
       keyframes: {
         'fade-in': {

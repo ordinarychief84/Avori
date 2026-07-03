@@ -40,7 +40,7 @@ export default async function QuizzesPage() {
         <EmptyState
           icon={ListChecks}
           title="No quizzes yet"
-          description="Build a skin-type quiz, gift finder or size guide — completions feed recommendations and your customer list."
+          description="Build a skin-type quiz, gift finder or size guide, completions feed recommendations and your customer list."
         />
       ) : (
         <Card className="overflow-hidden">

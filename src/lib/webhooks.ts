@@ -24,7 +24,7 @@ export async function emitWebhook(
       const delivery = await prisma.webhookDelivery.create({
         data: { endpointId: ep.id, topic, payload: JSON.parse(JSON.stringify(payload)) },
       });
-      // First attempt inline but fire-and-forget — callers never wait on
+      // First attempt inline but fire-and-forget, callers never wait on
       // third-party servers.
       void attemptDelivery(delivery.id).catch(() => {});
     }

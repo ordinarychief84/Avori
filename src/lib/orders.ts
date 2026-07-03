@@ -3,7 +3,8 @@ import { prisma } from './prisma';
 import { HttpError } from './auth';
 import { track } from './events';
 import { emitWebhook } from './webhooks';
-import { earnForOrder } from './loyalty';
+import { earnForOrder, getProgram } from './loyalty';
+import { addCredit } from './credit';
 import { recordReferralConversion } from './referrals';
 import { enqueueJob } from './jobs';
 import { forwardToDestinations } from './connectors/destinations';
@@ -31,7 +32,7 @@ export type IngestOrderInput = {
   discountCodes?: string[];
   placedAt?: Date;
   source?: string;
-  // Attribution — lets the storefront credit a referral link or an upsell
+  // Attribution, lets the storefront credit a referral link or an upsell
   // offer for this order.
   referralCode?: string;
   upsellOfferId?: string;
@@ -137,6 +138,20 @@ export async function ingestOrder(brandId: string, input: IngestOrderInput) {
   try {
     if (order.status === 'PAID' || order.status === 'FULFILLED') {
       await earnForOrder(brandId, customer.id, total, order.id);
+      // Rise-style cashback: a percent of every paid order returns as
+      // store credit the customer can spend on the next purchase.
+      const program = await getProgram(brandId);
+      const pct = Number(program?.cashbackPct ?? 0);
+      if (program?.enabled && pct > 0 && total > 0) {
+        await addCredit({
+          brandId,
+          customerId: customer.id,
+          type: 'CASHBACK',
+          amount: Math.round(total * pct) / 100,
+          reason: `${pct}% cashback on ${orderNumber}`,
+          orderId: order.id,
+        });
+      }
     }
   } catch (e) {
     console.error('loyalty earn failed', e);
@@ -204,7 +219,7 @@ export async function ingestOrder(brandId: string, input: IngestOrderInput) {
     console.error('review request scheduling failed', e);
   }
 
-  // Marketing destinations (GA4, Klaviyo, Meta, Attentive) — fire and forget.
+  // Marketing destinations (GA4, Klaviyo, Meta, Attentive), fire and forget.
   void forwardToDestinations(brandId, {
     kind: 'order_created',
     email,

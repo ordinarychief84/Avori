@@ -6,7 +6,7 @@ import type { IntegrationProvider } from '@prisma/client';
 // Marketing destinations: Google Analytics 4, Klaviyo, Meta (Conversions
 // API) and Attentive. Commerce connectors pull data IN; destinations push
 // events OUT. All sends are fire-and-forget from the order/customer
-// pipelines — a marketing outage must never break checkout ingestion.
+// pipelines, a marketing outage must never break checkout ingestion.
 
 export const MARKETING_PROVIDERS = ['GOOGLE', 'KLAVIYO', 'META', 'ATTENTIVE'] as const;
 export type MarketingProvider = (typeof MARKETING_PROVIDERS)[number];
@@ -32,7 +32,15 @@ export type DestinationEvent =
       items: Array<{ name: string; sku?: string | null; quantity: number; price: number }>;
     }
   | { kind: 'customer_created'; email: string; firstName?: string | null; lastName?: string | null }
-  | { kind: 'review_submitted'; email?: string | null; productName: string; rating: number };
+  | { kind: 'review_submitted'; email?: string | null; productName: string; rating: number }
+  | {
+      kind: 'shade_profile';
+      email?: string | null;
+      skinTone: string;
+      undertone: string;
+      season: string;
+      matches: number;
+    };
 
 const TIMEOUT = AbortSignal.timeout.bind(AbortSignal);
 
@@ -78,7 +86,7 @@ export async function verifyDestination(
     if (!res.ok) throw new HttpError(400, `Attentive rejected the API key (${res.status})`);
     return;
   }
-  // GOOGLE: the GA4 Measurement Protocol is write-only — there is no cheap
+  // GOOGLE: the GA4 Measurement Protocol is write-only, there is no cheap
   // credential probe, so validate shape and accept.
   if (!/^G-[A-Z0-9]{4,}$/i.test(config.measurementId ?? '')) {
     throw new HttpError(400, 'Google requires a GA4 Measurement ID like G-XXXXXXX');
@@ -93,7 +101,9 @@ export async function verifyDestination(
 async function sendGoogle(accessToken: string, config: DestinationConfig, ev: DestinationEvent) {
   const clientId = `avori.${sha256Lower('email' in ev && ev.email ? ev.email : crypto.randomUUID()).slice(0, 16)}`;
   const events =
-    ev.kind === 'order_created'
+    ev.kind === 'shade_profile'
+      ? [{ name: 'shade_analysis', params: { skin_tone: ev.skinTone, undertone: ev.undertone, season: ev.season, matches: ev.matches } }]
+      : ev.kind === 'order_created'
       ? [
           {
             name: 'purchase',
@@ -132,13 +142,17 @@ async function sendKlaviyo(accessToken: string, _config: DestinationConfig, ev: 
       ? 'Placed Order (Avori)'
       : ev.kind === 'customer_created'
         ? 'Created Account (Avori)'
-        : 'Submitted Review (Avori)';
+        : ev.kind === 'shade_profile'
+          ? 'Completed Shade Analysis (Avori)'
+          : 'Submitted Review (Avori)';
   const properties =
     ev.kind === 'order_created'
       ? { OrderId: ev.orderNumber, Items: ev.items.map((i) => i.name) }
       : ev.kind === 'review_submitted'
         ? { Product: ev.productName, Rating: ev.rating }
-        : {};
+        : ev.kind === 'shade_profile'
+          ? { SkinTone: ev.skinTone, Undertone: ev.undertone, Season: ev.season }
+          : {};
 
   await fetch('https://a.klaviyo.com/api/events/', {
     method: 'POST',
@@ -162,6 +176,15 @@ async function sendKlaviyo(accessToken: string, _config: DestinationConfig, ev: 
                 email,
                 ...('firstName' in ev && ev.firstName ? { first_name: ev.firstName } : {}),
                 ...('lastName' in ev && ev.lastName ? { last_name: ev.lastName } : {}),
+                ...(ev.kind === 'shade_profile'
+                  ? {
+                      properties: {
+                        avori_skin_tone: ev.skinTone,
+                        avori_undertone: ev.undertone,
+                        avori_color_season: ev.season,
+                      },
+                    }
+                  : {}),
               },
             },
           },
@@ -175,6 +198,7 @@ async function sendKlaviyo(accessToken: string, _config: DestinationConfig, ev: 
 async function sendMeta(accessToken: string, config: DestinationConfig, ev: DestinationEvent) {
   const email = 'email' in ev && ev.email ? ev.email : null;
   if (!email || !config.pixelId) return;
+  if (ev.kind === 'shade_profile') return; // no meaningful Meta standard event
   const eventName =
     ev.kind === 'order_created' ? 'Purchase' : ev.kind === 'customer_created' ? 'CompleteRegistration' : 'SubmitApplication';
   const data = [
@@ -203,7 +227,13 @@ async function sendAttentive(accessToken: string, _config: DestinationConfig, ev
   const email = 'email' in ev && ev.email ? ev.email : null;
   if (!email) return;
   const type =
-    ev.kind === 'order_created' ? 'avori_order' : ev.kind === 'customer_created' ? 'avori_signup' : 'avori_review';
+    ev.kind === 'order_created'
+      ? 'avori_order'
+      : ev.kind === 'customer_created'
+        ? 'avori_signup'
+        : ev.kind === 'shade_profile'
+          ? 'avori_shade_profile'
+          : 'avori_review';
   await fetch('https://api.attentivemobile.com/v1/events/custom', {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'content-type': 'application/json' },
@@ -215,7 +245,9 @@ async function sendAttentive(accessToken: string, _config: DestinationConfig, ev
           ? { orderNumber: ev.orderNumber, total: ev.total, currency: ev.currency }
           : ev.kind === 'review_submitted'
             ? { product: ev.productName, rating: ev.rating }
-            : {},
+            : ev.kind === 'shade_profile'
+              ? { skinTone: ev.skinTone, undertone: ev.undertone, season: ev.season }
+              : {},
     }),
     signal: TIMEOUT(8_000),
   });

@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const bundle = await prisma.$transaction(async (tx) => {
       if (data.items !== undefined) {
-        // Items are replaced wholesale — the builder sends the full list.
+        // Items are replaced wholesale, the builder sends the full list.
         await tx.bundleItem.deleteMany({ where: { bundleId: existing.id } });
         await tx.bundleItem.createMany({
           data: data.items.map((i) => ({

@@ -58,7 +58,7 @@ export default function SignupPage() {
     if (signInRes?.error) {
       setError('Account created but sign-in failed. Please log in manually.');
       toast.error('Sign-in failed', {
-        description: 'Your account was created — log in to continue.',
+        description: 'Your account was created, log in to continue.',
       });
       router.push(`/login?email=${encodeURIComponent(form.email)}`);
       return;

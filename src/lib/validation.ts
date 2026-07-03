@@ -30,7 +30,7 @@ export const productSchema = z.object({
   price: z.number().nonnegative().max(1_000_000),
   // Image can be uploaded (relative /uploads/...) or pasted from a CDN.
   imageUrl: urlOrAssetPath,
-  // Product URL is an external destination — must be a full URL.
+  // Product URL is an external destination, must be a full URL.
   productUrl: z.string().url(),
   sku: z.string().max(80).optional().or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
@@ -58,6 +58,8 @@ export const videoSchema = z.object({
   thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
   status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).default('DRAFT'),
   durationSec: z.number().int().nonnegative().optional(),
+  targetProductIds: z.array(z.string()).max(50).optional(),
+  sort: z.number().int().min(0).max(10_000).optional(),
 });
 
 export const videoPatchSchema = videoSchema.partial();
@@ -77,7 +79,7 @@ export const eventSchema = z.object({
   videoId: z.string().min(1).optional(),
   productId: z.string().min(1).optional(),
   type: z.enum(['IMPRESSION', 'VIEW', 'TAG_CLICK', 'CTA_CLICK']),
-  // `domain` is intentionally NOT validated here — the server derives it from
+  // `domain` is intentionally NOT validated here, the server derives it from
   // the request Origin / Referer header. Clients may still send a `domain`
   // field for forward compat; it is ignored.
   domain: z.string().max(200).optional(),
@@ -181,6 +183,7 @@ export const loyaltyProgramSchema = z.object({
   signupBonus: z.number().int().nonnegative().max(1_000_000).optional(),
   reviewBonus: z.number().int().nonnegative().max(1_000_000).optional(),
   birthdayBonus: z.number().int().nonnegative().max(1_000_000).optional(),
+  cashbackPct: z.number().min(0).max(100).optional(),
 });
 
 export const loyaltyTierSchema = z.object({
@@ -243,6 +246,8 @@ export const quizOptionSchema = z.object({
   imageUrl: urlOrAssetPath.optional().or(z.literal('')),
   productIds: z.array(z.string()).max(20).optional(),
   tags: z.array(z.string().max(40)).max(10).optional(),
+  // Recommendation weight: how strongly this option votes for its products.
+  weight: z.number().min(0).max(10).optional(),
   // Conditional logic: jump to this question next; null/absent falls through
   // to the next question by sort order.
   nextQuestionId: z.string().nullable().optional(),
@@ -315,7 +320,7 @@ export const bundleSchema = z.object({
     })
     .optional(),
   // Accepts either bare product ids (from the dashboard multiselect) or
-  // full item objects (from the API) — normalized to objects.
+  // full item objects (from the API), normalized to objects.
   items: z
     .array(
       z.union([
@@ -402,6 +407,14 @@ export const shadeAnalyzeSchema = z.object({
   imageBase64: z.string().min(100).max(15_000_000),
   mediaType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
   email: z.string().email().max(200).optional().or(z.literal('')),
+  // Octane-style intake: zero-party context that travels with the profile.
+  intake: z
+    .object({
+      skinType: z.enum(['dry', 'oily', 'combination', 'sensitive', 'normal']).optional(),
+      finish: z.enum(['matte', 'natural', 'dewy']).optional(),
+      coverage: z.enum(['sheer', 'medium', 'full']).optional(),
+    })
+    .optional(),
 });
 
 // ---------------------------------------------------------------------------

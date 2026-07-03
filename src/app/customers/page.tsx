@@ -10,7 +10,7 @@ import {
 import { caseStudies, useCases } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Customers — Avori',
+  title: 'Customers | Avori',
   description:
     'How modern brands use Avori: case studies and use cases across reviews, shoppable video, AI shade matching, loyalty and more.',
 };
@@ -26,10 +26,10 @@ export default function CustomersPage() {
             <>
               Brands growing on
               <br />
-              <span className="text-gradient-teal">one platform</span>
+              <span className="text-gradient-brand">one platform</span>
             </>
           }
-          sub="From clean cosmetics to headless DTC — how teams use Avori to convert, retain and personalize."
+          sub="From clean cosmetics to headless DTC, how teams use Avori to convert, retain and personalize."
         />
 
         {/* Case studies */}
@@ -57,7 +57,7 @@ export default function CustomersPage() {
                 </blockquote>
                 <div className="mt-3 text-sm">
                   <span className="font-semibold text-fg">{c.person}</span>
-                  <span className="text-fg-muted"> — {c.role}, {c.brand}</span>
+                  <span className="text-fg-muted">, {c.role}, {c.brand}</span>
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-5">
                   {c.metrics.map((m) => (
@@ -81,7 +81,7 @@ export default function CustomersPage() {
             ))}
           </div>
           <p className="mt-4 text-center text-2xs text-fg-subtle">
-            Illustrative stories composed for the Avori demo — your brand could be the first real one here.
+            Illustrative stories composed for the Avori demo, your brand could be the first real one here.
           </p>
         </section>
 
@@ -91,7 +91,7 @@ export default function CustomersPage() {
             <SectionHeading
               eyebrow="Use cases"
               title="Start with the goal, not the tool"
-              sub="Every Avori module maps to a growth outcome. Pick the outcome — the platform brings the right tools."
+              sub="Every Avori module maps to a growth outcome. Pick the outcome, the platform brings the right tools."
             />
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {useCases.map((u) => (
@@ -116,7 +116,7 @@ export default function CustomersPage() {
 
         <CtaBand
           title="Write the next story here"
-          sub="Launch Avori on your store today — and tell us what you grow."
+          sub="Launch Avori on your store today, and tell us what you grow."
         />
       </main>
       <MarketingFooter />

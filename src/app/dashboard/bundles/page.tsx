@@ -70,7 +70,7 @@ export default async function BundlesPage() {
         actions={
           <EntityDialog
             title="New bundle"
-            description="Pick the products after creating — or include them right away."
+            description="Pick the products after creating, or include them right away."
             endpoint="/api/brand/bundles"
             triggerLabel="New bundle"
             wide

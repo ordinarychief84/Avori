@@ -28,7 +28,7 @@ type ProductOption = { value: string; label: string };
 
 // Interactive quiz builder: questions with answer options, each option
 // mapping to recommended products and (optionally) jumping to a specific
-// next question — the conditional-logic branch.
+// next question, the conditional-logic branch.
 export default function QuizBuilder({
   quizId,
   questions: initialQuestions,

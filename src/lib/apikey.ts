@@ -26,7 +26,7 @@ export async function requireApiKey(req: Request): Promise<{ brandId: string; ap
   if (!record || record.revokedAt) throw new HttpError(401, 'Invalid or revoked API key');
   if (record.brand.disabled) throw new HttpError(403, 'This workspace is disabled');
 
-  // Touch lastUsedAt at most once a minute — fire-and-forget so the request
+  // Touch lastUsedAt at most once a minute, fire-and-forget so the request
   // never waits on bookkeeping.
   if (!record.lastUsedAt || Date.now() - record.lastUsedAt.getTime() > 60_000) {
     prisma.apiKey

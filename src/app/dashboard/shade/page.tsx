@@ -30,7 +30,7 @@ export default async function ShadePage() {
     <div className="space-y-8">
       <PageHeader
         title="Shade Studio"
-        description="AI analyzes a customer photo — skin tone, undertone, lip tone, hair and eye color — and recommends matching products."
+        description="AI analyzes a customer photo, skin tone, undertone, lip tone, hair and eye color, and recommends matching products."
       />
 
       {!aiEnabled() && (
@@ -62,15 +62,15 @@ export default async function ShadePage() {
         </CardHeader>
         <CardBody className="space-y-2 text-sm text-fg-muted">
           <p>
-            1 — Tag products with the skin tones and undertones they suit (edit any product and set{' '}
+            1, Tag products with the skin tones and undertones they suit (edit any product and set{' '}
             <span className="text-fg">Shade tones</span> / <span className="text-fg">Undertones</span>).
           </p>
           <p>
-            2 — Your storefront sends a customer photo to{' '}
+            2, Your storefront sends a customer photo to{' '}
             <code className="font-mono text-xs">POST /api/v1/shade/analyze</code> with an API key.
           </p>
           <p>
-            3 — Claude vision returns the color profile; Avori matches it against your catalog and stores the
+            3, Claude vision returns the color profile; Avori matches it against your catalog and stores the
             profile on the customer record for future personalization. Pair with{' '}
             <Link href="/dashboard/products" className="text-accent hover:underline">
               AI try-on

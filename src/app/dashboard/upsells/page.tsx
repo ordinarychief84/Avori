@@ -68,7 +68,7 @@ export default async function UpsellsPage() {
     <div className="space-y-8">
       <PageHeader
         title="Upsells & Cross-sells"
-        description="Targeted offers on product pages, cart, checkout and post-purchase — with full funnel attribution."
+        description="Targeted offers on product pages, cart, checkout and post-purchase, with full funnel attribution."
         actions={
           <EntityDialog title="New offer" endpoint="/api/brand/upsells" triggerLabel="New offer" wide fields={upsellFields} />
         }

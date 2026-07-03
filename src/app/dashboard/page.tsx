@@ -86,7 +86,7 @@ export default async function DashboardOverview() {
     <div className="space-y-8">
       <PageHeader
         title={brand?.name ?? 'Your store'}
-        description="Your commerce experience, unified — every module below shares one customer database."
+        description="Your commerce experience, unified, every module below shares one customer database."
       />
 
       {needsSetup && (
@@ -146,7 +146,7 @@ export default async function DashboardOverview() {
           <CardBody className="p-0">
             {recentOrders.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-fg-muted">
-                No orders yet — they arrive from Shopify or POST /api/v1/orders.
+                No orders yet, they arrive from Shopify or POST /api/v1/orders.
               </p>
             ) : (
               <table className="w-full text-sm">

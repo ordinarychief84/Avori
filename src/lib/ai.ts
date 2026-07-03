@@ -257,7 +257,7 @@ export async function assistantReply(brandId: string, conversationId: string): P
     `Store snapshot (last 30 days): revenue ${Number(orders._sum.total ?? 0).toFixed(2)}, orders ${orders._count}, customers total ${customerCount}, approved reviews ${reviewCount}, reviews awaiting moderation ${pendingReviews}.`,
     insights.length > 0
       ? `Current stored insights:\n${insights.map((i) => `- [${i.kind}] ${i.title}: ${i.body}`).join('\n')}`
-      : 'No stored insights yet — the merchant can generate them from the Analytics page.',
+      : 'No stored insights yet, the merchant can generate them from the Analytics page.',
   ].join('\n\n');
 
   const response = await client().messages.create({
@@ -301,7 +301,7 @@ export async function analyzeShadeImage(
     model: MODEL,
     max_tokens: 1024,
     system:
-      'You are a professional beauty shade-matching analyst. Analyze the person in the photo and report cosmetic color attributes. Use these vocabularies — skinTone: fair | light | medium | tan | deep | rich; undertone: cool | neutral | warm | olive; season: spring | summer | autumn | winter. lipTone, hairColor and eyeColor are short free-form descriptions (e.g. "rosy pink", "dark brown", "hazel"). notes: one sentence of shade-matching guidance. If no face is clearly visible, describe attributes as "unknown".',
+      'You are a professional beauty shade-matching analyst. Analyze the person in the photo and report cosmetic color attributes. Use these vocabularies, skinTone: fair | light | medium | tan | deep | rich; undertone: cool | neutral | warm | olive; season: spring | summer | autumn | winter. lipTone, hairColor and eyeColor are short free-form descriptions (e.g. "rosy pink", "dark brown", "hazel"). notes: one sentence of shade-matching guidance. If no face is clearly visible, describe attributes as "unknown".',
     messages: [
       {
         role: 'user',

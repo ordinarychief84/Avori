@@ -32,6 +32,7 @@ import {
   MarketingHeader,
   MarketingFooter,
   SectionHeading,
+  CtaBand,
 } from '@/components/marketing/SiteChrome';
 
 export default function LandingPage() {
@@ -47,7 +48,10 @@ export default function LandingPage() {
         <Developers />
         <SecurityBand />
         <Testimonials />
-        <FinalCta />
+        <CtaBand
+          title="Ready to unify your customer experience?"
+          sub="Set up your workspace, connect your store, and launch your first module today."
+        />
       </main>
       <MarketingFooter />
     </div>
@@ -69,11 +73,11 @@ function Hero() {
           <h1 className="mt-5 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
             One platform.
             <br />
-            <span className="text-gradient-teal">Every growth tool.</span>
+            <span className="text-gradient-brand">Every growth tool.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-muted">
             Reviews, shoppable video, AI shade matching, quizzes, loyalty, referrals, bundles and
-            upsells — unified on one dashboard, one customer database and one AI layer. Without the
+            upsells, unified on one dashboard, one customer database and one AI layer. Without the
             chaos of multiple apps.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -248,7 +252,7 @@ function FeatureRow({
   );
 }
 
-/* CSS-composed product mocks — theme-aware and crisp at any scale. */
+/* CSS-composed product mocks, theme-aware and crisp at any scale. */
 
 function DashboardMock() {
   const bars = [38, 52, 44, 66, 58, 74, 62, 82, 70, 90, 84, 96];
@@ -303,7 +307,7 @@ function DashboardMock() {
 
 function ReviewsMock() {
   const rows = [
-    { name: 'Maya A.', title: 'Shade match was perfect', body: 'The analyzer nailed my undertone — gloss looks amazing.', verified: true },
+    { name: 'Maya A.', title: 'Shade match was perfect', body: 'The analyzer nailed my undertone, gloss looks amazing.', verified: true },
     { name: 'Skye O.', title: 'Instant favourite', body: 'Silky, lasts all day, and the try-on preview was spot on.', verified: true },
     { name: 'Cleo N.', title: 'Good, shipping slow', body: 'Product 10/10. Delivery took a week longer than expected.', verified: false },
   ];
@@ -339,7 +343,7 @@ function ReviewsMock() {
               </div>
               <div className="mt-0.5 truncate text-xs font-semibold text-fg">{r.title}</div>
               <div className="truncate text-2xs text-fg-muted">
-                {r.body} — {r.name}
+                {r.body}, {r.name}
               </div>
             </div>
             <div className="flex shrink-0 gap-1.5">
@@ -558,7 +562,7 @@ function Platform() {
           eyebrow="Retention suite"
           icon={Crown}
           title="Points, tiers, referrals and store credit that bring them back"
-          copy="Launch a loyalty program with earn rates, VIP tiers and birthday bonuses in minutes. Reward referrers automatically — with fraud checks — and issue gift cards and store credit your checkout can validate through one API."
+          copy="Launch a loyalty program with earn rates, VIP tiers and birthday bonuses in minutes. Reward referrers automatically, with fraud checks, and issue gift cards and store credit your checkout can validate through one API."
           bullets={[
             'Earn rules, VIP multipliers, signup / review / birthday bonuses',
             'Referral links with self-referral and repeat-IP fraud protection',
@@ -601,7 +605,7 @@ function Platform() {
         <FeatureRow
           eyebrow="Revenue boosters"
           icon={TrendingUp}
-          title="Bundles, upsells, gifts and discounts — coordinated, not chaotic"
+          title="Bundles, upsells, gifts and discounts, coordinated, not chaotic"
           copy="Frequently-bought-together, Buy X Get Y, mix & match and volume tiers. Placement-targeted upsells across product, cart, checkout and post-purchase. Gift thresholds that nudge carts higher. All measured in one place."
           bullets={[
             'Four bundle types with per-item roles and tiered pricing',
@@ -648,7 +652,7 @@ function Platform() {
           eyebrow="Intelligence"
           icon={Sparkles}
           title="Analytics and an AI analyst that already knows your store"
-          copy="Revenue, AOV, repeat rate and module performance on one board — no stitching spreadsheets. Generate AI insights from 90 days of data, or just ask the assistant what to launch next."
+          copy="Revenue, AOV, repeat rate and module performance on one board, no stitching spreadsheets. Generate AI insights from 90 days of data, or just ask the assistant what to launch next."
           bullets={[
             'Unified funnel: impressions → engagement → orders → revenue',
             'Per-module boards for videos, reviews, quizzes, loyalty and more',
@@ -678,7 +682,7 @@ function Integrations() {
         <SectionHeading
           eyebrow="Integrations"
           title="Works where you sell"
-          sub="Connectors sync products, customers and orders. Everything else — widgets, APIs, webhooks — works on any website, headless or hosted."
+          sub="Connectors sync products, customers and orders. Everything else, widgets, APIs, webhooks, works on any website, headless or hosted."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {platforms.map((p) => (
@@ -696,7 +700,7 @@ function Integrations() {
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
           <div className="rounded-xl border border-border bg-fg p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
-              Embed a widget — one line
+              Embed a widget, one line
             </div>
             <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
               {`<script src="https://app.avori.com/widget.js" async></script>
@@ -707,7 +711,7 @@ function Integrations() {
           </div>
           <div className="rounded-xl border border-border bg-fg p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
-              Push an order — one request
+              Push an order, one request
             </div>
             <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
               {`curl -X POST https://app.avori.com/api/v1/orders \\
@@ -735,7 +739,7 @@ function Developers() {
     },
     {
       icon: Webhook,
-      title: 'Webhooks — both directions',
+      title: 'Webhooks in both directions',
       copy: 'Receive HMAC-signed events (order.created, review.approved…) with automatic retries and delivery logs. Inbound receivers verify Shopify and WooCommerce signatures.',
     },
     {
@@ -806,7 +810,7 @@ function Testimonials() {
   const quotes = [
     {
       quote:
-        'We replaced four subscriptions the first week. The loyalty and reviews finally talk to the same customer record — that alone changed our email game.',
+        'We replaced four subscriptions the first week. The loyalty and reviews finally talk to the same customer record, that alone changed our email game.',
       name: 'Amara O.',
       role: 'Founder, Roxa Beauty',
     },
@@ -853,37 +857,4 @@ function Testimonials() {
   );
 }
 
-/* --------------------------------------------------------------- final CTA */
-
-function FinalCta() {
-  return (
-    <section className="band-midnight">
-      <div className="mx-auto max-w-4xl px-6 py-20 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Ready to unify your customer experience?
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-stone-300">
-          Set up your workspace, connect your store, and launch your first module today — reviews,
-          video, loyalty or the AI shade analyzer.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/signup">
-            <Button size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
-              Get started free
-            </Button>
-          </Link>
-          <a href="mailto:hello@avori.com?subject=Avori%20demo">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/25 text-white hover:border-white/50 hover:bg-white/10"
-            >
-              Book a demo
-            </Button>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
 

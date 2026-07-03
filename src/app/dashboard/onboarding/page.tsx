@@ -20,7 +20,7 @@ export default async function OnboardingPage() {
     <div className="space-y-8">
       <PageHeader
         title={`Welcome to Avori, ${brand?.name ?? 'friend'}`}
-        description="Five steps to a fully wired commerce experience — most brands finish in under 15 minutes."
+        description="Five steps to a fully wired commerce experience, most brands finish in under 15 minutes."
       />
       <OnboardingWizard
         state={{

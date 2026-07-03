@@ -1,5 +1,5 @@
 // Marketing-site content. Add customers, use cases, help articles and FAQ
-// entries here — the pages render whatever is in these arrays.
+// entries here, the pages render whatever is in these arrays.
 
 export type CaseStudy = {
   slug: string;
@@ -22,7 +22,7 @@ export const caseStudies: CaseStudy[] = [
     logoText: 'ROXA',
     headline: 'Replaced four apps and lifted AOV 32% in one quarter',
     quote:
-      'We replaced four subscriptions the first week. Loyalty and reviews finally talk to the same customer record — that alone changed our email game.',
+      'We replaced four subscriptions the first week. Loyalty and reviews finally talk to the same customer record, that alone changed our email game.',
     person: 'Amara O.',
     role: 'Founder',
     metrics: [
@@ -39,7 +39,7 @@ export const caseStudies: CaseStudy[] = [
     logoText: 'LUMIÈRE',
     headline: 'The shade analyzer became their best-converting lead magnet',
     quote:
-      'People share the shade analyzer like a quiz — and every result lands in the CRM with matched products attached. It converts 3× better than our old popup.',
+      'People share the shade analyzer like a quiz, and every result lands in the CRM with matched products attached. It converts 3× better than our old popup.',
     person: 'Camille R.',
     role: 'Ecommerce Lead',
     metrics: [
@@ -101,7 +101,7 @@ export const useCases: UseCase[] = [
   {
     goal: 'Raise average order value',
     description:
-      'Frequently-bought-together bundles, placement-targeted upsells and free-gift thresholds nudge every cart higher — and attribute the lift.',
+      'Frequently-bought-together bundles, placement-targeted upsells and free-gift thresholds nudge every cart higher, and attribute the lift.',
     modules: ['Bundles', 'Upsells', 'Free Gifts', 'Discounts'],
   },
   {
@@ -113,7 +113,7 @@ export const useCases: UseCase[] = [
   {
     goal: 'Personalize the experience',
     description:
-      'The AI shade analyzer and quiz funnels build a color profile per customer and recommend from your own catalog — saved to the CRM for campaigns.',
+      'The AI shade analyzer and quiz funnels build a color profile per customer and recommend from your own catalog, saved to the CRM for campaigns.',
     modules: ['AI Shade Analyzer', 'Quizzes', 'Customers 360°'],
   },
   {
@@ -197,7 +197,7 @@ export const plans: Plan[] = [
 export const pricingFaq: Array<{ q: string; a: string }> = [
   {
     q: 'Is everything really included during early access?',
-    a: 'Yes. While Avori is in early access every workspace gets the full module set free. When billing turns on, you will get 30 days notice and can pick a plan — nothing is removed without warning.',
+    a: 'Yes. While Avori is in early access every workspace gets the full module set free. When billing turns on, you will get 30 days notice and can pick a plan, nothing is removed without warning.',
   },
   {
     q: 'Do I need a developer to install Avori?',
@@ -205,7 +205,7 @@ export const pricingFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What counts as an order?',
-    a: 'Any order ingested into Avori — from a connector sync, a webhook, or a REST API call. Cancelled and refunded orders are excluded from your monthly count.',
+    a: 'Any order ingested into Avori, from a connector sync, a webhook, or a REST API call. Cancelled and refunded orders are excluded from your monthly count.',
   },
   {
     q: 'How do AI features get billed?',
@@ -213,7 +213,7 @@ export const pricingFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I change plans or cancel anytime?',
-    a: 'Yes — upgrades apply immediately, downgrades at the next cycle, and cancelling keeps your data exportable for 90 days.',
+    a: 'Yes, upgrades apply immediately, downgrades at the next cycle, and cancelling keeps your data exportable for 90 days.',
   },
   {
     q: 'Do you offer discounts for annual billing?',
@@ -224,7 +224,7 @@ export const pricingFaq: Array<{ q: string; a: string }> = [
 export const productFaq: Array<{ q: string; a: string }> = [
   {
     q: 'Which platforms does Avori work with?',
-    a: 'Shopify and WooCommerce have native connectors that sync products, customers and orders. BigCommerce, Magento and any custom storefront integrate through the REST API and the embeddable widget — if your site can run one script tag, it can run Avori.',
+    a: 'Shopify and WooCommerce have native connectors that sync products, customers and orders. BigCommerce, Magento and any custom storefront integrate through the REST API and the embeddable widget, if your site can run one script tag, it can run Avori.',
   },
   {
     q: 'How does the AI Shade Analyzer work?',
@@ -232,7 +232,7 @@ export const productFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do all modules really share one customer database?',
-    a: 'Yes — that is the core of the platform. A review, a quiz response, a loyalty balance and an order all attach to the same customer record, so segments and campaigns see the whole person.',
+    a: 'Yes, that is the core of the platform. A review, a quiz response, a loyalty balance and an order all attach to the same customer record, so segments and campaigns see the whole person.',
   },
   {
     q: 'Can I moderate reviews before they go live?',
@@ -240,7 +240,7 @@ export const productFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How do loyalty points reach my checkout?',
-    a: 'Customers redeem points for rewards, which generate one-time codes. Your storefront validates any code — reward, discount or gift card — through a single endpoint: POST /api/v1/discounts/validate.',
+    a: 'Customers redeem points for rewards, which generate one-time codes. Your storefront validates any code, reward, discount or gift card, through a single endpoint: POST /api/v1/discounts/validate.',
   },
   {
     q: 'Is my data isolated from other brands?',
@@ -248,7 +248,7 @@ export const productFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I export my data?',
-    a: 'Survey and quiz responses export to CSV today, and every resource is readable through the REST API — your data is never locked in.',
+    a: 'Survey and quiz responses export to CSV today, and every resource is readable through the REST API, your data is never locked in.',
   },
 ];
 
@@ -274,7 +274,7 @@ export const helpArticles: HelpArticle[] = [
     title: 'Set up your workspace in 10 minutes',
     summary: 'Create your account, add products, and launch your first module.',
     body: [
-      'Create your workspace at /signup — the first account becomes the Owner and can invite teammates later from Settings → Team.',
+      'Create your workspace at /signup, the first account becomes the Owner and can invite teammates later from Settings → Team.',
       'Add products under Commerce → Products (or connect Shopify/WooCommerce in Settings → Integrations and let the sync import them).',
       'Pick one module to launch first. Reviews is the fastest win: it starts collecting from post-purchase requests automatically once orders flow.',
       'Embed the widget on your site with the one-line snippet from Embed & SDK, then watch events arrive in Analytics.',
@@ -300,7 +300,7 @@ export const helpArticles: HelpArticle[] = [
     body: [
       'In WooCommerce, create REST keys under WooCommerce → Settings → Advanced → REST API (Read access is enough for sync).',
       'In Avori, open Settings → Integrations → WooCommerce → Connect, paste the store URL, consumer key and consumer secret. Avori validates the keys before saving and starts the first sync.',
-      'For real-time orders, add a webhook in Woo (topic: Order created) pointing at the URL shown on the integration card, and set the same secret in both places — deliveries are verified with HMAC-SHA256.',
+      'For real-time orders, add a webhook in Woo (topic: Order created) pointing at the URL shown on the integration card, and set the same secret in both places, deliveries are verified with HMAC-SHA256.',
     ],
   },
   {
@@ -310,7 +310,7 @@ export const helpArticles: HelpArticle[] = [
     summary: 'Server-side event forwarding to your marketing stack.',
     body: [
       'Connect each destination in Settings → Marketing destinations. Klaviyo, Meta and Attentive credentials are verified live before saving; GA4 uses your Measurement ID plus a Measurement Protocol API secret.',
-      'Once connected, Avori forwards purchases, signups and review events server-side — no extra pixels, no client-side scripts, and it works for API and connector orders alike.',
+      'Once connected, Avori forwards purchases, signups and review events server-side, no extra pixels, no client-side scripts, and it works for API and connector orders alike.',
       'Events are fire-and-forget with per-destination isolation: one provider having an outage never blocks order ingestion or other destinations.',
     ],
   },
@@ -333,7 +333,7 @@ export const helpArticles: HelpArticle[] = [
     body: [
       'All reviews land as Pending unless you set an auto-publish threshold in Reviews → Settings (e.g. auto-approve 4★ and up).',
       'Verified badges are automatic: if the reviewer’s email matches a customer who bought that product, the review is marked verified.',
-      'Generate an AI summary from any product’s reviews — it is cached on the product and served through the public reviews endpoint for your widget.',
+      'Generate an AI summary from any product’s reviews, it is cached on the product and served through the public reviews endpoint for your widget.',
     ],
   },
   {
@@ -344,7 +344,7 @@ export const helpArticles: HelpArticle[] = [
     body: [
       'Configure earn rate (points per currency unit), signup/review/birthday bonuses, and VIP tiers with multipliers under Grow → Loyalty.',
       'Customers earn automatically on every paid order from any source. Tiers recalculate on lifetime points.',
-      'Redemptions mint one-time codes. Your checkout validates any code type with POST /api/v1/discounts/validate — it answers for discount campaigns, reward codes and gift cards in one call.',
+      'Redemptions mint one-time codes. Your checkout validates any code type with POST /api/v1/discounts/validate, it answers for discount campaigns, reward codes and gift cards in one call.',
     ],
   },
   {
@@ -365,8 +365,8 @@ export const helpArticles: HelpArticle[] = [
     summary: 'Owner vs Manager vs Staff.',
     body: [
       'Owner: everything, including team management, API keys, webhooks and workspace settings. The first account in a workspace is the Owner.',
-      'Manager: full module access — create campaigns, edit products, answer questions, view analytics.',
-      'Staff: day-to-day moderation — approve reviews, answer Q&A, view content. Invite teammates from Settings → Team with a temporary password.',
+      'Manager: full module access, create campaigns, edit products, answer questions, view analytics.',
+      'Staff: day-to-day moderation, approve reviews, answer Q&A, view content. Invite teammates from Settings → Team with a temporary password.',
     ],
   },
 ];

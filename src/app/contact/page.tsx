@@ -5,7 +5,7 @@ import { MarketingHeader, MarketingFooter, PageHero } from '@/components/marketi
 import ContactForm from '@/components/marketing/ContactForm';
 
 export const metadata: Metadata = {
-  title: 'Contact — Avori',
+  title: 'Contact | Avori',
   description: 'Talk to the Avori team about sales, support or partnerships.',
 };
 
@@ -20,10 +20,10 @@ export default function ContactPage() {
             <>
               Talk to a human.
               <br />
-              <span className="text-gradient-teal">We answer fast.</span>
+              <span className="text-gradient-brand">We answer fast.</span>
             </>
           }
-          sub="Questions about plans, a migration from your current stack, or a headless build — send it over."
+          sub="Questions about plans, a migration from your current stack, or a headless build, send it over."
         />
         <section className="mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-[1fr_1.3fr]">
           <div className="space-y-4">
@@ -31,7 +31,7 @@ export default function ContactPage() {
               {
                 icon: Mail,
                 title: 'Sales & general',
-                body: 'Pricing, demos, migrations and partnerships — use the form and pick a topic.',
+                body: 'Pricing, demos, migrations and partnerships, use the form and pick a topic.',
               },
               {
                 icon: LifeBuoy,
@@ -42,7 +42,7 @@ export default function ContactPage() {
                     <Link href="/help" className="font-semibold text-accent hover:text-accent-hover">
                       Help Center
                     </Link>{' '}
-                    first — setup guides for every module and connector live there.
+                    first, setup guides for every module and connector live there.
                   </>
                 ),
               },

@@ -16,18 +16,18 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Avori — One platform. Every growth tool.',
+  title: 'Avori | One platform. Every growth tool.',
   description:
-    'The all-in-one commerce experience platform: reviews, shoppable video, AI shade analysis, quizzes, loyalty, referrals, bundles and upsells — one dashboard, one customer database, one AI layer.',
+    'The all-in-one commerce experience platform: reviews, shoppable video, AI shade analysis, quizzes, loyalty, referrals, bundles and upsells, one dashboard, one customer database, one AI layer.',
   icons: {
     icon: '/brand/logo-mark.svg',
     apple: '/brand/logo-mark.svg',
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   openGraph: {
-    title: 'Avori — One platform. Every growth tool.',
+    title: 'Avori | One platform. Every growth tool.',
     description:
-      'Increase sales, engage customers and build loyalty — without the chaos of multiple apps.',
+      'Increase sales, engage customers and build loyalty, without the chaos of multiple apps.',
     url: '/',
     siteName: 'Avori',
     type: 'website',
@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Avori — One platform. Every growth tool.',
+    title: 'Avori | One platform. Every growth tool.',
     description:
-      'Increase sales, engage customers and build loyalty — without the chaos of multiple apps.',
+      'Increase sales, engage customers and build loyalty, without the chaos of multiple apps.',
   },
 };
 

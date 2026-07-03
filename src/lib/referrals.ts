@@ -1,18 +1,28 @@
+import type { ReferralKind } from '@prisma/client';
 import { prisma } from './prisma';
 import { genReferralCode } from './codes';
 import { ensureMember, addPoints, getProgram } from './loyalty';
 import { addCredit } from './credit';
 import { track } from './events';
 
-export async function ensureReferral(brandId: string, customerId: string) {
+export async function ensureReferral(
+  brandId: string,
+  customerId: string,
+  kind: ReferralKind = 'CUSTOMER'
+) {
   const existing = await prisma.referral.findFirst({ where: { brandId, customerId } });
-  if (existing) return existing;
+  if (existing) {
+    if (existing.kind !== kind) {
+      return prisma.referral.update({ where: { id: existing.id }, data: { kind } });
+    }
+    return existing;
+  }
   const customer = await prisma.customer.findUnique({ where: { id: customerId } });
-  // Retry on the (brandId, code) unique constraint — collisions are rare.
+  // Retry on the (brandId, code) unique constraint, collisions are rare.
   for (let i = 0; i < 3; i++) {
     try {
       return await prisma.referral.create({
-        data: { brandId, customerId, code: genReferralCode(customer?.firstName) },
+        data: { brandId, customerId, kind, code: genReferralCode(customer?.firstName) },
       });
     } catch {
       continue;
@@ -108,7 +118,7 @@ export async function recordReferralConversion(params: {
       customerId: referral.customerId,
       type: 'ISSUE',
       amount: Number(rp.referrerCredit),
-      reason: `Referral reward — order by ${refereeEmail}`,
+      reason: `Referral reward, order by ${refereeEmail}`,
       orderId,
     });
   }

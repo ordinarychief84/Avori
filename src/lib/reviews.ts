@@ -129,7 +129,7 @@ export async function submitReview(
   return review;
 }
 
-// Loyalty bonus for an approved review — granted at most once per review
+// Loyalty bonus for an approved review, granted at most once per review
 // (guarded by a reason marker on the points ledger).
 export async function grantReviewBonus(brandId: string, reviewId: string): Promise<void> {
   const program = await getProgram(brandId);

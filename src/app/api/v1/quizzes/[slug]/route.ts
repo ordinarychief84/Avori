@@ -5,6 +5,7 @@ import { HttpError } from '@/lib/auth';
 import { quizSubmitSchema } from '@/lib/validation';
 import { fail, ok } from '@/lib/http';
 import { track } from '@/lib/events';
+import { forwardToDestinations } from '@/lib/connectors/destinations';
 
 type QuizOption = {
   id: string;
@@ -12,6 +13,7 @@ type QuizOption = {
   imageUrl?: string;
   productIds?: string[];
   tags?: string[];
+  weight?: number;
   nextQuestionId?: string | null;
 };
 
@@ -61,7 +63,8 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     const data = quizSubmitSchema.parse(await req.json());
     const quiz = await findActiveQuiz(brandId, params.slug);
 
-    // Recommendation engine: selected options vote for their linked products.
+    // Recommendation engine: selected options cast weighted votes for their
+    // linked products (weight defaults to 1, builders can boost 0-10).
     const votes = new Map<string, number>();
     for (const q of quiz.questions) {
       const answer = data.answers[q.id];
@@ -69,8 +72,9 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       const selected = Array.isArray(answer) ? answer : [answer];
       for (const optionId of selected) {
         const option = (q.options as QuizOption[]).find((o) => o.id === optionId);
+        const weight = option?.weight ?? 1;
         for (const pid of option?.productIds ?? []) {
-          votes.set(pid, (votes.get(pid) ?? 0) + 1);
+          votes.set(pid, (votes.get(pid) ?? 0) + weight);
         }
       }
     }
@@ -86,12 +90,20 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     const email = data.email?.trim().toLowerCase() || null;
     let customerId: string | null = null;
     if (email) {
+      const existing = await prisma.customer.findUnique({
+        where: { brandId_email: { brandId, email } },
+        select: { id: true },
+      });
       const customer = await prisma.customer.upsert({
         where: { brandId_email: { brandId, email } },
         update: {},
         create: { brandId, email, source: 'quiz' },
       });
       customerId = customer.id;
+      // New quiz leads flow straight into the marketing stack.
+      if (!existing) {
+        void forwardToDestinations(brandId, { kind: 'customer_created', email });
+      }
     }
 
     const response = await prisma.quizResponse.create({

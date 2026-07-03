@@ -10,7 +10,7 @@ import { Input, FormField } from '@/components/ui/Input';
 import CopyField from '@/components/CopyField';
 
 // API key creation with the show-once reveal flow: the plaintext key exists
-// only in this dialog — the server stores a hash.
+// only in this dialog, the server stores a hash.
 export default function ApiKeyManager() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function ApiKeyManager() {
         {createdKey ? (
           <div className="space-y-4">
             <p className="text-sm text-fg-muted">
-              This is the only time the full key is shown. Store it somewhere safe — requests send it
+              This is the only time the full key is shown. Store it somewhere safe, requests send it
               as <code className="font-mono text-xs">Authorization: Bearer &lt;key&gt;</code>.
             </p>
             <div className="flex items-center gap-2 rounded-md border border-accent/30 bg-accent-subtle/50 p-3">

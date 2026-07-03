@@ -43,6 +43,7 @@ export default async function LoyaltyPage() {
     { name: 'enabled', label: 'Program', type: 'toggle' as const, placeholder: 'Loyalty program enabled' },
     { name: 'pointsName', label: 'Points name', type: 'text' as const, placeholder: 'Points' },
     { name: 'earnRate', label: 'Earn rate (points per $1 spent)', type: 'number' as const, step: '0.1' },
+    { name: 'cashbackPct', label: 'Cashback (% of each order as store credit)', type: 'number' as const, step: '0.5', hint: '0 turns cashback off' },
     { name: 'redeemRate', label: 'Redeem rate (points per $1 off)', type: 'number' as const },
     { name: 'signupBonus', label: 'Signup bonus', type: 'number' as const },
     { name: 'reviewBonus', label: 'Approved review bonus', type: 'number' as const },
@@ -66,6 +67,7 @@ export default async function LoyaltyPage() {
               enabled: program.enabled,
               pointsName: program.pointsName,
               earnRate: Number(program.earnRate),
+              cashbackPct: Number(program.cashbackPct),
               redeemRate: program.redeemRate,
               signupBonus: program.signupBonus,
               reviewBonus: program.reviewBonus,
@@ -104,7 +106,7 @@ export default async function LoyaltyPage() {
           <CardBody className="p-0">
             {program.tiers.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-fg-muted">
-                No tiers yet — members earn at the base rate.
+                No tiers yet, members earn at the base rate.
               </p>
             ) : (
               <table className="w-full text-sm">
@@ -176,7 +178,7 @@ export default async function LoyaltyPage() {
           </CardHeader>
           <CardBody className="p-0">
             {rewards.length === 0 ? (
-              <p className="px-5 pb-5 text-sm text-fg-muted">No rewards yet — add what points redeem for.</p>
+              <p className="px-5 pb-5 text-sm text-fg-muted">No rewards yet, add what points redeem for.</p>
             ) : (
               <table className="w-full text-sm">
                 <tbody>

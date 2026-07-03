@@ -82,7 +82,7 @@ export default async function CustomersPage({
           description={
             q
               ? 'Try a different search.'
-              : 'Customers appear automatically from orders, reviews, quizzes and referrals — or add one manually.'
+              : 'Customers appear automatically from orders, reviews, quizzes and referrals, or add one manually.'
           }
         />
       ) : (

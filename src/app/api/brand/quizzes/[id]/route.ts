@@ -24,6 +24,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const data = quizSchema.partial().parse(await req.json());
     const existing = await prisma.quiz.findFirst({ where: { id: params.id, brandId } });
     if (!existing) throw new HttpError(404, 'Quiz not found');
+
+    // Publishing guard: an ACTIVE quiz must be answerable end to end.
+    if (data.status === 'ACTIVE') {
+      const questions = await prisma.quizQuestion.findMany({ where: { quizId: existing.id } });
+      if (questions.length === 0) {
+        throw new HttpError(400, 'Add at least one question before publishing');
+      }
+      const unanswerable = questions.filter(
+        (q) =>
+          q.type !== 'TEXT' && (!Array.isArray(q.options) || (q.options as unknown[]).length < 2)
+      );
+      if (unanswerable.length > 0) {
+        throw new HttpError(
+          400,
+          `Every choice question needs at least 2 options ("${unanswerable[0].prompt.slice(0, 40)}" does not)`
+        );
+      }
+    }
+
     const quiz = await prisma.quiz.update({
       where: { id: existing.id },
       data: {

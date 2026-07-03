@@ -1,6 +1,6 @@
 import { prisma } from './prisma';
 
-// Best-effort audit trail. Never throws — a failed audit write must not fail
+// Best-effort audit trail. Never throws, a failed audit write must not fail
 // the action it documents.
 export async function audit(entry: {
   brandId: string;

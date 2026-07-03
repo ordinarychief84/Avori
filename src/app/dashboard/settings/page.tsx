@@ -113,7 +113,7 @@ export default async function SettingsPage({
       {searchParams.shopify === 'connected' && (
         <Card className="border-success/40 bg-success/5">
           <CardBody className="text-sm text-fg">
-            Shopify connected — the first sync is running in the background.
+            Shopify connected, the first sync is running in the background.
           </CardBody>
         </Card>
       )}
@@ -128,7 +128,7 @@ export default async function SettingsPage({
           <CardTitle>Integrations</CardTitle>
           <CardDescription>
             Shopify syncs products, customers and orders. WooCommerce, BigCommerce and Magento connectors follow the same
-            architecture — custom platforms integrate today via the REST API below.
+            architecture, custom platforms integrate today via the REST API below.
           </CardDescription>
         </CardHeader>
         <CardBody className="space-y-4">
@@ -187,7 +187,7 @@ export default async function SettingsPage({
                   { name: 'storeUrl', label: 'Store URL', type: 'text', required: true, placeholder: 'https://shop.example.com' },
                   { name: 'consumerKey', label: 'Consumer key', type: 'text', required: true, placeholder: 'ck_…' },
                   { name: 'consumerSecret', label: 'Consumer secret', type: 'text', required: true, placeholder: 'cs_…' },
-                  { name: 'webhookSecret', label: 'Webhook secret', type: 'text', hint: 'Optional — set the same secret on your Woo “Order created” webhook' },
+                  { name: 'webhookSecret', label: 'Webhook secret', type: 'text', hint: 'Optional, set the same secret on your Woo “Order created” webhook' },
                 ]}
               />
             </div>
@@ -256,7 +256,7 @@ export default async function SettingsPage({
           <div>
             <CardTitle>API keys</CardTitle>
             <CardDescription>
-              Authenticate the REST API (/api/v1/*) — orders, reviews, loyalty, quizzes, shade analysis and more.
+              Authenticate the REST API (/api/v1/*), orders, reviews, loyalty, quizzes, shade analysis and more.
             </CardDescription>
           </div>
           <ApiKeyManager />
@@ -415,7 +415,7 @@ export default async function SettingsPage({
       <Card>
         <CardHeader>
           <CardTitle>Plan & billing</CardTitle>
-          <CardDescription>Stripe-ready subscription billing — plans gate module limits as you scale.</CardDescription>
+          <CardDescription>Stripe-ready subscription billing, plans gate module limits as you scale.</CardDescription>
         </CardHeader>
         <CardBody className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">

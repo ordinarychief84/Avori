@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     const ip = clientIp(req);
     const { ok: allowed } = rateLimit(`contact:${ip}`, 5);
-    if (!allowed) return fail(new Error('Rate limited — please try again in a minute'));
+    if (!allowed) return fail(new Error('Rate limited, please try again in a minute'));
 
     const data = schema.parse(await req.json());
     await prisma.contactMessage.create({
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         message: data.message,
       },
     });
-    console.log(`[contact] ${data.email} — ${data.topic || 'general'}`);
+    console.log(`[contact] ${data.email}, ${data.topic || 'general'}`);
     return ok({ received: true }, 201);
   } catch (e) {
     return fail(e);

@@ -5,6 +5,7 @@ import { shadeAnalyzeSchema } from '@/lib/validation';
 import { fail, ok } from '@/lib/http';
 import { analyzeShadeImage, matchProductsForShade } from '@/lib/ai';
 import { track } from '@/lib/events';
+import { forwardToDestinations } from '@/lib/connectors/destinations';
 
 export const maxDuration = 60;
 
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
     const data = shadeAnalyzeSchema.parse(await req.json());
 
     const analysis = await analyzeShadeImage(data.imageBase64, data.mediaType);
+    const fullAnalysis = { ...analysis, ...(data.intake ? { intake: data.intake } : {}) };
     const productIds = await matchProductsForShade(brandId, analysis);
     const products = await prisma.product.findMany({
       where: { id: { in: productIds } },
@@ -43,12 +45,20 @@ export async function POST(req: NextRequest) {
         hairColor: analysis.hairColor,
         eyeColor: analysis.eyeColor,
         season: analysis.season,
-        analysis: JSON.parse(JSON.stringify(analysis)),
+        analysis: JSON.parse(JSON.stringify(fullAnalysis)),
         recommendedProductIds: productIds,
         source: 'api',
       },
     });
     await track({ brandId, type: 'SHADE_ANALYSIS', refType: 'shade', refId: profile.id });
+    void forwardToDestinations(brandId, {
+      kind: 'shade_profile',
+      email,
+      skinTone: analysis.skinTone,
+      undertone: analysis.undertone,
+      season: analysis.season,
+      matches: productIds.length,
+    });
 
     return ok(
       {

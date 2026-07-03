@@ -23,7 +23,7 @@ const credentialsSchema = z.object({
   password: z.string().min(8),
 });
 
-// Precomputed bcrypt hash of a random secret — used to spend the same CPU
+// Precomputed bcrypt hash of a random secret, used to spend the same CPU
 // time on missing-account login attempts as on real ones, so an attacker
 // can't enumerate accounts via response timing.
 const DUMMY_HASH = bcrypt.hashSync(
@@ -55,7 +55,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
-          // Equalize timing — always run a bcrypt round so absent vs present
+          // Equalize timing, always run a bcrypt round so absent vs present
           // accounts can't be distinguished by response time.
           await bcrypt.compare(password, DUMMY_HASH);
           return null;

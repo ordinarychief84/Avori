@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     const data = eventSchema.parse(await req.json());
 
-    // Server-determined domain — never trust the field the client sent.
+    // Server-determined domain, never trust the field the client sent.
     // Origin first, then Referer, then null.
     const trustedDomain =
       hostnameFromHeader(req.headers.get('origin')) ||

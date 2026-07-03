@@ -24,7 +24,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               Turn every video into a checkout.
             </h2>
             <p className="mt-4 text-fg-muted">
-              Avori brands tag products inside vertical videos and embed them anywhere — inline,
+              Avori brands tag products inside vertical videos and embed them anywhere, inline,
               floating, or full-screen feed.
             </p>
             <div className="mt-10 grid grid-cols-3 gap-2 text-left">

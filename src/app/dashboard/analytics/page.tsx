@@ -117,7 +117,7 @@ export default async function AnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Daily revenue — last 30 days</CardTitle>
+          <CardTitle>Daily revenue, last 30 days</CardTitle>
         </CardHeader>
         <CardBody>
           {orders30._count === 0 ? (

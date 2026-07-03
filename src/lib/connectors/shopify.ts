@@ -15,7 +15,7 @@ export function shopifyConfigured(): boolean {
   return !!process.env.SHOPIFY_API_KEY && !!process.env.SHOPIFY_API_SECRET;
 }
 
-// Signed OAuth state: <brandId>.<hmac> — verified in the callback so the
+// Signed OAuth state: <brandId>.<hmac>, verified in the callback so the
 // integration can only be attached to the brand that initiated the install.
 export function signOAuthState(brandId: string): string {
   const sig = crypto
@@ -210,7 +210,7 @@ export async function runShopifySync(brandId: string): Promise<{ products: numbe
     });
   }
 
-  // Orders (only new ones — dedupe on externalId via orderNumber uniqueness)
+  // Orders (only new ones, dedupe on externalId via orderNumber uniqueness)
   const { orders } = await shopifyGet<{ orders: ShopifyOrder[] }>(
     shopDomain,
     accessToken,
