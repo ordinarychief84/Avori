@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardBody } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Stat } from '@/components/ui/Stat';
 import { PageHeader } from '@/components/AppShell';
+import ShadeAnalyzer from '@/components/ShadeAnalyzer';
 import { fmtDateTime } from '@/lib/format';
 
 export default async function ShadePage() {
@@ -42,6 +43,8 @@ export default async function ShadePage() {
           </CardBody>
         </Card>
       )}
+
+      <ShadeAnalyzer aiEnabled={aiEnabled()} />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Analyses run" value={totalProfiles} />

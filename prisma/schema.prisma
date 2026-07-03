@@ -5,6 +5,10 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // For Supabase/pgBouncer setups: DATABASE_URL points at the pooler for the
+  // app, DIRECT_URL at the direct connection for migrations. Locally both
+  // are the same.
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
