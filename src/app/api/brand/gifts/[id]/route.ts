@@ -17,7 +17,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.trigger !== undefined ? { trigger: data.trigger } : {}),
         ...(data.thresholdAmount !== undefined ? { thresholdAmount: data.thresholdAmount } : {}),
-        ...(data.triggerProductId !== undefined ? { triggerProductId: data.triggerProductId } : {}),
+        ...(data.triggerProductId !== undefined
+          ? { triggerProductId: data.triggerProductId || null }
+          : {}),
         ...(data.giftProductIds !== undefined ? { giftProductIds: data.giftProductIds } : {}),
         ...(data.chooseGift !== undefined ? { chooseGift: data.chooseGift } : {}),
         ...(data.startsAt !== undefined

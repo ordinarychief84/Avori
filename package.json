@@ -11,6 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "worker": "tsx scripts/worker.ts",
     "widget:build": "esbuild widget-src/widget.ts --bundle --minify --outfile=public/widget.js --target=es2020 --format=iife"
   },
   "dependencies": {

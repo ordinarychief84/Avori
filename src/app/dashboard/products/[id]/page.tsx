@@ -24,6 +24,8 @@ export default async function EditProductPage({ params }: { params: { id: string
           tryOnEnabled: product.tryOnEnabled,
           tryOnCategory: product.tryOnCategory,
           tryOnTint: product.tryOnTint,
+          shadeTones: product.shadeTones,
+          undertones: product.undertones,
         }}
       />
     </div>

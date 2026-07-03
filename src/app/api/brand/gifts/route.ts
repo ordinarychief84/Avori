@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
         status: data.status ?? 'DRAFT',
         trigger: data.trigger ?? 'CART_VALUE',
         thresholdAmount: data.thresholdAmount ?? null,
-        triggerProductId: data.triggerProductId ?? null,
+        triggerProductId: data.triggerProductId || null,
         giftProductIds: data.giftProductIds ?? [],
         chooseGift: data.chooseGift ?? false,
         startsAt: data.startsAt ? new Date(data.startsAt) : null,

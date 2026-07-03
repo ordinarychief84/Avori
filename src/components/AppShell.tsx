@@ -14,6 +14,22 @@ import {
   BarChart3,
   Code2,
   Building2,
+  Users,
+  ShoppingCart,
+  Star,
+  Instagram,
+  ListChecks,
+  ClipboardList,
+  Palette,
+  Crown,
+  Share2,
+  CreditCard,
+  Gift,
+  Percent,
+  Boxes,
+  TrendingUp,
+  Sparkles,
+  Settings,
 } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/cn';
@@ -24,18 +40,69 @@ type NavItem = {
   icon: React.ElementType;
 };
 
-const BRAND_NAV: NavItem[] = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/products', label: 'Products', icon: Package },
-  { href: '/dashboard/videos', label: 'Videos', icon: Film },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/dashboard/embed', label: 'Embed', icon: Code2 },
+type NavGroup = { heading: string | null; items: NavItem[] };
+
+const BRAND_NAV: NavGroup[] = [
+  {
+    heading: null,
+    items: [{ href: '/dashboard', label: 'Overview', icon: LayoutDashboard }],
+  },
+  {
+    heading: 'Commerce',
+    items: [
+      { href: '/dashboard/customers', label: 'Customers', icon: Users },
+      { href: '/dashboard/orders', label: 'Orders', icon: ShoppingCart },
+      { href: '/dashboard/products', label: 'Products', icon: Package },
+    ],
+  },
+  {
+    heading: 'Engage',
+    items: [
+      { href: '/dashboard/videos', label: 'Videos', icon: Film },
+      { href: '/dashboard/reviews', label: 'Reviews', icon: Star },
+      { href: '/dashboard/social', label: 'Social Feed', icon: Instagram },
+      { href: '/dashboard/quizzes', label: 'Quizzes', icon: ListChecks },
+      { href: '/dashboard/surveys', label: 'Surveys', icon: ClipboardList },
+      { href: '/dashboard/shade', label: 'Shade Studio', icon: Palette },
+    ],
+  },
+  {
+    heading: 'Grow',
+    items: [
+      { href: '/dashboard/loyalty', label: 'Loyalty', icon: Crown },
+      { href: '/dashboard/referrals', label: 'Referrals', icon: Share2 },
+      { href: '/dashboard/giftcards', label: 'Gift Cards', icon: CreditCard },
+      { href: '/dashboard/discounts', label: 'Discounts', icon: Percent },
+      { href: '/dashboard/bundles', label: 'Bundles', icon: Boxes },
+      { href: '/dashboard/gifts', label: 'Free Gifts', icon: Gift },
+      { href: '/dashboard/upsells', label: 'Upsells', icon: TrendingUp },
+    ],
+  },
+  {
+    heading: 'Intelligence',
+    items: [
+      { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+      { href: '/dashboard/assistant', label: 'AI Assistant', icon: Sparkles },
+    ],
+  },
+  {
+    heading: 'Setup',
+    items: [
+      { href: '/dashboard/embed', label: 'Embed & SDK', icon: Code2 },
+      { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    ],
+  },
 ];
 
-const ADMIN_NAV: NavItem[] = [
-  { href: '/admin', label: 'Brands', icon: Building2 },
-  { href: '/admin/videos', label: 'Videos', icon: Film },
-  { href: '/admin/products', label: 'Products', icon: Package },
+const ADMIN_NAV: NavGroup[] = [
+  {
+    heading: null,
+    items: [
+      { href: '/admin', label: 'Brands', icon: Building2 },
+      { href: '/admin/videos', label: 'Videos', icon: Film },
+      { href: '/admin/products', label: 'Products', icon: Package },
+    ],
+  },
 ];
 
 export function AppShell({
@@ -64,7 +131,7 @@ export function AppShell({
         email={email}
         role={role}
         signOutAction={signOutAction}
-        className="hidden lg:flex"
+        className="hidden lg:flex lg:sticky lg:top-0 lg:h-screen"
       />
 
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-bg/80 px-4 backdrop-blur lg:hidden">
@@ -118,7 +185,7 @@ function Sidebar({
   onNavigate,
   onClose,
 }: {
-  nav: NavItem[];
+  nav: NavGroup[];
   home: string;
   brandName: string;
   email: string;
@@ -156,26 +223,37 @@ function Sidebar({
         </div>
       </div>
 
-      <nav className="mt-4 flex-1 space-y-0.5 px-2">
-        {nav.map((n) => {
-          const active = pathname === n.href || pathname?.startsWith(n.href + '/');
-          return (
-            <Link
-              key={n.href}
-              href={n.href}
-              onClick={onNavigate}
-              className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-                active
-                  ? 'bg-accent-subtle text-fg ring-1 ring-accent/30'
-                  : 'text-fg-muted hover:bg-surface hover:text-fg'
-              )}
-            >
-              <n.icon className={cn('h-4 w-4', active ? 'text-accent' : '')} />
-              <span className="flex-1">{n.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="mt-4 flex-1 space-y-4 overflow-y-auto px-2 pb-4">
+        {nav.map((group, gi) => (
+          <div key={gi} className="space-y-0.5">
+            {group.heading && (
+              <div className="px-3 pb-1 pt-1 text-2xs uppercase tracking-[0.18em] text-fg-subtle">
+                {group.heading}
+              </div>
+            )}
+            {group.items.map((n) => {
+              const active =
+                pathname === n.href ||
+                (n.href !== '/dashboard' && pathname?.startsWith(n.href + '/'));
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={onNavigate}
+                  className={cn(
+                    'flex items-center gap-3 rounded-md px-3 py-1.5 text-sm transition-colors',
+                    active
+                      ? 'bg-accent-subtle text-fg ring-1 ring-accent/30'
+                      : 'text-fg-muted hover:bg-surface hover:text-fg'
+                  )}
+                >
+                  <n.icon className={cn('h-4 w-4', active ? 'text-accent' : '')} />
+                  <span className="flex-1">{n.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <form action={signOutAction} className="border-t border-border px-3 py-3">

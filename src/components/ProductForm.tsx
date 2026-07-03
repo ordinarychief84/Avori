@@ -22,7 +22,12 @@ type ProductInput = {
   tryOnEnabled?: boolean;
   tryOnCategory?: TryOnCategory;
   tryOnTint?: string | null;
+  shadeTones?: string[];
+  undertones?: string[];
 };
+
+const SHADE_TONES = ['fair', 'light', 'medium', 'tan', 'deep', 'rich'] as const;
+const UNDERTONES = ['cool', 'neutral', 'warm', 'olive'] as const;
 
 const TRYON_CATEGORIES: { value: TryOnCategory; label: string }[] = [
   { value: 'NONE', label: 'None' },
@@ -46,6 +51,8 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
     tryOnEnabled: initial?.tryOnEnabled ?? false,
     tryOnCategory: (initial?.tryOnCategory ?? 'NONE') as TryOnCategory,
     tryOnTint: initial?.tryOnTint ?? '#C44569',
+    shadeTones: initial?.shadeTones ?? ([] as string[]),
+    undertones: initial?.undertones ?? ([] as string[]),
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +79,8 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
         tryOnEnabled: form.tryOnEnabled,
         tryOnCategory: form.tryOnEnabled ? form.tryOnCategory : 'NONE',
         tryOnTint: form.tryOnEnabled ? form.tryOnTint : null,
+        shadeTones: form.shadeTones,
+        undertones: form.undertones,
       }),
     });
     setBusy(false);
@@ -205,6 +214,73 @@ export default function ProductForm({ initial }: { initial?: ProductInput }) {
                 </FormField>
               </div>
             )}
+          </div>
+
+          {/* Shade matching */}
+          <div className="rounded-lg border border-border bg-bg/40 p-4">
+            <div className="text-sm font-medium text-fg">Shade matching</div>
+            <p className="mt-1 text-xs text-fg-muted">
+              Tag the tones this product suits. The AI shade analyzer recommends matching products
+              to customers who scan their photo.
+            </p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <FormField label="Skin tones">
+                <div className="flex flex-wrap gap-1.5">
+                  {SHADE_TONES.map((t) => {
+                    const on = form.shadeTones.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() =>
+                          setForm({
+                            ...form,
+                            shadeTones: on
+                              ? form.shadeTones.filter((x) => x !== t)
+                              : [...form.shadeTones, t],
+                          })
+                        }
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                          on
+                            ? 'border-accent/40 bg-accent-subtle text-accent'
+                            : 'border-border bg-surface text-fg-muted hover:text-fg'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FormField>
+              <FormField label="Undertones">
+                <div className="flex flex-wrap gap-1.5">
+                  {UNDERTONES.map((t) => {
+                    const on = form.undertones.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() =>
+                          setForm({
+                            ...form,
+                            undertones: on
+                              ? form.undertones.filter((x) => x !== t)
+                              : [...form.undertones, t],
+                          })
+                        }
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                          on
+                            ? 'border-accent/40 bg-accent-subtle text-accent'
+                            : 'border-border bg-surface text-fg-muted hover:text-fg'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FormField>
+            </div>
           </div>
         </CardBody>
         <CardFooter>

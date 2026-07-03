@@ -314,15 +314,23 @@ export const bundleSchema = z.object({
         .optional(),
     })
     .optional(),
+  // Accepts either bare product ids (from the dashboard multiselect) or
+  // full item objects (from the API) — normalized to objects.
   items: z
     .array(
-      z.object({
-        productId: z.string().min(1),
-        role: z.enum(['ANY', 'TRIGGER', 'REWARD']).optional(),
-        quantity: z.number().int().positive().max(100).optional(),
-      })
+      z.union([
+        z.string().min(1),
+        z.object({
+          productId: z.string().min(1),
+          role: z.enum(['ANY', 'TRIGGER', 'REWARD']).optional(),
+          quantity: z.number().int().positive().max(100).optional(),
+        }),
+      ])
     )
     .max(30)
+    .transform((items) =>
+      items.map((i) => (typeof i === 'string' ? { productId: i } : i))
+    )
     .optional(),
 });
 

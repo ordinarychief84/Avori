@@ -81,12 +81,16 @@ TAG_ID=$(curl -s -b "$JAR_DEMO" -X POST -H 'Content-Type: application/json' \
 [ -n "$TAG_ID" ] && { echo "  PASS tag create"; PASS=$((PASS+1)); } || { echo "  FAIL tag create"; FAIL=$((FAIL+1)); }
 chk "PATCH tag"  200 "$(curl -s -b "$JAR_DEMO" -o /dev/null -w %{http_code} -X PATCH -H 'Content-Type: application/json' -d '{"endTime":5}' "$BASE/api/brand/videos/$V_ID/tags/$TAG_ID")"
 chk "DELETE tag" 200 "$(curl -s -b "$JAR_DEMO" -o /dev/null -w %{http_code} -X DELETE "$BASE/api/brand/videos/$V_ID/tags/$TAG_ID")"
-chk "endTime<=startTime -> 400" 400 "$(curl -s -b "$JAR_DEMO" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "{\"productId\":\"$P1\",\"x\":50,\"y\":50,\"startTime\":5,\"endTime\":3}" "$BASE/api/brand/videos/$V_ID/tags")"
+# Bodies hoisted into variables: bash 3.2 (macOS default) mis-parses escaped
+# quotes nested inside "$(...)" and brace-expands the JSON into fragments.
+BAD_TAG_BODY="{\"productId\":\"$P1\",\"x\":50,\"y\":50,\"startTime\":5,\"endTime\":3}"
+chk "endTime<=startTime -> 400" 400 "$(curl -s -b "$JAR_DEMO" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "$BAD_TAG_BODY" "$BASE/api/brand/videos/$V_ID/tags")"
 curl -s -b "$JAR_DEMO" -X DELETE "$BASE/api/brand/videos/$V_ID" > /dev/null
 curl -s -b "$JAR_DEMO" -X DELETE "$BASE/api/brand/products/$P1" > /dev/null
 
 echo "== events =="
-chk "events ok" 200 "$(curl -s -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -H 'Origin: http://example.com' -d "{\"brandId\":\"$DEMO_BRAND\",\"type\":\"IMPRESSION\",\"mode\":\"floating\"}" "$BASE/api/public/events")"
+EVENT_BODY="{\"brandId\":\"$DEMO_BRAND\",\"type\":\"IMPRESSION\",\"mode\":\"floating\"}"
+chk "events ok" 200 "$(curl -s -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -H 'Origin: http://example.com' -d "$EVENT_BODY" "$BASE/api/public/events")"
 
 echo "== signup rate limit =="
 LIMITED=0

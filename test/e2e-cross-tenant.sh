@@ -45,12 +45,15 @@ chk "B PATCH A.product 404"  404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_c
 chk "B DELETE A.product 404" 404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X DELETE "$BASE/api/brand/products/$A_PROD")"
 chk "B GET A.video 404"      404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} "$BASE/api/brand/videos/$A_VID")"
 chk "B PATCH A.video 404"    404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X PATCH -H 'Content-Type: application/json' -d '{"title":"x"}' "$BASE/api/brand/videos/$A_VID")"
-chk "B tag A.video 404"      404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "{\"productId\":\"$A_PROD\",\"x\":1,\"y\":1,\"startTime\":0,\"endTime\":1}" "$BASE/api/brand/videos/$A_VID/tags")"
+# Body hoisted into a variable: bash 3.2 (macOS default) mis-parses escaped
+# quotes nested inside "$(...)" and brace-expands the JSON into fragments.
+TAG_BODY="{\"productId\":\"$A_PROD\",\"x\":1,\"y\":1,\"startTime\":0,\"endTime\":1}"
+chk "B tag A.video 404"      404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "$TAG_BODY" "$BASE/api/brand/videos/$A_VID/tags")"
 
 B_VID=$(curl -s -b "$JAR_B" -X POST -H 'Content-Type: application/json' \
   -d '{"title":"Bv","videoUrl":"https://example.com/bv.mp4","status":"ACTIVE"}' \
   "$BASE/api/brand/videos" | jget video.id)
-chk "B tag B.video w/ A.product 404" 404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "{\"productId\":\"$A_PROD\",\"x\":1,\"y\":1,\"startTime\":0,\"endTime\":1}" "$BASE/api/brand/videos/$B_VID/tags")"
+chk "B tag B.video w/ A.product 404" 404 "$(curl -s -b "$JAR_B" -o /dev/null -w %{http_code} -X POST -H 'Content-Type: application/json' -d "$TAG_BODY" "$BASE/api/brand/videos/$B_VID/tags")"
 
 LIST=$(curl -s -b "$JAR_B" "$BASE/api/brand/products")
 echo "$LIST" | grep -q "$A_PROD" && { echo "  FAIL B sees A's product in list"; FAIL=$((FAIL+1)); } || { echo "  PASS B's list excludes A's product"; PASS=$((PASS+1)); }
