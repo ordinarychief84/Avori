@@ -17,6 +17,7 @@ const config: Config = {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           hover: 'rgb(var(--accent-hover) / <alpha-value>)',
           deep: 'rgb(var(--accent-deep) / <alpha-value>)',
+          bright: 'rgb(var(--accent-bright) / <alpha-value>)',
           subtle: 'rgb(var(--accent-subtle) / <alpha-value>)',
         },
         success: 'rgb(var(--success) / <alpha-value>)',
@@ -37,9 +38,9 @@ const config: Config = {
         xl: '1rem',
       },
       boxShadow: {
-        soft: '0 1px 2px 0 rgb(13 13 18 / 0.04), 0 1px 1px 0 rgb(13 13 18 / 0.06)',
-        glow: '0 0 0 1px rgb(124 58 237 / 0.35), 0 0 24px -4px rgb(124 58 237 / 0.45)',
-        card: '0 1px 2px 0 rgb(13 13 18 / 0.04), 0 8px 24px -12px rgb(13 13 18 / 0.10)',
+        soft: '0 1px 2px 0 rgb(17 24 39 / 0.04), 0 1px 1px 0 rgb(17 24 39 / 0.06)',
+        glow: '0 0 0 1px rgb(15 118 110 / 0.35), 0 0 24px -4px rgb(45 212 191 / 0.45)',
+        card: '0 1px 2px 0 rgb(17 24 39 / 0.04), 0 8px 24px -12px rgb(17 24 39 / 0.10)',
       },
       keyframes: {
         'fade-in': {

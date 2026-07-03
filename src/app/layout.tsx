@@ -16,17 +16,18 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Avori — Shoppable video for any storefront',
+  title: 'Avori — One platform. Every growth tool.',
   description:
-    'Upload short vertical videos, tag products, and embed a shoppable widget on your website. One snippet. Three modes. Real conversion.',
+    'The all-in-one commerce experience platform: reviews, shoppable video, AI shade analysis, quizzes, loyalty, referrals, bundles and upsells — one dashboard, one customer database, one AI layer.',
   icons: {
     icon: '/brand/logo-mark.svg',
     apple: '/brand/logo-mark.svg',
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   openGraph: {
-    title: 'Avori',
-    description: 'Shoppable video for any storefront.',
+    title: 'Avori — One platform. Every growth tool.',
+    description:
+      'Increase sales, engage customers and build loyalty — without the chaos of multiple apps.',
     url: '/',
     siteName: 'Avori',
     type: 'website',
@@ -34,8 +35,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Avori',
-    description: 'Shoppable video for any storefront.',
+    title: 'Avori — One platform. Every growth tool.',
+    description:
+      'Increase sales, engage customers and build loyalty — without the chaos of multiple apps.',
   },
 };
 
@@ -50,9 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           toastOptions={{
             style: {
               background: 'rgb(255 255 255)',
-              border: '1px solid rgb(229 231 235)',
-              color: 'rgb(13 13 18)',
-              boxShadow: '0 8px 24px -12px rgb(13 13 18 / 0.10)',
+              border: '1px solid rgb(231 229 228)',
+              color: 'rgb(17 24 39)',
+              boxShadow: '0 8px 24px -12px rgb(17 24 39 / 0.10)',
             },
           }}
         />

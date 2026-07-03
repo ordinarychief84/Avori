@@ -80,6 +80,14 @@ const handlers: Record<string, (job: JobRecord) => Promise<void>> = {
     const { runShopifySync } = await import('./connectors/shopify');
     await runShopifySync(p.brandId);
   },
+
+  // Pulls products / customers / orders from a connected WooCommerce store.
+  woo_sync: async (job) => {
+    const p = (job.payload ?? {}) as { brandId?: string };
+    if (!p.brandId) return;
+    const { runWooSync } = await import('./connectors/woocommerce');
+    await runWooSync(p.brandId);
+  },
 };
 
 export async function runPendingJobs(limit = 20): Promise<{ ran: number; failed: number }> {

@@ -35,6 +35,10 @@ export default async function SettingsPage({
     prisma.integration.findFirst({ where: { brandId, provider: 'SHOPIFY' } }),
     prisma.auditLog.findMany({ where: { brandId }, orderBy: { createdAt: 'desc' }, take: 20 }),
   ]);
+  const wooIntegration = await prisma.integration.findFirst({
+    where: { brandId, provider: 'WOOCOMMERCE' },
+  });
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
   const isOwner = me?.brandRole === 'OWNER';
 
   return (
@@ -100,6 +104,47 @@ export default async function SettingsPage({
             ) : (
               <ShopifyConnect configured={shopifyConfigured()} />
             )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface-2/40 p-4">
+            <div>
+              <div className="flex items-center gap-2 text-sm font-medium text-fg">
+                WooCommerce
+                <Badge tone={wooIntegration?.status === 'CONNECTED' ? 'success' : 'neutral'}>
+                  {wooIntegration?.status?.toLowerCase() ?? 'not connected'}
+                </Badge>
+              </div>
+              <div className="mt-0.5 text-xs text-fg-muted">
+                {wooIntegration?.shopDomain ?? 'No store linked yet'}
+                {wooIntegration?.lastSyncAt && ` · last sync ${fmtDateTime(wooIntegration.lastSyncAt)}`}
+              </div>
+              {wooIntegration?.status === 'CONNECTED' && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-2xs text-fg-subtle">
+                  Order webhook URL: <CopyField value={`${appUrl}/api/integrations/woocommerce/webhooks`} />
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {wooIntegration?.status === 'CONNECTED' && (
+                <RowAction endpoint="/api/integrations/woocommerce/sync" method="POST" label="Sync now" successMessage="Sync complete" />
+              )}
+              <EntityDialog
+                title={wooIntegration?.status === 'CONNECTED' ? 'Update WooCommerce keys' : 'Connect WooCommerce'}
+                description="Create REST keys in WooCommerce → Settings → Advanced → REST API (read access). Then add a webhook for “Order created” pointing at the URL shown after connecting, using the same secret."
+                endpoint="/api/integrations/woocommerce/connect"
+                triggerLabel={wooIntegration?.status === 'CONNECTED' ? 'Reconfigure' : 'Connect'}
+                triggerVariant={wooIntegration?.status === 'CONNECTED' ? 'secondary' : 'primary'}
+                triggerSize="sm"
+                triggerIcon="none"
+                submitLabel="Connect & sync"
+                fields={[
+                  { name: 'storeUrl', label: 'Store URL', type: 'text', required: true, placeholder: 'https://shop.example.com' },
+                  { name: 'consumerKey', label: 'Consumer key', type: 'text', required: true, placeholder: 'ck_…' },
+                  { name: 'consumerSecret', label: 'Consumer secret', type: 'text', required: true, placeholder: 'cs_…' },
+                  { name: 'webhookSecret', label: 'Webhook secret', type: 'text', hint: 'Optional — set the same secret on your Woo “Order created” webhook' },
+                ]}
+              />
+            </div>
           </div>
         </CardBody>
       </Card>
