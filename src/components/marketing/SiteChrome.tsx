@@ -102,7 +102,7 @@ export function MarketingFooter() {
     {
       heading: 'Platform',
       links: [
-        { label: 'All modules', href: '/#platform' },
+        { label: 'All solutions', href: '/solutions' },
         { label: 'Integrations', href: '/#integrations' },
         { label: 'Security', href: '/#security' },
         { label: 'Pricing', href: '/pricing' },
