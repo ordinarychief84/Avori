@@ -185,7 +185,7 @@ function StatsBand() {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="rounded-xl border border-border bg-surface p-6 text-center shadow-soft"
+            className="hover-pop rounded-xl border border-border bg-surface p-6 text-center shadow-soft"
           >
             <div className="text-3xl font-bold tracking-tight text-accent">{s.value}</div>
             <div className="mt-2 text-sm leading-snug text-fg-muted">{s.label}</div>
@@ -265,7 +265,7 @@ function ReviewsMock() {
     { name: 'Cleo N.', title: 'Good, shipping slow', body: 'Product 10/10. Delivery took a week longer than expected.', verified: false },
   ];
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+    <div className="hover-pop overflow-hidden rounded-xl border border-border bg-surface shadow-card">
       <div className="flex items-center justify-between border-b border-border bg-surface-2/50 px-4 py-2.5">
         <span className="text-xs font-semibold text-fg">Moderation queue</span>
         <span className="rounded-full bg-warning/10 px-2 py-0.5 text-2xs font-semibold text-warning">
@@ -325,7 +325,7 @@ function AnalyticsMock() {
   ];
   const bars = [30, 45, 38, 58, 50, 68, 62, 78, 72, 88];
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+    <div className="hover-pop overflow-hidden rounded-xl border border-border bg-surface shadow-card">
       <div className="flex items-center justify-between border-b border-border bg-surface-2/50 px-4 py-2.5">
         <span className="text-xs font-semibold text-fg">Unified analytics</span>
         <span className="flex items-center gap-1 rounded-full bg-accent-subtle px-2 py-0.5 text-2xs font-semibold text-accent">
@@ -387,7 +387,7 @@ function Platform() {
             ].map((m) => (
               <div
                 key={m.label}
-                className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm font-medium text-fg shadow-soft"
+                className="hover-pop flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm font-medium text-fg shadow-soft"
               >
                 <m.icon className="h-4 w-4 shrink-0 text-accent" />
                 {m.label}
@@ -456,7 +456,7 @@ function Platform() {
               ].map((g, i) => (
                 <div
                   key={g}
-                  className={`relative aspect-square rounded-xl border border-border bg-gradient-to-br ${g}`}
+                  className={`hover-pop relative aspect-square overflow-hidden rounded-xl border border-border bg-gradient-to-br ${g}`}
                 >
                   {i % 2 === 0 && (
                     <span className="absolute bottom-1.5 left-1.5 rounded-full bg-fg/70 px-2 py-0.5 text-2xs font-semibold text-bg">
@@ -533,7 +533,7 @@ function Platform() {
               ].map((p) => (
                 <div
                   key={p.src}
-                  className="overflow-hidden rounded-xl border border-border bg-surface shadow-card"
+                  className="hover-pop overflow-hidden rounded-xl border border-border bg-surface shadow-card"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -689,7 +689,7 @@ function Integrations() {
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {platforms.map((p) => (
-            <div key={p.name} className="rounded-xl border border-border bg-surface p-5 shadow-soft">
+            <div key={p.name} className="hover-pop rounded-xl border border-border bg-surface p-5 shadow-soft">
               <p.icon className="h-6 w-6 text-accent" />
               <div className="mt-3 font-semibold text-fg">{p.name}</div>
               <div className="mt-0.5 text-xs text-fg-muted">{p.desc}</div>
@@ -761,7 +761,7 @@ function Developers() {
         />
         <div className="mt-10 grid gap-4 lg:grid-cols-3">
           {cards.map((c) => (
-            <div key={c.title} className="rounded-xl border border-border bg-surface p-6 shadow-soft">
+            <div key={c.title} className="hover-pop rounded-xl border border-border bg-surface p-6 shadow-soft">
               <c.icon className="h-6 w-6 text-accent" />
               <h3 className="mt-3 font-semibold text-fg">{c.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-fg-muted">{c.copy}</p>
@@ -795,7 +795,7 @@ function SecurityBand() {
           {items.map((i) => (
             <div
               key={i.label}
-              className="flex items-start gap-3 rounded-lg border border-border bg-surface p-4 shadow-soft"
+              className="hover-pop flex items-start gap-3 rounded-lg border border-border bg-surface p-4 shadow-soft"
             >
               <i.icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
               <span className="text-sm text-fg">{i.label}</span>
@@ -838,7 +838,7 @@ function Testimonials() {
           {quotes.map((q) => (
             <figure
               key={q.name}
-              className="flex flex-col rounded-xl border border-border bg-surface p-6 shadow-soft"
+              className="hover-pop flex flex-col rounded-xl border border-border bg-surface p-6 shadow-soft"
             >
               <div className="flex items-center gap-1 text-warning">
                 {Array.from({ length: 5 }).map((_, i) => (

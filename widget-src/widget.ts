@@ -50,13 +50,13 @@ type UgcItem = {
 const STYLE_ID = 'av-style';
 const STYLES = `
 .av-root,.av-root *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,system-ui,sans-serif}
-.av-root{--av-card-bg:#F3F4F6;--av-card-fg:#0D0D12;--av-card-muted:#6B7280;--av-accent:#009B00;--av-accent-deep:#007A00;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(13,13,18,.12);--av-bubble-shadow:0 8px 24px rgba(13,13,18,.18)}
-.av-root[data-theme="dark"]{--av-card-bg:#16161E;--av-card-fg:#F3F4F6;--av-card-muted:#D1D5DB;--av-accent:#009B00;--av-accent-deep:#007A00;--av-cta-fg:#fff;--av-shadow:0 -12px 40px rgba(0,0,0,.5);--av-bubble-shadow:0 12px 32px rgba(0,0,0,.5)}
+.av-root{--av-card-bg:#F3F4F6;--av-card-fg:#0D0D12;--av-card-muted:#6B7280;--av-accent:#F224F2;--av-accent-deep:#CD1ECD;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(13,13,18,.12);--av-bubble-shadow:0 8px 24px rgba(13,13,18,.18)}
+.av-root[data-theme="dark"]{--av-card-bg:#16161E;--av-card-fg:#F3F4F6;--av-card-muted:#D1D5DB;--av-accent:#F224F2;--av-accent-deep:#CD1ECD;--av-cta-fg:#fff;--av-shadow:0 -12px 40px rgba(0,0,0,.5);--av-bubble-shadow:0 12px 32px rgba(0,0,0,.5)}
 .av-stage{position:relative;width:100%;aspect-ratio:9/16;background:#000;overflow:hidden;border-radius:12px;color:#fff}
 .av-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .av-overlay{position:absolute;inset:0;pointer-events:none}
-.av-hot{position:absolute;width:28px;height:28px;border-radius:9999px;background:rgba(0,155,0,.85);border:2px solid #fff;box-shadow:0 0 0 4px rgba(0,155,0,.25);transform:translate(-50%,-50%);cursor:pointer;pointer-events:auto;animation:avPulse 1.6s ease-out infinite}
-@keyframes avPulse{0%{box-shadow:0 0 0 0 rgba(0,155,0,.5)}100%{box-shadow:0 0 0 14px rgba(0,155,0,0)}}
+.av-hot{position:absolute;width:28px;height:28px;border-radius:9999px;background:rgba(242,36,242,.85);border:2px solid #fff;box-shadow:0 0 0 4px rgba(242,36,242,.25);transform:translate(-50%,-50%);cursor:pointer;pointer-events:auto;animation:avPulse 1.6s ease-out infinite}
+@keyframes avPulse{0%{box-shadow:0 0 0 0 rgba(242,36,242,.5)}100%{box-shadow:0 0 0 14px rgba(242,36,242,0)}}
 .av-mute{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:0;border-radius:9999px;width:32px;height:32px;cursor:pointer;font-size:14px;pointer-events:auto;display:flex;align-items:center;justify-content:center}
 .av-meta{position:absolute;left:12px;bottom:14px;right:60px;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none}
 .av-meta .t{font-weight:600;font-size:14px;line-height:1.2}
@@ -120,8 +120,8 @@ const STYLES = `
 .av-tryon video,.av-tryon canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .av-tryon .placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#A7B2CC;font-size:13px;text-align:center;padding:24px}
 .av-tryon .toolbar{display:flex;gap:8px;width:100%;flex-wrap:wrap;justify-content:center}
-.av-tryon button.action{background:#009B00;color:#fff;border:0;padding:10px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.av-tryon button.action:hover{background:#007A00}
+.av-tryon button.action{background:#F224F2;color:#fff;border:0;padding:10px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.av-tryon button.action:hover{background:#CD1ECD}
 .av-tryon button.ghost{background:transparent;color:#F3F4F6;border:1px solid #3E3E50;padding:10px 14px;border-radius:8px;font-size:13px;cursor:pointer}
 .av-tryon button.ghost:hover{background:#1F1F2A}
 .av-tryon .footer{padding:12px 16px;border-top:1px solid #2E2E3C;display:flex;align-items:center;gap:10px;font-size:12px;color:#A7B2CC}
@@ -519,7 +519,7 @@ function openTryOn(
   // We re-check the format here and fall back to a safe brand default.
   const tint = /^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(product.tryOn.tint)
     ? product.tryOn.tint
-    : '#009B00';
+    : '#F224F2';
   const tryOn = { category: product.tryOn.category, tint };
 
   ensureStyles();

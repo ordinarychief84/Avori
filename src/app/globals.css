@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 /*
- * Avori palette (Gladly-inspired): white canvas, near-black ink, vivid
- * green primary #009B00, mint tint #CDEFCD, #E3E3E3 hairlines.
+ * Avori palette (Drip-inspired): white canvas, near-black ink, magenta
+ * primary #AF00AF with bright #F224F2, pink tint #FDEEFF, #E3E3E3
+ * hairlines, deep navy #01095B dark bands.
  */
 :root {
   --bg: 255 255 255;            /* white page canvas */
@@ -15,11 +16,11 @@
   --fg: 13 13 13;               /* #0D0D0D ink */
   --fg-muted: 74 74 74;         /* #4A4A4A secondary */
   --fg-subtle: 138 138 138;     /* #8A8A8A placeholder */
-  --accent: 0 155 0;            /* #009B00 vivid green */
-  --accent-hover: 0 128 0;      /* #008000 */
-  --accent-deep: 0 100 0;       /* #006400 */
-  --accent-bright: 85 212 85;   /* #55D455 lighter green for gradients */
-  --accent-subtle: 231 247 231; /* #E7F7E7 mint tint for pills, hover rows */
+  --accent: 175 0 175;          /* #AF00AF brand magenta */
+  --accent-hover: 142 0 142;    /* #8E008E */
+  --accent-deep: 122 0 122;     /* #7A007A */
+  --accent-bright: 242 36 242;  /* #F224F2 bright magenta for gradients, CTAs */
+  --accent-subtle: 253 238 255; /* #FDEEFF pink tint for pills, hover rows */
   --success: 21 128 61;         /* #15803D distinct from accent */
   --warning: 217 119 6;         /* #D97706 */
   --danger: 220 38 38;          /* #DC2626 */
@@ -36,8 +37,8 @@ body {
 
 body {
   background-image:
-    radial-gradient(1200px 500px at 80% -10%, rgb(0 155 0 / 0.05), transparent 60%),
-    radial-gradient(900px 400px at -10% 10%, rgb(205 239 205 / 0.35), transparent 60%);
+    radial-gradient(1200px 500px at 80% -10%, rgb(175 0 175 / 0.05), transparent 60%),
+    radial-gradient(900px 400px at -10% 10%, rgb(251 189 251 / 0.28), transparent 60%);
 }
 
 ::selection {
@@ -106,8 +107,25 @@ body {
   }
   .band-midnight {
     background:
-      radial-gradient(900px 400px at 85% -20%, rgb(0 155 0 / 0.22), transparent 60%),
-      radial-gradient(700px 300px at 5% 110%, rgb(85 212 85 / 0.12), transparent 60%),
-      #0d0d0d;
+      radial-gradient(900px 400px at 85% -20%, rgb(242 36 242 / 0.25), transparent 60%),
+      radial-gradient(700px 300px at 5% 110%, rgb(175 0 175 / 0.18), transparent 60%),
+      #01095b;
+  }
+  /* Card hover, measured from drip.com: a three-layer elevation pop with an
+     optional inner-graphic zoom (.hover-zoom child scales on card hover). */
+  .hover-pop {
+    transition: box-shadow 0.2s ease;
+  }
+  .hover-pop:hover {
+    box-shadow:
+      0 5px 5px -3px rgb(0 0 0 / 0.2),
+      0 8px 10px 1px rgb(0 0 0 / 0.14),
+      0 3px 14px 2px rgb(0 0 0 / 0.12);
+  }
+  .hover-pop .hover-zoom {
+    transition: transform 0.3s ease;
+  }
+  .hover-pop:hover .hover-zoom {
+    transform: translateZ(0) scale(1.04);
   }
 }

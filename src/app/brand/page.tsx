@@ -16,10 +16,11 @@ export const metadata: Metadata = {
 };
 
 const COLORS = [
-  ['Ink', '#0D0D0D', 'Primary text, dark bands'],
-  ['Brand Green', '#009B00', 'Primary actions, accents'],
-  ['Bright Green', '#55D455', 'Gradients, highlights'],
-  ['Mint', '#E7F7E7', 'Pills, hover rows'],
+  ['Ink', '#0D0D0D', 'Primary text'],
+  ['Navy', '#01095B', 'Dark bands, footers'],
+  ['Brand Magenta', '#AF00AF', 'Primary actions, accents'],
+  ['Bright Magenta', '#F224F2', 'Gradients, highlights, CTAs'],
+  ['Pink Tint', '#FDEEFF', 'Pills, hover rows'],
   ['White', '#FFFFFF', 'Page canvas and cards'],
   ['Gray', '#4A4A4A', 'Secondary text'],
   ['Hairline', '#E3E3E3', 'Borders, dividers'],

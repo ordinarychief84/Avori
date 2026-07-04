@@ -63,10 +63,10 @@ export function LogoMark({ className }: { className?: string }) {
         strokeLinecap="round"
         fill="none"
       />
-      {/* Upper bar: seafoam parallelogram */}
-      <path d="M16 26h36l4 6H20z" fill="#55D455" />
-      {/* Lower bar: ocean-teal parallelogram */}
-      <path d="M16 36h36l4 6H20z" fill="#009B00" />
+      {/* Upper bar: bright-magenta parallelogram */}
+      <path d="M16 26h36l4 6H20z" fill="#F224F2" />
+      {/* Lower bar: brand-magenta parallelogram */}
+      <path d="M16 36h36l4 6H20z" fill="#AF00AF" />
     </svg>
   );
 }
