@@ -146,7 +146,6 @@ export function MarketingFooter() {
       links: [
         { label: 'Help Center', href: '/help' },
         { label: 'Developer Hub', href: '/docs' },
-        { label: 'Design Guide', href: '/brand' },
         { label: 'Contact', href: '/contact' },
       ],
     },
@@ -155,8 +154,6 @@ export function MarketingFooter() {
       links: [
         { label: 'About', href: '/about' },
         { label: 'Customers', href: '/customers' },
-        { label: 'Log in', href: '/login' },
-        { label: 'Create account', href: '/signup' },
       ],
     },
   ];
