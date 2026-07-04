@@ -1,7 +1,7 @@
 // Avori embeddable widget — vanilla TS, no framework deps.
 // Bundled to /public/widget.js via `npm run widget:build`.
 
-type Mode = 'inline' | 'floating' | 'feed';
+type Mode = 'inline' | 'floating' | 'feed' | 'gallery';
 type ThemeMode = 'auto' | 'light' | 'dark';
 type ResolvedTheme = 'light' | 'dark';
 
@@ -36,16 +36,27 @@ type WidgetVideo = {
 
 type Feed = { brand: { id: string; name: string; slug: string } | null; videos: WidgetVideo[] };
 
+type UgcProduct = { id: string; name: string; price: number; imageUrl: string; productUrl: string };
+type UgcItem = {
+  id: string;
+  mediaUrl: string;
+  mediaType: string;
+  thumbnailUrl: string | null;
+  caption: string | null;
+  creditName: string | null;
+  products: UgcProduct[];
+};
+
 const STYLE_ID = 'av-style';
 const STYLES = `
 .av-root,.av-root *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,system-ui,sans-serif}
-.av-root{--av-card-bg:#F3F4F6;--av-card-fg:#0D0D12;--av-card-muted:#6B7280;--av-accent:#7C3AED;--av-accent-deep:#4C1D95;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(13,13,18,.12);--av-bubble-shadow:0 8px 24px rgba(13,13,18,.18)}
-.av-root[data-theme="dark"]{--av-card-bg:#16161E;--av-card-fg:#F3F4F6;--av-card-muted:#D1D5DB;--av-accent:#7C3AED;--av-accent-deep:#4C1D95;--av-cta-fg:#fff;--av-shadow:0 -12px 40px rgba(0,0,0,.5);--av-bubble-shadow:0 12px 32px rgba(0,0,0,.5)}
+.av-root{--av-card-bg:#F3F4F6;--av-card-fg:#0D0D12;--av-card-muted:#6B7280;--av-accent:#009B00;--av-accent-deep:#007A00;--av-cta-fg:#fff;--av-shadow:0 -8px 32px rgba(13,13,18,.12);--av-bubble-shadow:0 8px 24px rgba(13,13,18,.18)}
+.av-root[data-theme="dark"]{--av-card-bg:#16161E;--av-card-fg:#F3F4F6;--av-card-muted:#D1D5DB;--av-accent:#009B00;--av-accent-deep:#007A00;--av-cta-fg:#fff;--av-shadow:0 -12px 40px rgba(0,0,0,.5);--av-bubble-shadow:0 12px 32px rgba(0,0,0,.5)}
 .av-stage{position:relative;width:100%;aspect-ratio:9/16;background:#000;overflow:hidden;border-radius:12px;color:#fff}
 .av-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .av-overlay{position:absolute;inset:0;pointer-events:none}
-.av-hot{position:absolute;width:28px;height:28px;border-radius:9999px;background:rgba(124,58,237,.85);border:2px solid #fff;box-shadow:0 0 0 4px rgba(124,58,237,.25);transform:translate(-50%,-50%);cursor:pointer;pointer-events:auto;animation:avPulse 1.6s ease-out infinite}
-@keyframes avPulse{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}100%{box-shadow:0 0 0 14px rgba(124,58,237,0)}}
+.av-hot{position:absolute;width:28px;height:28px;border-radius:9999px;background:rgba(0,155,0,.85);border:2px solid #fff;box-shadow:0 0 0 4px rgba(0,155,0,.25);transform:translate(-50%,-50%);cursor:pointer;pointer-events:auto;animation:avPulse 1.6s ease-out infinite}
+@keyframes avPulse{0%{box-shadow:0 0 0 0 rgba(0,155,0,.5)}100%{box-shadow:0 0 0 14px rgba(0,155,0,0)}}
 .av-mute{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:0;border-radius:9999px;width:32px;height:32px;cursor:pointer;font-size:14px;pointer-events:auto;display:flex;align-items:center;justify-content:center}
 .av-meta{position:absolute;left:12px;bottom:14px;right:60px;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none}
 .av-meta .t{font-weight:600;font-size:14px;line-height:1.2}
@@ -80,6 +91,23 @@ const STYLES = `
 .av-feed .close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.5);color:#fff;border:0;width:36px;height:36px;border-radius:9999px;cursor:pointer;font-size:18px;z-index:5;display:flex;align-items:center;justify-content:center}
 .av-feed .av-stage{height:100%;border-radius:0;aspect-ratio:auto}
 
+/* UGC gallery */
+.av-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.av-gal-item{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;background:#111;border:0;padding:0;display:block;width:100%}
+.av-gal-item img,.av-gal-item video{width:100%;height:100%;object-fit:cover;display:block}
+.av-gal-item .badge{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 7px;border-radius:9999px;font-weight:600}
+.av-glb{width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 48px);overflow:auto;background:var(--av-card-bg);color:var(--av-card-fg);border-radius:14px;display:flex;flex-direction:column}
+.av-glb .media{width:100%;max-height:60vh;object-fit:contain;background:#000;display:block}
+.av-glb .info{padding:14px 16px}
+.av-glb .cap{font-size:14px;line-height:1.45}
+.av-glb .credit{font-size:12px;color:var(--av-card-muted);margin-top:4px}
+.av-glb .prod{display:flex;gap:12px;align-items:center;border-top:1px solid rgba(128,128,128,.18);padding:10px 0}
+.av-glb .prod img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.av-glb .prod .name{font-weight:600;font-size:13px}
+.av-glb .prod .price{font-size:12px;color:var(--av-card-muted);margin-top:2px}
+.av-glb .prod .cta{margin-left:auto;background:var(--av-accent);color:var(--av-cta-fg);text-decoration:none;padding:7px 13px;border-radius:8px;font-weight:600;font-size:12px}
+.av-glb .prod .cta:hover{background:var(--av-accent-deep)}
+
 /* AI Try-on modal */
 .av-tryon{position:fixed;inset:0;background:rgba(13,13,18,.92);display:flex;align-items:center;justify-content:center;z-index:2147483647;padding:16px;color:#F3F4F6}
 .av-tryon .panel{background:#16161E;border:1px solid #2E2E3C;border-radius:16px;width:min(480px,100%);max-height:96vh;overflow:auto;display:flex;flex-direction:column}
@@ -92,8 +120,8 @@ const STYLES = `
 .av-tryon video,.av-tryon canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .av-tryon .placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#A7B2CC;font-size:13px;text-align:center;padding:24px}
 .av-tryon .toolbar{display:flex;gap:8px;width:100%;flex-wrap:wrap;justify-content:center}
-.av-tryon button.action{background:#7C3AED;color:#fff;border:0;padding:10px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.av-tryon button.action:hover{background:#4C1D95}
+.av-tryon button.action{background:#009B00;color:#fff;border:0;padding:10px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.av-tryon button.action:hover{background:#007A00}
 .av-tryon button.ghost{background:transparent;color:#F3F4F6;border:1px solid #3E3E50;padding:10px 14px;border-radius:8px;font-size:13px;cursor:pointer}
 .av-tryon button.ghost:hover{background:#1F1F2A}
 .av-tryon .footer{padding:12px 16px;border-top:1px solid #2E2E3C;display:flex;align-items:center;gap:10px;font-size:12px;color:#A7B2CC}
@@ -154,6 +182,11 @@ class WidgetInstance {
     }
     ensureStyles();
     this.theme = detectTheme(this.themeAttr, this.el);
+
+    if (this.mode === 'gallery') {
+      await this.initGallery();
+      return;
+    }
 
     try {
       const res = await fetch(`${this.api}/api/public/brand/${this.brandId}/videos`);
@@ -249,6 +282,104 @@ class WidgetInstance {
     });
     overlay.querySelector('.close')!.addEventListener('click', () => overlay.remove());
     document.body.appendChild(overlay);
+  }
+
+  async initGallery() {
+    let items: UgcItem[] = [];
+    try {
+      const productId = this.el.dataset.productId;
+      const qs = productId ? `?productId=${encodeURIComponent(productId)}` : '';
+      const res = await fetch(`${this.api}/api/public/brand/${this.brandId}/ugc${qs}`);
+      if (!res.ok) return;
+      items = (await res.json()).items ?? [];
+    } catch {
+      return;
+    }
+    if (!items.length) return;
+    this.track('IMPRESSION');
+
+    const root = this.themeRoot(this.el);
+    const grid = document.createElement('div');
+    grid.className = 'av-gal';
+    items.forEach((item) => {
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'av-gal-item';
+      const thumb = item.thumbnailUrl || item.mediaUrl;
+      cell.innerHTML =
+        item.mediaType === 'VIDEO' && !item.thumbnailUrl
+          ? `<video src="${escapeAttr(item.mediaUrl)}" muted playsinline preload="metadata"></video>`
+          : `<img src="${escapeAttr(thumb)}" alt="" loading="lazy">`;
+      if (item.products.length) {
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = 'Shop';
+        cell.appendChild(badge);
+      }
+      cell.addEventListener('click', () => this.openGalleryItem(item));
+      grid.appendChild(cell);
+    });
+    root.appendChild(grid);
+  }
+
+  openGalleryItem(item: UgcItem) {
+    const modal = this.themeRoot(document.createElement('div'));
+    modal.className += ' av-modal';
+    modal.innerHTML = `<button class="close" aria-label="Close">×</button><div class="av-glb"></div>`;
+    const panel = modal.querySelector('.av-glb') as HTMLElement;
+
+    const media =
+      item.mediaType === 'VIDEO'
+        ? Object.assign(document.createElement('video'), {
+            src: item.mediaUrl,
+            controls: true,
+            playsInline: true,
+            autoplay: true,
+            muted: true,
+          })
+        : Object.assign(document.createElement('img'), { src: item.mediaUrl, alt: '' });
+    media.className = 'media';
+    panel.appendChild(media);
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    if (item.caption) {
+      const cap = document.createElement('div');
+      cap.className = 'cap';
+      cap.textContent = item.caption;
+      info.appendChild(cap);
+    }
+    if (item.creditName) {
+      const credit = document.createElement('div');
+      credit.className = 'credit';
+      credit.textContent = `Shared by ${item.creditName}`;
+      info.appendChild(credit);
+    }
+    item.products.forEach((p) => {
+      const row = document.createElement('div');
+      row.className = 'prod';
+      row.innerHTML = `
+        <img src="${escapeAttr(p.imageUrl)}" alt="">
+        <div><div class="name"></div><div class="price">$${p.price.toFixed(2)}</div></div>
+        <a class="cta" target="_blank" rel="noopener" href="${escapeAttr(p.productUrl)}">Shop</a>
+      `;
+      (row.querySelector('.name') as HTMLElement).textContent = p.name;
+      row.querySelector('.cta')!.addEventListener('click', () => {
+        this.track('CTA_CLICK', { productId: p.id });
+      });
+      info.appendChild(row);
+    });
+    panel.appendChild(info);
+
+    const close = () => {
+      if (media instanceof HTMLVideoElement) media.pause();
+      modal.remove();
+    };
+    modal.querySelector('.close')!.addEventListener('click', close);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) close();
+    });
+    document.body.appendChild(modal);
   }
 
   buildStage(v: WidgetVideo): HTMLElement {
@@ -388,7 +519,7 @@ function openTryOn(
   // We re-check the format here and fall back to a safe brand default.
   const tint = /^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(product.tryOn.tint)
     ? product.tryOn.tint
-    : '#7C3AED';
+    : '#009B00';
   const tryOn = { category: product.tryOn.category, tint };
 
   ensureStyles();

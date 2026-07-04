@@ -113,6 +113,12 @@
       return req('/api/public/brand/' + need() + '/social');
     },
 
+    /** Curated UGC gallery. Pass a productId to narrow to one product. */
+    ugc: function (productId) {
+      var q = productId ? '?productId=' + encodeURIComponent(productId) : '';
+      return req('/api/public/brand/' + need() + '/ugc' + q);
+    },
+
     /** Open a hosted quiz in a modal. Returns a close() function. */
     openQuiz: function (slug) {
       return modal(BASE + '/q/' + need() + '/' + encodeURIComponent(slug), 'Product quiz');

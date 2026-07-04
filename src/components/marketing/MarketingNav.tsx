@@ -10,15 +10,24 @@ import { cn } from '@/lib/cn';
 type Item = { label: string; href: string; hint?: string };
 
 const SOLUTIONS: Item[] = [
-  { label: 'Reviews & UGC', href: '/#reviews' },
+  { label: 'Reviews', href: '/#reviews' },
+  { label: 'UGC Gallery', href: '/#ugc' },
   { label: 'Shoppable Video', href: '/#video' },
+  { label: 'Social Feed', href: '/#ugc' },
   { label: 'AI Shade Analyzer', href: '/#shade' },
-  { label: 'Quizzes & Guided Selling', href: '/#shade' },
-  { label: 'Loyalty & Cashback', href: '/#retention' },
-  { label: 'Gift Cards & Refunds', href: '/#retention' },
+  { label: 'Quizzes', href: '/#shade' },
+  { label: 'Surveys', href: '/#intelligence' },
+  { label: 'Loyalty Program', href: '/#retention' },
+  { label: 'Cashback', href: '/#retention' },
+  { label: 'Store Credit', href: '/#retention' },
+  { label: 'Gift Cards', href: '/#retention' },
   { label: 'Referrals', href: '/#retention' },
-  { label: 'Bundles & Upsells', href: '/#boosters' },
-  { label: 'Analytics & AI Assistant', href: '/#intelligence' },
+  { label: 'Bundles', href: '/#boosters' },
+  { label: 'Upsells', href: '/#boosters' },
+  { label: 'Free Gifts', href: '/#boosters' },
+  { label: 'Discounts', href: '/#boosters' },
+  { label: 'Analytics', href: '/#intelligence' },
+  { label: 'AI Assistant', href: '/#intelligence' },
 ];
 
 const RESOURCES: Item[] = [
@@ -56,7 +65,12 @@ function Dropdown({
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', open && 'rotate-180')} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 w-60 rounded-xl border border-border bg-surface p-2 shadow-card">
+        <div
+          className={cn(
+            'absolute left-0 top-full z-50 rounded-xl border border-border bg-surface p-2 shadow-card',
+            items.length > 8 ? 'grid w-[26rem] grid-cols-2 gap-x-1' : 'w-60'
+          )}
+        >
           {items.map((i) => (
             <Link
               key={i.label}

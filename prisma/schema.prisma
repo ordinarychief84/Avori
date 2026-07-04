@@ -46,6 +46,7 @@ enum WidgetMode {
   inline
   floating
   feed
+  gallery
 }
 
 enum EventType {
@@ -130,6 +131,7 @@ model Brand {
   upsells          UpsellOffer[]
   socialAccounts   SocialAccount[]
   socialPosts      SocialPost[]
+  ugcItems         UgcItem[]
   shadeProfiles    ShadeProfile[]
   apiKeys          ApiKey[]
   webhookEndpoints WebhookEndpoint[]
@@ -1239,4 +1241,46 @@ model AiInsight {
   createdAt DateTime @default(now())
 
   @@index([brandId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// UGC gallery — standalone customer photo/video wall, separate from Reviews
+// (which own their media) and the Social feed (the brand's own posts).
+// Items arrive from approved review media, direct uploads, or featuring a
+// social post; merchants curate with a PENDING → APPROVED / HIDDEN flow.
+// ---------------------------------------------------------------------------
+
+enum UgcSource {
+  REVIEW
+  UPLOAD
+  SOCIAL
+}
+
+enum UgcStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+}
+
+model UgcItem {
+  id           String    @id @default(cuid())
+  brandId      String
+  brand        Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  source       UgcSource @default(UPLOAD)
+  status       UgcStatus @default(PENDING)
+  mediaUrl     String
+  // IMAGE | VIDEO
+  mediaType    String    @default("IMAGE")
+  thumbnailUrl String?
+  caption      String?
+  creditName   String?
+  productIds   String[]  @default([])
+  reviewId     String?
+  socialPostId String?
+  sort         Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([brandId, status, sort])
+  @@index([brandId, reviewId])
 }

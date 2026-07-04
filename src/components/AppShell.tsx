@@ -27,6 +27,7 @@ import {
   Gift,
   Percent,
   Boxes,
+  Camera,
   TrendingUp,
   Sparkles,
   Settings,
@@ -60,6 +61,7 @@ const BRAND_NAV: NavGroup[] = [
     items: [
       { href: '/dashboard/videos', label: 'Videos', icon: Film },
       { href: '/dashboard/reviews', label: 'Reviews', icon: Star },
+      { href: '/dashboard/ugc', label: 'UGC Gallery', icon: Camera },
       { href: '/dashboard/social', label: 'Social Feed', icon: Instagram },
       { href: '/dashboard/quizzes', label: 'Quizzes', icon: ListChecks },
       { href: '/dashboard/surveys', label: 'Surveys', icon: ClipboardList },

@@ -69,6 +69,7 @@ const ENDPOINTS: Array<[string, string, string]> = [
   ['POST', '/api/v1/gifts/eligible', 'Which free-gift campaigns a cart unlocks'],
   ['POST', '/api/v1/shade/analyze', 'AI shade analysis: base64 selfie → color profile + matches'],
   ['GET', '/api/v1/social', 'Shoppable social feed'],
+  ['GET', '/api/v1/ugc', 'Curated UGC gallery (?productId, ?status)'],
   ['POST', '/api/v1/events', 'Generic analytics event ingestion'],
 ];
 
@@ -219,13 +220,14 @@ const ok = crypto.timingSafeEqual(
     Avori.init({ brandId: "YOUR_BRAND_ID" });
     Avori.widget({ mode: "floating" });
     Avori.reviews("product_id").then(renderStars);
+    Avori.ugc().then(renderGallery); // curated UGC wall
     Avori.openShadeAnalyzer(); // hosted analyzer in a modal
   };
 </script>`}</Code>
               <p>
                 Read-only widget data:{' '}
                 <code className="font-mono text-xs text-fg">
-                  GET /api/public/brand/&#123;brandId&#125;/videos · /reviews?productId=… · /social
+                  GET /api/public/brand/&#123;brandId&#125;/videos · /reviews?productId=… · /social · /ugc?productId=…
                 </code>
               </p>
             </DocSection>

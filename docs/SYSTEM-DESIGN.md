@@ -134,6 +134,7 @@ later without API changes).
 | Review + Q&A service | `src/lib/reviews.ts` | Built |
 | Video commerce | video routes + widget | Built |
 | Social feed | social routes | Built (manual + API; IG/TikTok import deferred) |
+| UGC gallery | `src/lib/ugc.ts` + ugc routes + widget `gallery` mode | Built |
 | Bundle / Upsell | bundle + upsell routes | Built |
 | Loyalty / credit / referral | `loyalty.ts`, `credit.ts`, `referrals.ts` | Built |
 | Analytics | `events.ts` + dashboard pages | Built (rollups pending) |
@@ -184,6 +185,7 @@ models**, extend them:
 | product / variant | `Product` | **Add `ProductVariant`** (S7 schema) |
 | customer / order / order_item | `Customer` / `Order` / `OrderItem` | Keep |
 | review / review_media / Q&A | `Review` (+`mediaUrls[]`) / `ProductQuestion` | Add `ReviewVote`; media URLs stay array + `MediaAsset` registry |
+| ugc | `UgcItem` (source/status enums, review sync) | Built |
 | video / tags | `Video` / `VideoProductTag` | Keep |
 | social | `SocialAccount` / `SocialPost` | Keep |
 | bundle / upsell | `Bundle`+`BundleItem` / `UpsellOffer` | Keep |

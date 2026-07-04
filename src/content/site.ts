@@ -96,7 +96,7 @@ export const useCases: UseCase[] = [
     goal: 'Increase conversion rate',
     description:
       'Reviews with verified badges, Q&A on product pages, and shoppable video give shoppers the proof they need at the moment of decision.',
-    modules: ['Reviews & UGC', 'Shoppable Video', 'Q&A'],
+    modules: ['Reviews', 'UGC Gallery', 'Shoppable Video', 'Q&A'],
   },
   {
     goal: 'Raise average order value',
@@ -120,7 +120,7 @@ export const useCases: UseCase[] = [
     goal: 'Understand what works',
     description:
       'One analytics board across every module, AI-generated insights, and an assistant that answers questions about your live store data.',
-    modules: ['Analytics', 'AI Assistant', 'Surveys & NPS'],
+    modules: ['Analytics', 'AI Assistant', 'Surveys'],
   },
   {
     goal: 'Feed your marketing stack',
@@ -156,7 +156,8 @@ export const plans: Plan[] = [
     highlight: false,
     features: [
       '2 active modules',
-      'Reviews & Q&A with moderation',
+      'Reviews with Q&A and moderation',
+      'UGC gallery with product tagging',
       'Widget SDK + REST API',
       'Basic analytics',
       '1 team seat',
@@ -220,6 +221,7 @@ export const planComparison: ComparisonGroup[] = [
       { feature: 'Orders included / month', values: ['300', '3,000', '12,000', 'Unlimited'] },
       { feature: 'Active modules', values: ['2', 'All', 'All', 'All'] },
       { feature: 'Unified customer database', values: [true, true, true, true] },
+      { feature: 'UGC gallery with product tagging', values: [true, true, true, true] },
       { feature: 'Hosted quiz & shade pages', values: [false, true, true, true] },
       { feature: 'Widget SDK + REST API', values: [true, true, true, true] },
     ],

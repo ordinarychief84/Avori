@@ -2,6 +2,7 @@ import { prisma } from './prisma';
 import { HttpError } from './auth';
 import { track } from './events';
 import { emitWebhook } from './webhooks';
+import { syncReviewUgc } from './ugc';
 import { getProgram, ensureMember, addPoints } from './loyalty';
 import { brandSettings } from './orders';
 import { forwardToDestinations } from './connectors/destinations';
@@ -96,6 +97,7 @@ export async function submitReview(
   if (status === 'APPROVED') {
     await recomputeProductRating(input.productId);
     await grantReviewBonus(brandId, review.id);
+    await syncReviewUgc(brandId, review.id);
   }
 
   await track({

@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BadgeCheck,
   BarChart3,
+  Camera,
   Boxes,
   CheckCircle2,
   Code2,
@@ -173,7 +174,7 @@ function LogoStrip() {
 
 function StatsBand() {
   const stats = [
-    { value: '+28%', label: 'conversion on pages with reviews & UGC' },
+    { value: '+28%', label: 'conversion on pages with reviews and UGC' },
     { value: '+41%', label: 'average order value with bundles & upsells' },
     { value: '3.4×', label: 'repeat purchase rate with loyalty & referrals' },
     { value: '1 line', label: 'of code to embed any widget on any site' },
@@ -365,13 +366,14 @@ function Platform() {
             title="Every module. One customer database."
             sub="Each tool below usually costs its own subscription. In Avori they ship together, share every customer record, and feed one analytics and AI engine."
           />
-          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {[
-              { icon: Star, label: 'Reviews & UGC' },
+              { icon: Star, label: 'Reviews' },
+              { icon: Camera, label: 'UGC Gallery' },
               { icon: Film, label: 'Shoppable Video' },
               { icon: ScanFace, label: 'AI Shade Match' },
               { icon: ListChecks, label: 'Quizzes' },
-              { icon: BarChart3, label: 'Surveys & NPS' },
+              { icon: BarChart3, label: 'Surveys' },
               { icon: Crown, label: 'Loyalty' },
               { icon: Share2, label: 'Referrals' },
               { icon: CreditCard, label: 'Gift Cards' },
@@ -396,7 +398,7 @@ function Platform() {
 
         <FeatureRow
           id="reviews"
-          eyebrow="Reviews & UGC"
+          eyebrow="Reviews"
           icon={Star}
           title="Turn customer voices into conversion"
           copy="Collect text, photo and video reviews on autopilot with post-purchase requests. Moderate in one queue, reply publicly, and let AI summarize hundreds of reviews into one shopper-ready paragraph."
@@ -428,8 +430,51 @@ function Platform() {
           }
         />
 
+
         <FeatureRow
           reverse
+          id="ugc"
+          eyebrow="UGC Gallery"
+          icon={Camera}
+          title="A shoppable wall of real customers"
+          copy="Photos and videos from approved reviews flow into one curated gallery, alongside anything you upload or feature from social. Tag products, approve what represents the brand, and publish a wall that sells."
+          bullets={[
+            'Auto-collects media from approved reviews',
+            'Moderation queue: approve, hide, credit the customer',
+            'Product tagging with a shop-this-look lightbox',
+            'Embeds with data-mode="gallery", the SDK, or GET /api/v1/ugc',
+          ]}
+          visual={
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                'from-accent/30 to-accent-bright/40',
+                'from-warning/30 to-accent/20',
+                'from-accent-bright/30 to-accent/40',
+                'from-accent/20 to-warning/30',
+                'from-accent-bright/40 to-accent/30',
+                'from-accent/40 to-accent-bright/20',
+              ].map((g, i) => (
+                <div
+                  key={g}
+                  className={`relative aspect-square rounded-xl border border-border bg-gradient-to-br ${g}`}
+                >
+                  {i % 2 === 0 && (
+                    <span className="absolute bottom-1.5 left-1.5 rounded-full bg-fg/70 px-2 py-0.5 text-2xs font-semibold text-bg">
+                      Shop
+                    </span>
+                  )}
+                  {i === 4 && (
+                    <span className="absolute -bottom-3 left-1/2 w-max -translate-x-1/2 rounded-lg border border-border bg-surface px-2.5 py-1 text-2xs font-medium text-fg shadow-card">
+                      Shared by Amara O.
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          }
+        />
+
+        <FeatureRow
           id="video"
           eyebrow="Shoppable video"
           icon={Film}

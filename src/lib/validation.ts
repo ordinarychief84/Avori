@@ -83,7 +83,7 @@ export const eventSchema = z.object({
   // the request Origin / Referer header. Clients may still send a `domain`
   // field for forward compat; it is ignored.
   domain: z.string().max(200).optional(),
-  mode: z.enum(['inline', 'floating', 'feed']).optional(),
+  mode: z.enum(['inline', 'floating', 'feed', 'gallery']).optional(),
 });
 
 export const brandPatchSchema = z.object({
@@ -397,6 +397,22 @@ export const socialPostSchema = z.object({
 });
 
 export const socialPostPatchSchema = socialPostSchema.partial();
+
+// ---------------------------------------------------------------------------
+// UGC gallery
+// ---------------------------------------------------------------------------
+
+export const ugcItemSchema = z.object({
+  mediaUrl: urlOrAssetPath,
+  mediaType: z.enum(['IMAGE', 'VIDEO']).optional(),
+  thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
+  caption: z.string().max(500).optional().or(z.literal('')),
+  creditName: z.string().max(80).optional().or(z.literal('')),
+  productIds: z.array(z.string()).max(10).optional(),
+  status: z.enum(['PENDING', 'APPROVED', 'HIDDEN']).optional(),
+  sort: z.number().int().nonnegative().optional(),
+});
+export const ugcItemPatchSchema = ugcItemSchema.partial();
 
 // ---------------------------------------------------------------------------
 // Shade analysis
