@@ -132,10 +132,13 @@ export const useCases: UseCase[] = [
 
 export type Plan = {
   name: string;
-  price: string;
-  cadence: string;
   blurb: string;
+  monthly: number; // per month, billed monthly
+  annual: number; // per month, billed annually
+  orderCap: string;
+  perExtra: string | null;
   cta: string;
+  href: string;
   highlight: boolean;
   features: string[];
 };
@@ -143,53 +146,119 @@ export type Plan = {
 export const plans: Plan[] = [
   {
     name: 'Starter',
-    price: '$0',
-    cadence: 'free forever',
-    blurb: 'Everything you need to launch your first growth module.',
-    cta: 'Start free',
+    blurb: 'Launch your first growth module free.',
+    monthly: 0,
+    annual: 0,
+    orderCap: 'Up to 300 orders / month',
+    perExtra: null,
+    cta: 'Start Now',
+    href: '/signup',
     highlight: false,
     features: [
-      'Up to 300 orders / month',
       '2 active modules',
-      'Reviews & Q&A',
+      'Reviews & Q&A with moderation',
       'Widget SDK + REST API',
+      'Basic analytics',
       '1 team seat',
       'Community support',
     ],
   },
   {
     name: 'Growth',
-    price: '$79',
-    cadence: 'per month',
-    blurb: 'The full platform for growing brands. Most popular.',
-    cta: 'Start 14-day trial',
+    blurb: 'The full platform for growing brands.',
+    monthly: 79,
+    annual: 63,
+    orderCap: 'Up to 3,000 orders / month',
+    perExtra: '+$0.03 per additional order',
+    cta: 'Start Now',
+    href: '/signup',
     highlight: true,
     features: [
-      'Up to 3,000 orders / month',
       'All modules included',
       'AI review summaries & insights',
-      'AI Shade Analyzer (500 analyses/mo)',
+      'AI Shade Analyzer (500 analyses / mo)',
+      'Hosted quiz & shade pages',
       'Shopify & WooCommerce connectors',
-      'Marketing destinations (GA4, Klaviyo, Meta, Attentive)',
+      'GA4, Klaviyo, Meta & Attentive destinations',
       '5 team seats',
       'Email support',
     ],
   },
   {
     name: 'Scale',
-    price: '$249',
-    cadence: 'per month',
-    blurb: 'For high-volume brands and headless builds.',
-    cta: 'Talk to us',
+    blurb: 'High volume, headless and multi-team.',
+    monthly: 249,
+    annual: 199,
+    orderCap: 'Up to 12,000 orders / month',
+    perExtra: '+$0.02 per additional order',
+    cta: 'Start Now',
+    href: '/signup',
     highlight: false,
     features: [
-      'Unlimited orders',
-      'All modules + AI Assistant',
+      'Everything in Growth',
+      'AI Assistant with store context',
       'Unlimited shade analyses',
       'Priority webhook throughput',
       'Unlimited team seats + RBAC',
       'Audit log export',
-      'Dedicated support',
+      'Priority support',
+    ],
+  },
+];
+
+export type ComparisonRow = {
+  feature: string;
+  values: [boolean | string, boolean | string, boolean | string, boolean | string];
+};
+export type ComparisonGroup = { category: string; rows: ComparisonRow[] };
+
+// Columns: Starter, Growth, Scale, Enterprise
+export const planComparison: ComparisonGroup[] = [
+  {
+    category: 'Platform',
+    rows: [
+      { feature: 'Orders included / month', values: ['300', '3,000', '12,000', 'Unlimited'] },
+      { feature: 'Active modules', values: ['2', 'All', 'All', 'All'] },
+      { feature: 'Unified customer database', values: [true, true, true, true] },
+      { feature: 'Hosted quiz & shade pages', values: [false, true, true, true] },
+      { feature: 'Widget SDK + REST API', values: [true, true, true, true] },
+    ],
+  },
+  {
+    category: 'AI',
+    rows: [
+      { feature: 'AI review summaries', values: [false, true, true, true] },
+      { feature: 'Shade analyses / month', values: [false, '500', 'Unlimited', 'Unlimited'] },
+      { feature: 'AI merchant insights', values: [false, true, true, true] },
+      { feature: 'AI Assistant', values: [false, false, true, true] },
+    ],
+  },
+  {
+    category: 'Integrations',
+    rows: [
+      { feature: 'Shopify & WooCommerce connectors', values: [false, true, true, true] },
+      { feature: 'Marketing destinations (GA4, Klaviyo, Meta, Attentive)', values: [false, true, true, true] },
+      { feature: 'Outbound webhooks', values: [true, true, true, true] },
+      { feature: 'Priority webhook throughput', values: [false, false, true, true] },
+    ],
+  },
+  {
+    category: 'Team & security',
+    rows: [
+      { feature: 'Team seats', values: ['1', '5', 'Unlimited', 'Unlimited'] },
+      { feature: 'Role-based access control', values: [false, true, true, true] },
+      { feature: 'Audit log', values: [true, true, true, true] },
+      { feature: 'Audit log export', values: [false, false, true, true] },
+      { feature: 'White labeling', values: [false, false, false, true] },
+    ],
+  },
+  {
+    category: 'Support',
+    rows: [
+      { feature: 'Help center', values: [true, true, true, true] },
+      { feature: 'Email support', values: [false, true, true, true] },
+      { feature: 'Priority support', values: [false, false, true, true] },
+      { feature: 'Dedicated account manager', values: [false, false, false, true] },
     ],
   },
 ];

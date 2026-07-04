@@ -1,47 +1,14 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import MarketingNav from '@/components/marketing/MarketingNav';
 import { Button } from '@/components/ui/Button';
 
 // Shared chrome for every marketing page (landing, pricing, about, customers,
 // help, docs, brand, contact).
 
 export function MarketingHeader() {
-  const nav = [
-    { label: 'Platform', href: '/#platform' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'Customers', href: '/customers' },
-    { label: 'Developers', href: '/docs' },
-    { label: 'Help', href: '/help' },
-  ];
-  return (
-    <header className="glass sticky top-0 z-50 border-b border-border">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6">
-        <Link href="/" aria-label="Avori home" className="shrink-0">
-          <Logo size="md" />
-        </Link>
-        <nav className="hidden items-center gap-7 text-sm text-fg-muted md:flex">
-          {nav.map((n) => (
-            <Link key={n.label} href={n.href} className="transition-colors hover:text-fg">
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <Link href="/login">
-            <Button variant="ghost" size="sm">
-              Log in
-            </Button>
-          </Link>
-          <Link href="/signup">
-            <Button size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-              Get started free
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
+  return <MarketingNav />;
 }
 
 export function SectionHeading({

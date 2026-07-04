@@ -64,31 +64,26 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="grid-radial absolute inset-x-0 top-0 h-[520px]" aria-hidden />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pb-20 pt-16 lg:grid-cols-[1.05fr_1fr] lg:pb-28 lg:pt-24">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pb-20 pt-14 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-20">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent-subtle px-3 py-1 text-2xs font-semibold uppercase tracking-[0.18em] text-accent">
-            <Sparkles className="h-3 w-3" />
-            Commerce Experience OS
-          </div>
-          <h1 className="mt-5 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl">
-            One platform.
+          <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+            Increase Your Customers&rsquo;
             <br />
-            <span className="text-gradient-brand">Every growth tool.</span>
+            Lifetime Value with
+            <br />
+            <span className="text-gradient-brand">One Platform</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-muted">
-            Reviews, shoppable video, AI shade matching, quizzes, loyalty, referrals, bundles and
-            upsells, unified on one dashboard, one customer database and one AI layer. Without the
-            chaos of multiple apps.
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg-muted">
+            Streamlined reviews, shoppable video, AI shade matching, loyalty and store credit for
+            ecommerce: elevate customer retention, boost sales, and drive repeat purchases.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/signup">
-              <Button size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                Start free
-              </Button>
+            <Link href="/contact">
+              <Button size="lg">Request a Demo</Button>
             </Link>
-            <Link href="/login">
-              <Button size="lg" variant="secondary" leftIcon={<Play className="h-4 w-4" />}>
-                See the live demo
+            <Link href="/signup">
+              <Button size="lg" variant="outline">
+                Start Now
               </Button>
             </Link>
           </div>
@@ -100,44 +95,48 @@ function Hero() {
               </li>
             ))}
           </ul>
+          <a
+            href="#shade"
+            className="group mt-10 inline-flex items-center gap-1.5 text-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
+          >
+            What are you talking about? I&rsquo;m just here for the Shade Analyzer
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
         </div>
 
-        {/* Hero visual: dashboard in a browser frame + floating proof cards */}
-        <div className="relative mx-auto w-full max-w-xl">
-          <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
-            <div className="flex items-center gap-1.5 border-b border-border bg-surface-2/60 px-4 py-2.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-danger/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-success/70" />
-              <span className="ml-3 rounded-md bg-surface px-2 py-0.5 font-mono text-2xs text-fg-subtle">
-                app.avori.com/dashboard
-              </span>
-            </div>
-            <DashboardMock />
-          </div>
-
-          <div className="absolute -left-6 top-10 hidden w-48 rounded-lg border border-border bg-surface p-3 shadow-card sm:block">
+        {/* Hero visual: lifestyle photo with floating activity cards */}
+        <div className="relative mx-auto w-full max-w-lg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/marketing/hero-beauty.jpg"
+            alt="Beauty products from an Avori-powered store"
+            className="aspect-[4/3.4] w-full rounded-3xl object-cover shadow-card ring-1 ring-border"
+          />
+          <div className="absolute -left-4 bottom-8 hidden w-52 rounded-xl border border-border bg-surface p-3 shadow-card sm:block">
             <div className="flex items-center gap-1 text-warning">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-current" />
               ))}
             </div>
             <p className="mt-1.5 text-xs leading-snug text-fg">
-              “Shade match was scary accurate.”
+              &ldquo;The shade match was perfect on the first try.&rdquo;
             </p>
             <div className="mt-1.5 flex items-center gap-1 text-2xs text-fg-subtle">
               <BadgeCheck className="h-3 w-3 text-accent" /> Verified buyer
             </div>
           </div>
-
-          <div className="absolute -right-4 -top-5 hidden items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-card sm:flex">
-            <Crown className="h-3.5 w-3.5 text-accent" />
-            <span className="text-2xs font-semibold text-fg">+240 pts earned</span>
+          <div className="absolute -right-3 bottom-24 hidden items-center gap-2.5 rounded-xl border border-border bg-surface py-2.5 pl-2.5 pr-4 shadow-card sm:flex">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-subtle">
+              <Crown className="h-4 w-4 text-accent" />
+            </span>
+            <span>
+              <span className="block text-xs font-semibold text-fg">Order #1042 placed</span>
+              <span className="block text-2xs text-fg-muted">Maya earned 240 points + $3.80 cashback</span>
+            </span>
           </div>
-
-          <div className="absolute -bottom-5 right-8 hidden items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-card sm:flex">
+          <div className="absolute -top-4 left-8 hidden items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-card sm:flex">
             <TrendingUp className="h-3.5 w-3.5 text-success" />
-            <span className="text-2xs font-semibold text-fg">AOV +41% with bundles</span>
+            <span className="text-2xs font-semibold text-fg">Repeat purchases up 3.4x</span>
           </div>
         </div>
       </div>
@@ -203,6 +202,7 @@ function StatsBand() {
 
 
 function FeatureRow({
+  id,
   eyebrow,
   icon: Icon,
   title,
@@ -211,6 +211,7 @@ function FeatureRow({
   visual,
   reverse = false,
 }: {
+  id?: string;
   eyebrow: string;
   icon: React.ElementType;
   title: string;
@@ -221,7 +222,8 @@ function FeatureRow({
 }) {
   return (
     <div
-      className={`grid items-center gap-10 lg:grid-cols-2 lg:gap-16 ${
+      id={id}
+      className={`grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16 ${
         reverse ? 'lg:[&>*:first-child]:order-2' : ''
       }`}
     >
@@ -254,56 +256,6 @@ function FeatureRow({
 
 /* CSS-composed product mocks, theme-aware and crisp at any scale. */
 
-function DashboardMock() {
-  const bars = [38, 52, 44, 66, 58, 74, 62, 82, 70, 90, 84, 96];
-  return (
-    <div className="grid grid-cols-[104px_1fr] text-left">
-      <div className="space-y-1 border-r border-border bg-surface-2/50 p-3">
-        {['Overview', 'Customers', 'Reviews', 'Videos', 'Loyalty', 'Analytics'].map((n, i) => (
-          <div
-            key={n}
-            className={`rounded px-2 py-1 text-2xs ${
-              i === 0 ? 'bg-accent-subtle font-semibold text-accent' : 'text-fg-muted'
-            }`}
-          >
-            {n}
-          </div>
-        ))}
-      </div>
-      <div className="space-y-3 p-4">
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            ['Revenue', '$128,560', '+18.6%'],
-            ['Orders', '1,842', '+12.4%'],
-            ['AOV', '$69.78', '+8.2%'],
-            ['Conversion', '3.45%', '+1.1%'],
-          ].map(([l, v, d]) => (
-            <div key={l} className="rounded-lg border border-border bg-surface p-2.5 shadow-soft">
-              <div className="text-2xs text-fg-subtle">{l}</div>
-              <div className="mt-0.5 text-sm font-bold text-fg">{v}</div>
-              <div className="text-2xs font-medium text-success">{d}</div>
-            </div>
-          ))}
-        </div>
-        <div className="rounded-lg border border-border bg-surface p-3 shadow-soft">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-2xs font-semibold text-fg">Revenue overview</span>
-            <span className="text-2xs text-fg-subtle">Last 12 weeks</span>
-          </div>
-          <div className="flex h-20 items-end gap-1.5">
-            {bars.map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t bg-gradient-to-t from-accent to-accent-bright"
-                style={{ height: `${h}%`, opacity: 0.55 + (i / bars.length) * 0.45 }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ReviewsMock() {
   const rows = [
@@ -443,6 +395,7 @@ function Platform() {
         </div>
 
         <FeatureRow
+          id="reviews"
           eyebrow="Reviews & UGC"
           icon={Star}
           title="Turn customer voices into conversion"
@@ -477,6 +430,7 @@ function Platform() {
 
         <FeatureRow
           reverse
+          id="video"
           eyebrow="Shoppable video"
           icon={Film}
           title="TikTok-style video that sells on your site"
@@ -515,6 +469,7 @@ function Platform() {
         />
 
         <FeatureRow
+          id="shade"
           eyebrow="AI personalization"
           icon={ScanFace}
           title="A selfie becomes a personal shade consultation"
@@ -559,6 +514,7 @@ function Platform() {
 
         <FeatureRow
           reverse
+          id="retention"
           eyebrow="Retention suite"
           icon={Crown}
           title="Points, tiers, referrals and store credit that bring them back"
@@ -603,6 +559,7 @@ function Platform() {
         />
 
         <FeatureRow
+          id="boosters"
           eyebrow="Revenue boosters"
           icon={TrendingUp}
           title="Bundles, upsells, gifts and discounts, coordinated, not chaotic"
@@ -649,6 +606,7 @@ function Platform() {
 
         <FeatureRow
           reverse
+          id="intelligence"
           eyebrow="Intelligence"
           icon={Sparkles}
           title="Analytics and an AI analyst that already knows your store"
