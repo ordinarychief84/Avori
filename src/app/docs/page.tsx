@@ -210,6 +210,19 @@ const ok = crypto.timingSafeEqual(
      data-brand-id="YOUR_BRAND_ID"
      data-mode="floating"></div>`}</Code>
               <p>
+                The SDK wraps the public surface for custom builds: reviews JSON, social feeds,
+                event tracking, and modal launchers for the hosted quiz and shade analyzer.
+              </p>
+              <Code>{`<script src="https://app.avori.com/sdk.js" async></script>
+<script>
+  window.avoriReady = function (Avori) {
+    Avori.init({ brandId: "YOUR_BRAND_ID" });
+    Avori.widget({ mode: "floating" });
+    Avori.reviews("product_id").then(renderStars);
+    Avori.openShadeAnalyzer(); // hosted analyzer in a modal
+  };
+</script>`}</Code>
+              <p>
                 Read-only widget data:{' '}
                 <code className="font-mono text-xs text-fg">
                   GET /api/public/brand/&#123;brandId&#125;/videos · /reviews?productId=… · /social

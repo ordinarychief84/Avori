@@ -32,6 +32,18 @@ const nextConfig = {
         ],
       },
       {
+        source: '/sdk.js',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=300, s-maxage=300' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+        ],
+      },
+      {
+        source: '/downloads/:path*',
+        headers: [{ key: 'Content-Disposition', value: 'attachment' }],
+      },
+      {
         source: '/api/public/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },

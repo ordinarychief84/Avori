@@ -367,9 +367,32 @@ export const helpArticles: HelpArticle[] = [
     title: 'Connect WooCommerce',
     summary: 'REST keys, webhook setup, and signature verification.',
     body: [
-      'In WooCommerce, create REST keys under WooCommerce → Settings → Advanced → REST API (Read access is enough for sync).',
+      'Fastest path: download the Avori Connect plugin (Settings → Integrations in Avori), install it in WordPress under Plugins → Add New → Upload, then paste your Brand ID and API key. It embeds the widget and pushes orders in real time.',
+      'Prefer connector keys instead? In WooCommerce, create REST keys under WooCommerce → Settings → Advanced → REST API (Read access is enough for sync).',
       'In Avori, open Settings → Integrations → WooCommerce → Connect, paste the store URL, consumer key and consumer secret. Avori validates the keys before saving and starts the first sync.',
       'For real-time orders, add a webhook in Woo (topic: Order created) pointing at the URL shown on the integration card, and set the same secret in both places, deliveries are verified with HMAC-SHA256.',
+    ],
+  },
+  {
+    slug: 'connect-magento',
+    category: 'Integrations',
+    title: 'Connect Magento / Adobe Commerce',
+    summary: 'REST API integration in three steps.',
+    body: [
+      'Create an API key in Avori under Settings → API keys and store it in your Magento configuration, never in frontend code.',
+      'Forward orders server-side: on checkout success (an observer on sales_order_place_after works well), POST the order to /api/v1/orders with the Bearer key. Use externalId like magento-<increment_id> so retries never duplicate.',
+      'Embed the widget by adding the one-line snippet from Embed & SDK to your theme footer. Reviews, loyalty and quizzes then run through the same key.',
+    ],
+  },
+  {
+    slug: 'connect-bigcommerce',
+    category: 'Integrations',
+    title: 'Connect BigCommerce',
+    summary: 'Script Manager plus REST API integration.',
+    body: [
+      'Create an API key in Avori under Settings → API keys.',
+      'Add the Avori widget through Storefront → Script Manager: create a script, location Footer, pages All, and paste the snippet from Embed & SDK.',
+      'Forward orders with a BigCommerce webhook (scope store/order/created) pointed at your middleware, which POSTs to /api/v1/orders with the Bearer key. Use externalId like bc-<order_id> for idempotency.',
     ],
   },
   {

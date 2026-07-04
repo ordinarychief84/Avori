@@ -123,7 +123,7 @@ export default async function SettingsPage({
         </Card>
       )}
 
-      <Card>
+      <Card id="integrations" className="scroll-mt-24">
         <CardHeader>
           <CardTitle>Integrations</CardTitle>
           <CardDescription>
@@ -164,6 +164,13 @@ export default async function SettingsPage({
                 {wooIntegration?.shopDomain ?? 'No store linked yet'}
                 {wooIntegration?.lastSyncAt && ` · last sync ${fmtDateTime(wooIntegration.lastSyncAt)}`}
               </div>
+              <a
+                href="/downloads/avori-connect.zip"
+                download
+                className="mt-1 inline-block text-2xs font-semibold text-accent hover:text-accent-hover"
+              >
+                Download the WordPress plugin (recommended)
+              </a>
               {wooIntegration?.status === 'CONNECTED' && (
                 <div className="mt-1.5 flex items-center gap-1.5 text-2xs text-fg-subtle">
                   Order webhook URL: <CopyField value={`${appUrl}/api/integrations/woocommerce/webhooks`} />
@@ -251,7 +258,7 @@ export default async function SettingsPage({
         </CardBody>
       </Card>
 
-      <Card>
+      <Card id="apikeys" className="scroll-mt-24">
         <CardHeader className="flex-row items-center justify-between">
           <div>
             <CardTitle>API keys</CardTitle>
