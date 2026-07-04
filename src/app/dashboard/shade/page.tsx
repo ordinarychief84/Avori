@@ -9,10 +9,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Stat } from '@/components/ui/Stat';
 import { PageHeader } from '@/components/AppShell';
 import ShadeAnalyzer from '@/components/ShadeAnalyzer';
+import CopyField from '@/components/CopyField';
 import { fmtDateTime } from '@/lib/format';
 
 export default async function ShadePage() {
   const { brandId } = await pageBrandSession();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
   const [profiles, matchableProducts, totalProfiles] = await Promise.all([
     prisma.shadeProfile.findMany({
       where: { brandId },
@@ -44,7 +46,18 @@ export default async function ShadePage() {
         </Card>
       )}
 
-      <ShadeAnalyzer aiEnabled={aiEnabled()} />
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-surface-2/40 px-4 py-3 text-sm">
+        <span className="text-fg-muted">
+          Shareable hosted analyzer, drop it in bio links, emails or QR codes:
+        </span>
+        <CopyField value={`${appUrl}/s/${brandId}`} />
+      </div>
+
+      <ShadeAnalyzer
+        aiEnabled={aiEnabled()}
+        brandId={brandId}
+        claimEndpoint={`/api/public/brand/${brandId}/shade/claim`}
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Analyses run" value={totalProfiles} />
@@ -62,15 +75,15 @@ export default async function ShadePage() {
         </CardHeader>
         <CardBody className="space-y-2 text-sm text-fg-muted">
           <p>
-            1, Tag products with the skin tones and undertones they suit (edit any product and set{' '}
+            1. Tag products with the skin tones and undertones they suit (edit any product and set{' '}
             <span className="text-fg">Shade tones</span> / <span className="text-fg">Undertones</span>).
           </p>
           <p>
-            2, Your storefront sends a customer photo to{' '}
+            2. Your storefront sends a customer photo to{' '}
             <code className="font-mono text-xs">POST /api/v1/shade/analyze</code> with an API key.
           </p>
           <p>
-            3, Claude vision returns the color profile; Avori matches it against your catalog and stores the
+            3. AI vision returns the color profile; Avori matches it against your catalog and stores the
             profile on the customer record for future personalization. Pair with{' '}
             <Link href="/dashboard/products" className="text-accent hover:underline">
               AI try-on

@@ -2,7 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, ImageUp, RefreshCw, ScanFace, Sparkles, X } from 'lucide-react';
+import {
+  Camera,
+  Check,
+  ImageUp,
+  Mail,
+  RefreshCw,
+  ScanFace,
+  ShoppingBag,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
@@ -34,7 +44,7 @@ type Step = 'capture' | 'preview' | 'analyzing' | 'results';
 
 const MAX_EDGE = 1024;
 
-// Downscale to keep the request small and strip EXIF, returns raw base64
+// Downscale to keep the request small and strip EXIF. Returns raw base64
 // (no data: prefix) plus the media type actually encoded.
 async function toJpegBase64(source: CanvasImageSource, width: number, height: number) {
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
@@ -47,15 +57,31 @@ async function toJpegBase64(source: CanvasImageSource, width: number, height: nu
   return { base64: dataUrl.split(',')[1], dataUrl, mediaType: 'image/jpeg' as const };
 }
 
-export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
+// Selfie shade analyzer. The flow sells first and captures second: analyze,
+// show matched products with a buy path immediately, then offer email
+// capture for shoppers who are not ready to buy.
+export default function ShadeAnalyzer({
+  aiEnabled,
+  analyzeEndpoint = '/api/brand/shade/analyze',
+  claimEndpoint,
+  brandId,
+}: {
+  aiEnabled: boolean;
+  analyzeEndpoint?: string;
+  claimEndpoint?: string;
+  brandId?: string;
+}) {
   const router = useRouter();
   const [step, setStep] = useState<Step>('capture');
   const [photo, setPhoto] = useState<{ base64: string; dataUrl: string; mediaType: string } | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [profileId, setProfileId] = useState<string | null>(null);
   const [cameraOn, setCameraOn] = useState(false);
   const [intake, setIntake] = useState({ skinType: '', finish: '' });
   const [email, setEmail] = useState('');
+  const [claimed, setClaimed] = useState(false);
+  const [claiming, setClaiming] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -75,7 +101,6 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
       });
       streamRef.current = stream;
       setCameraOn(true);
-      // Attach after state flips so the <video> exists.
       requestAnimationFrame(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -83,7 +108,7 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
         }
       });
     } catch {
-      toast.error('Camera unavailable, check browser permissions, or upload a photo instead.');
+      toast.error('Camera unavailable. Check browser permissions, or upload a photo instead.');
     }
   };
 
@@ -124,13 +149,12 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
     if (!photo) return;
     setStep('analyzing');
     try {
-      const res = await fetch('/api/brand/shade/analyze', {
+      const res = await fetch(analyzeEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           imageBase64: photo.base64,
           mediaType: photo.mediaType,
-          ...(email.trim() ? { email: email.trim() } : {}),
           ...(intake.skinType || intake.finish
             ? {
                 intake: {
@@ -145,12 +169,39 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
       if (!res.ok) throw new Error(data?.error ?? 'Analysis failed');
       setAnalysis(data.analysis);
       setRecommendations(data.recommendations ?? []);
+      setProfileId(data.profileId ?? null);
       setStep('results');
-      router.refresh(); // the profile appears in the analyses table below
+      router.refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Analysis failed');
       setStep('preview');
     }
+  };
+
+  const shopClick = (productId: string) => {
+    if (!brandId) return;
+    void fetch('/api/public/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brandId, productId, type: 'CTA_CLICK' }),
+    }).catch(() => {});
+  };
+
+  const claim = async () => {
+    if (!claimEndpoint || !profileId || !email.trim()) return;
+    setClaiming(true);
+    const res = await fetch(claimEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profileId, email: email.trim() }),
+    });
+    setClaiming(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      toast.error(data?.error ?? 'Could not save your email');
+      return;
+    }
+    setClaimed(true);
   };
 
   const reset = () => {
@@ -158,6 +209,9 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
     setPhoto(null);
     setAnalysis(null);
     setRecommendations([]);
+    setProfileId(null);
+    setEmail('');
+    setClaimed(false);
     setStep('capture');
   };
 
@@ -172,6 +226,119 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
       ]
     : [];
 
+  /* -------------------------------------------------- results (own layout) */
+  if (step === 'results' && analysis) {
+    return (
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 text-lg font-bold tracking-tight text-fg">
+            <Sparkles className="h-5 w-5 text-accent" />
+            {recommendations.length > 0 ? 'Your matches' : 'Your color profile'}
+          </h3>
+          <Button size="sm" variant="ghost" onClick={reset} leftIcon={<RefreshCw className="h-3.5 w-3.5" />}>
+            Analyze another photo
+          </Button>
+        </div>
+
+        {recommendations.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recommendations.slice(0, 6).map((p, i) => (
+              <div
+                key={p.id}
+                className={cn(
+                  'overflow-hidden rounded-2xl border bg-surface shadow-card',
+                  i === 0 ? 'border-accent' : 'border-border'
+                )}
+              >
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.imageUrl} alt={p.name} className="aspect-square w-full object-cover" />
+                  {i === 0 && (
+                    <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-white">
+                      Top match
+                    </span>
+                  )}
+                  {p.tryOnEnabled && (
+                    <span className="absolute right-3 top-3">
+                      <Badge tone="accent">try-on</Badge>
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-2.5 p-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="truncate font-semibold text-fg">{p.name}</span>
+                    <span className="shrink-0 text-sm text-fg-muted">${p.price.toFixed(2)}</span>
+                  </div>
+                  <a href={p.productUrl} target="_blank" rel="noreferrer" onClick={() => shopClick(p.id)}>
+                    <Button className="w-full" size="sm" leftIcon={<ShoppingBag className="h-4 w-4" />}>
+                      Shop now
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardBody className="text-sm text-fg-muted">
+              No catalog matches yet. Tag shade tones and undertones on your products to power
+              recommendations.
+            </CardBody>
+          </Card>
+        )}
+
+        <Card>
+          <CardBody className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-6">
+              {attributes.map((a) => (
+                <div key={a.label} className="rounded-md border border-border bg-surface-2/40 px-3 py-2">
+                  <div className="text-2xs uppercase tracking-[0.15em] text-fg-subtle">{a.label}</div>
+                  <div className="mt-0.5 text-sm font-medium capitalize text-fg">{a.value || 'n/a'}</div>
+                </div>
+              ))}
+            </div>
+            {analysis.notes && <p className="text-sm text-fg-muted">{analysis.notes}</p>}
+          </CardBody>
+        </Card>
+
+        {claimEndpoint && !claimed && (
+          <div className="rounded-2xl border border-border bg-surface p-5 shadow-soft">
+            <div className="flex items-center gap-2 text-sm font-semibold text-fg">
+              <Mail className="h-4 w-4 text-accent" />
+              Not ready to buy? We&apos;ll email your shade profile and matches.
+            </div>
+            <form
+              className="mt-3 flex flex-col gap-2 sm:flex-row"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void claim();
+              }}
+            >
+              <Input
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1"
+              />
+              <Button type="submit" loading={claiming} variant="secondary">
+                Email my matches
+              </Button>
+            </form>
+          </div>
+        )}
+        {claimed && (
+          <div className="flex items-center justify-center gap-2 rounded-2xl border border-success/40 bg-success/5 p-4 text-sm font-medium text-fg">
+            <Check className="h-4 w-4 text-success" />
+            Saved. Your matches are on their way to {email}.
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ------------------------------------------- capture / preview / analyze */
   return (
     <Card className="overflow-hidden border-accent/25">
       <CardBody className="p-0">
@@ -209,7 +376,7 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                     <div className="h-1 w-2/3 overflow-hidden rounded-full bg-border">
                       <div className="h-full w-1/3 animate-shimmer rounded-full bg-accent [background:linear-gradient(90deg,transparent,rgb(var(--accent)),transparent)] bg-[length:200px_100%]" />
                     </div>
-                    <span className="text-xs font-medium text-fg">Analyzing your shades…</span>
+                    <span className="text-xs font-medium text-fg">Analyzing your shades</span>
                   </div>
                 )}
               </div>
@@ -221,7 +388,8 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                 <div>
                   <p className="font-medium text-fg">Take or upload a selfie</p>
                   <p className="mt-1 max-w-xs text-sm text-fg-muted">
-                    Face the light, no filters. The AI reads skin tone, undertone, lips, hair and eyes.
+                    Face the light, no filters. The AI reads skin tone, undertone, lips, hair and
+                    eyes.
                   </p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2">
@@ -254,63 +422,13 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
 
           {/* Right: state panel */}
           <div className="border-t border-border p-6 lg:border-l lg:border-t-0">
-            {step === 'results' && analysis ? (
-              <div className="space-y-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-sm font-semibold text-fg">
-                    <Sparkles className="h-4 w-4 text-accent" /> Your color profile
-                  </h3>
-                  <Button size="sm" variant="ghost" onClick={reset} leftIcon={<RefreshCw className="h-3.5 w-3.5" />}>
-                    Analyze another
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {attributes.map((a) => (
-                    <div key={a.label} className="rounded-md border border-border bg-surface-2/40 px-3 py-2">
-                      <div className="text-2xs uppercase tracking-[0.15em] text-fg-subtle">{a.label}</div>
-                      <div className="mt-0.5 text-sm font-medium capitalize text-fg">{a.value || '—'}</div>
-                    </div>
-                  ))}
-                </div>
-                {analysis.notes && <p className="text-sm text-fg-muted">{analysis.notes}</p>}
-                <div>
-                  <h4 className="text-2xs uppercase tracking-[0.15em] text-fg-subtle">
-                    Matched products ({recommendations.length})
-                  </h4>
-                  {recommendations.length === 0 ? (
-                    <p className="mt-2 text-sm text-fg-muted">
-                      No catalog matches yet, tag shade tones on your products to power recommendations.
-                    </p>
-                  ) : (
-                    <div className="mt-2 space-y-2">
-                      {recommendations.map((p) => (
-                        <a
-                          key={p.id}
-                          href={p.productUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 rounded-md border border-border p-2 transition-colors hover:border-accent/40"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.imageUrl} alt="" className="h-10 w-10 rounded object-cover ring-1 ring-border" />
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm font-medium text-fg">{p.name}</div>
-                            <div className="text-xs text-fg-muted">${p.price.toFixed(2)}</div>
-                          </div>
-                          {p.tryOnEnabled && <Badge tone="accent">try-on</Badge>}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : step === 'preview' || step === 'analyzing' ? (
+            {step === 'preview' || step === 'analyzing' ? (
               <div className="flex h-full flex-col justify-center gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-fg">Ready to analyze</h3>
+                  <h3 className="text-sm font-semibold text-fg">Almost there</h3>
                   <p className="mt-1 text-sm text-fg-muted">
-                    The photo is downscaled in your browser and sent to Claude vision. Nothing is stored
-                    except the resulting color profile.
+                    Two optional details sharpen your matches. The photo is downscaled in your
+                    browser; only the resulting color profile is stored.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -339,16 +457,9 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                     ))}
                   </Select>
                 </div>
-                <Input
-                  type="email"
-                  placeholder="Email the results (optional, saves to the customer profile)"
-                  value={email}
-                  disabled={step === 'analyzing'}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
                 <div className="flex gap-2">
                   <Button onClick={analyze} loading={step === 'analyzing'} leftIcon={<Sparkles className="h-4 w-4" />}>
-                    Analyze shades
+                    Find my matches
                   </Button>
                   <Button variant="secondary" onClick={reset} disabled={step === 'analyzing'}>
                     Retake
@@ -356,8 +467,8 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
                 </div>
                 {!aiEnabled && (
                   <p className="rounded-md border border-warning/40 bg-warning/5 p-3 text-xs text-fg-muted">
-                    <span className="font-medium text-fg">Heads up:</span> ANTHROPIC_API_KEY isn&apos;t set, so
-                    the analysis call will fail until it&apos;s added to .env.
+                    <span className="font-medium text-fg">Heads up:</span> ANTHROPIC_API_KEY is not
+                    set, so the analysis call will fail until it is added to .env.
                   </p>
                 )}
               </div>
@@ -365,12 +476,12 @@ export default function ShadeAnalyzer({ aiEnabled }: { aiEnabled: boolean }) {
               <div className="flex h-full flex-col justify-center gap-3">
                 <h3 className="text-sm font-semibold text-fg">How it works</h3>
                 <ol className="space-y-2 text-sm text-fg-muted">
-                  <li>1, Take a selfie or upload a clear, well-lit photo.</li>
-                  <li>2, Claude vision reads skin tone, undertone, lip tone, hair and eye color.</li>
-                  <li>3 | Avori matches the profile against products tagged with shade tones.</li>
+                  <li>1. Take a selfie or upload a clear, well-lit photo.</li>
+                  <li>2. AI reads skin tone, undertone, lip tone, hair and eye color.</li>
+                  <li>3. You get matched products instantly, with a buy link on each.</li>
                 </ol>
                 <p className="text-xs text-fg-subtle">
-                  Same engine your storefront calls via POST /api/v1/shade/analyze.
+                  Shoppers who are not ready to buy can save their matches by email at the end.
                 </p>
               </div>
             )}

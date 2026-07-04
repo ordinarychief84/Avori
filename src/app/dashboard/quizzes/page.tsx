@@ -8,9 +8,11 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/AppShell';
 import EntityDialog from '@/components/EntityDialog';
 import RowDelete from '@/components/RowDelete';
+import CopyField from '@/components/CopyField';
 
 export default async function QuizzesPage() {
   const { brandId } = await pageBrandSession();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
   const quizzes = await prisma.quiz.findMany({
     where: { brandId },
     orderBy: { createdAt: 'desc' },
@@ -63,7 +65,13 @@ export default async function QuizzesPage() {
                     <Link href={`/dashboard/quizzes/${q.id}`} className="font-medium text-fg hover:text-accent">
                       {q.title}
                     </Link>
-                    <div className="font-mono text-2xs text-fg-subtle">/{q.slug}</div>
+                    <div className="mt-0.5 flex items-center gap-1.5">
+                      {q.status === 'ACTIVE' ? (
+                        <CopyField value={`${appUrl}/q/${brandId}/${q.slug}`} />
+                      ) : (
+                        <span className="font-mono text-2xs text-fg-subtle">/{q.slug}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-5 py-3.5 text-fg-muted">{q._count.questions}</td>
                   <td className="px-5 py-3.5 text-fg-muted">{q.views}</td>
