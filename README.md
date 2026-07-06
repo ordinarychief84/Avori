@@ -161,3 +161,8 @@ npm run db:seed          # Seed demo data (idempotent)
 npm run widget:build     # Rebuild /public/widget.js
 ./test/run-all.sh        # E2E test suite
 ```
+
+
+## Setting up merchants
+
+The end-to-end developer guide for taking a merchant from empty workspace to every solution live on their storefront: [docs/MERCHANT-SETUP.md](docs/MERCHANT-SETUP.md).
