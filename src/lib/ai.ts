@@ -1,3 +1,4 @@
+import 'server-only'; // build error if this secret-touching module is ever imported into client code
 import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from './prisma';
 import { HttpError } from './auth';

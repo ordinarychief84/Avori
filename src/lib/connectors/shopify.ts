@@ -1,3 +1,4 @@
+import 'server-only'; // build error if this secret-touching module leaks into a client bundle
 import crypto from 'crypto';
 import { prisma } from '../prisma';
 import { HttpError } from '../auth';

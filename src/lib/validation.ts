@@ -1,21 +1,34 @@
 import { z } from 'zod';
+import { sanitizeText, isSafeUrl } from './sanitize';
 
-// Accepts either a full URL (https://cdn.example.com/x.jpg) or an
+// Sanitizing free-text field: trims, Unicode-normalizes and strips control/
+// invisible characters. Use for any human-entered text that gets stored and
+// later rendered (names, titles, bodies, captions).
+export function cleanText(max: number, min = 0) {
+  const base = z.string().max(max).transform(sanitizeText);
+  return min > 0 ? base.refine((s) => s.length >= min, `Must be at least ${min} characters`) : base;
+}
+
+// Accepts either a full http(s) URL (https://cdn.example.com/x.jpg) or an
 // app-relative absolute path returned by /api/brand/upload (/uploads/...).
-// Used for asset fields where the user can paste a CDN URL OR upload
-// through the dashboard's uploader.
+// isSafeUrl blocks javascript:, data:, vbscript: and protocol-relative URLs
+// so a stored value can never execute when rendered into an href/src.
 const urlOrAssetPath = z
   .string()
   .min(1)
-  .refine(
-    (s) => /^https?:\/\//.test(s) || s.startsWith('/'),
-    'Must be a full URL or an absolute path starting with /'
-  );
+  .refine(isSafeUrl, 'Must be an http(s) URL or an absolute path starting with /');
+
+// A user-supplied external URL that will be rendered as a link or fetched.
+// http(s) only.
+const safeHttpUrl = z
+  .string()
+  .url()
+  .refine(isSafeUrl, 'Must be an http or https URL');
 
 export const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(128),
-  name: z.string().min(1).max(80).optional(),
+  name: cleanText(80).optional(),
   brandName: z.string().min(1).max(80),
   domain: z.string().min(1).max(200).optional().or(z.literal('')),
   // GDPR: consent must be an affirmative act, so the API refuses signups
@@ -31,12 +44,12 @@ const SHADE_TONES = ['fair', 'light', 'medium', 'tan', 'deep', 'rich'] as const;
 const UNDERTONES = ['cool', 'neutral', 'warm', 'olive'] as const;
 
 export const productSchema = z.object({
-  name: z.string().min(1).max(200),
+  name: cleanText(200, 1),
   price: z.number().nonnegative().max(1_000_000),
   // Image can be uploaded (relative /uploads/...) or pasted from a CDN.
   imageUrl: urlOrAssetPath,
   // Product URL is an external destination, must be a full URL.
-  productUrl: z.string().url(),
+  productUrl: safeHttpUrl,
   sku: z.string().max(80).optional().or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
   // AI try-on
@@ -57,8 +70,8 @@ export const productSchema = z.object({
 export const productPatchSchema = productSchema.partial();
 
 export const videoSchema = z.object({
-  title: z.string().min(1).max(200),
-  description: z.string().max(2000).optional().or(z.literal('')),
+  title: cleanText(200, 1),
+  description: cleanText(2000).optional().or(z.literal('')),
   videoUrl: urlOrAssetPath,
   thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
   status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).default('DRAFT'),
@@ -92,7 +105,7 @@ export const eventSchema = z.object({
 });
 
 export const brandPatchSchema = z.object({
-  name: z.string().min(1).max(80).optional(),
+  name: cleanText(80).optional(),
   domain: z.string().min(1).max(200).optional().or(z.literal('')),
 });
 
@@ -116,7 +129,7 @@ export const customerPatchSchema = customerSchema.partial();
 export const orderItemInput = z.object({
   productId: z.string().optional(),
   sku: z.string().max(80).optional(),
-  name: z.string().min(1).max(200),
+  name: cleanText(200, 1),
   quantity: z.number().int().positive().max(1000),
   price: z.number().nonnegative().max(1_000_000),
 });
@@ -151,9 +164,9 @@ export const orderStatusSchema = z.object({
 export const reviewSubmitSchema = z.object({
   productId: z.string().min(1),
   rating: z.number().int().min(1).max(5),
-  title: z.string().max(150).optional().or(z.literal('')),
-  body: z.string().min(1).max(5000),
-  authorName: z.string().min(1).max(80),
+  title: cleanText(150).optional().or(z.literal('')),
+  body: cleanText(5000, 1),
+  authorName: cleanText(80, 1),
   authorEmail: z.string().email().max(200).optional().or(z.literal('')),
   mediaUrls: z.array(urlOrAssetPath).max(6).optional(),
   orderId: z.string().optional(),
@@ -161,18 +174,18 @@ export const reviewSubmitSchema = z.object({
 
 export const reviewModerateSchema = z.object({
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'SPAM']).optional(),
-  reply: z.string().max(2000).nullable().optional(),
+  reply: cleanText(2000).nullable().optional(),
 });
 
 export const questionSubmitSchema = z.object({
   productId: z.string().min(1),
-  body: z.string().min(1).max(2000),
-  authorName: z.string().max(80).optional().or(z.literal('')),
+  body: cleanText(2000, 1),
+  authorName: cleanText(80).optional().or(z.literal('')),
   authorEmail: z.string().email().max(200).optional().or(z.literal('')),
 });
 
 export const questionAnswerSchema = z.object({
-  answer: z.string().max(4000).nullable().optional(),
+  answer: cleanText(4000).nullable().optional(),
   status: z.enum(['PENDING', 'PUBLISHED', 'HIDDEN']).optional(),
 });
 
@@ -394,8 +407,8 @@ export const socialPostSchema = z.object({
   mediaUrl: urlOrAssetPath,
   mediaType: z.enum(['IMAGE', 'VIDEO']).optional(),
   thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
-  caption: z.string().max(2200).optional().or(z.literal('')),
-  permalink: z.string().url().optional().or(z.literal('')),
+  caption: cleanText(2200).optional().or(z.literal('')),
+  permalink: safeHttpUrl.optional().or(z.literal('')),
   productIds: z.array(z.string()).max(10).optional(),
   visible: z.boolean().optional(),
   sort: z.number().int().nonnegative().optional(),
@@ -411,8 +424,8 @@ export const ugcItemSchema = z.object({
   mediaUrl: urlOrAssetPath,
   mediaType: z.enum(['IMAGE', 'VIDEO']).optional(),
   thumbnailUrl: urlOrAssetPath.optional().or(z.literal('')),
-  caption: z.string().max(500).optional().or(z.literal('')),
-  creditName: z.string().max(80).optional().or(z.literal('')),
+  caption: cleanText(500).optional().or(z.literal('')),
+  creditName: cleanText(80).optional().or(z.literal('')),
   productIds: z.array(z.string()).max(10).optional(),
   status: z.enum(['PENDING', 'APPROVED', 'HIDDEN']).optional(),
   sort: z.number().int().nonnegative().optional(),

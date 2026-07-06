@@ -246,7 +246,7 @@ class WidgetInstance {
     const bubble = this.themeRoot(document.createElement('div'));
     bubble.className += ' av-bubble';
     bubble.innerHTML = `
-      <video src="${escapeAttr(v.videoUrl)}" muted playsinline loop autoplay></video>
+      <video src="${safeUrl(v.videoUrl)}" muted playsinline loop autoplay></video>
       <span class="badge">Shop</span>
       <button class="x" aria-label="Close">×</button>
     `;
@@ -308,8 +308,8 @@ class WidgetInstance {
       const thumb = item.thumbnailUrl || item.mediaUrl;
       cell.innerHTML =
         item.mediaType === 'VIDEO' && !item.thumbnailUrl
-          ? `<video src="${escapeAttr(item.mediaUrl)}" muted playsinline preload="metadata"></video>`
-          : `<img src="${escapeAttr(thumb)}" alt="" loading="lazy">`;
+          ? `<video src="${safeUrl(item.mediaUrl)}" muted playsinline preload="metadata"></video>`
+          : `<img src="${safeUrl(thumb)}" alt="" loading="lazy">`;
       if (item.products.length) {
         const badge = document.createElement('span');
         badge.className = 'badge';
@@ -359,9 +359,9 @@ class WidgetInstance {
       const row = document.createElement('div');
       row.className = 'prod';
       row.innerHTML = `
-        <img src="${escapeAttr(p.imageUrl)}" alt="">
+        <img src="${safeUrl(p.imageUrl)}" alt="">
         <div><div class="name"></div><div class="price">$${p.price.toFixed(2)}</div></div>
-        <a class="cta" target="_blank" rel="noopener" href="${escapeAttr(p.productUrl)}">Shop</a>
+        <a class="cta" target="_blank" rel="noopener" href="${safeUrl(p.productUrl)}">Shop</a>
       `;
       (row.querySelector('.name') as HTMLElement).textContent = p.name;
       row.querySelector('.cta')!.addEventListener('click', () => {
@@ -386,8 +386,8 @@ class WidgetInstance {
     const stage = document.createElement('div');
     stage.className = 'av-stage';
     stage.innerHTML = `
-      <video class="av-video" src="${escapeAttr(v.videoUrl)}" ${
-        v.thumbnailUrl ? `poster="${escapeAttr(v.thumbnailUrl)}"` : ''
+      <video class="av-video" src="${safeUrl(v.videoUrl)}" ${
+        v.thumbnailUrl ? `poster="${safeUrl(v.thumbnailUrl)}"` : ''
       } muted playsinline loop preload="metadata"></video>
       <div class="av-overlay"></div>
       <button class="av-mute" aria-label="Toggle sound">🔇</button>
@@ -462,16 +462,14 @@ class WidgetInstance {
     card.innerHTML = `
       <button class="x" aria-label="Close">×</button>
       <div class="row">
-        <img class="thumb" src="${escapeAttr(tag.product.imageUrl)}" alt="">
+        <img class="thumb" src="${safeUrl(tag.product.imageUrl)}" alt="">
         <div>
           <div class="name"></div>
           <div class="price">$${tag.product.price.toFixed(2)}</div>
         </div>
         <div class="actions">
           ${showTryOn ? `<button class="tryon" type="button">✨ Try on</button>` : ''}
-          <a class="cta" target="_blank" rel="noopener" href="${escapeAttr(
-            tag.product.productUrl
-          )}">Shop</a>
+          <a class="cta" target="_blank" rel="noopener" href="${safeUrl(tag.product.productUrl)}">Shop</a>
         </div>
       </div>
     `;
@@ -689,6 +687,21 @@ function escapeAttr(s: string): string {
   return String(s).replace(/[&<>"']/g, (c) => {
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!;
   });
+}
+
+// Output guard for URLs written into href/src. Attribute-escaping alone does
+// not stop a javascript:/data:/vbscript: scheme (nothing to escape), so we
+// reject any non-http(s), non-relative URL and fall back to '#'. Defence in
+// depth: the API already validates these on write.
+function safeUrl(s: string): string {
+  const v = String(s).trim();
+  if (v.startsWith('/') && !v.startsWith('//')) return escapeAttr(v);
+  try {
+    if (/^https?:$/i.test(new URL(v).protocol)) return escapeAttr(v);
+  } catch {
+    /* malformed */
+  }
+  return '#';
 }
 
 function cssEscape(s: string): string {

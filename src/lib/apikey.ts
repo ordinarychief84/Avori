@@ -1,6 +1,13 @@
 import crypto from 'crypto';
 import { prisma } from './prisma';
 import { HttpError } from './auth';
+import { rateLimit } from './ratelimit';
+
+// Per-key request cap for the REST API. API traffic is server-to-server, so
+// we throttle by key rather than IP: a stolen or misbehaving key cannot hammer
+// the platform, and one merchant's volume never affects another's. Override
+// with API_RATE_LIMIT (requests per minute per key).
+const API_RATE_LIMIT = Number(process.env.API_RATE_LIMIT ?? 300);
 
 export function sha256(s: string): string {
   return crypto.createHash('sha256').update(s).digest('hex');
@@ -25,6 +32,11 @@ export async function requireApiKey(req: Request): Promise<{ brandId: string; ap
   });
   if (!record || record.revokedAt) throw new HttpError(401, 'Invalid or revoked API key');
   if (record.brand.disabled) throw new HttpError(403, 'This workspace is disabled');
+
+  // Per-key throttle. Keyed on the record id (not the raw key) so the secret
+  // never lands in the in-memory bucket map.
+  const { ok: allowed } = rateLimit(`apikey:${record.id}`, API_RATE_LIMIT);
+  if (!allowed) throw new HttpError(429, 'Rate limit exceeded for this API key');
 
   // Touch lastUsedAt at most once a minute, fire-and-forget so the request
   // never waits on bookkeeping.
