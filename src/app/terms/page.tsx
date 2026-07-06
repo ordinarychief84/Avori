@@ -53,7 +53,7 @@ const SECTIONS: Array<{ h: string; p: string[] }> = [
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero eyebrow="Legal" title="Terms of Service" sub="Last updated July 2026." />

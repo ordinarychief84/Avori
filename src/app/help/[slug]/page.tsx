@@ -23,7 +23,7 @@ export default function HelpArticlePage({ params }: { params: { slug: string } }
   );
 
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main className="mx-auto max-w-3xl px-6 py-14">
         <Link

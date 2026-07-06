@@ -25,7 +25,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero

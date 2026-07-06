@@ -38,7 +38,7 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <Hero />
@@ -64,31 +64,36 @@ export default function LandingPage() {
 function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="grid-radial absolute inset-x-0 top-0 h-[520px]" aria-hidden />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pb-20 pt-14 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-20">
-        <div>
-          <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-            Increase Your Customers&rsquo;
+      <div className="hero-aurora absolute inset-0" aria-hidden />
+      <div className="grid-radial absolute inset-x-0 top-0 h-[560px] opacity-50" aria-hidden />
+      <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-16 lg:pt-24">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent-subtle px-4 py-1.5 text-2xs font-semibold uppercase tracking-[0.2em] text-accent-bright">
+            One platform · every growth tool
+          </div>
+          <h1 className="mt-7 font-display text-5xl font-bold leading-[0.98] tracking-tight sm:text-7xl lg:text-[5.25rem]">
+            Turn shoppers into
             <br />
-            Lifetime Value with
-            <br />
-            <span className="text-gradient-brand">One Platform</span>
+            <span className="text-gradient-brand">lifetime customers</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg-muted">
-            Streamlined reviews, shoppable video, AI shade matching, loyalty and store credit for
-            ecommerce: elevate customer retention, boost sales, and drive repeat purchases.
+          <p className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
+            Reviews, shoppable video, AI quizzes, loyalty and analytics in one dashboard with one
+            customer database. Built for Shopify, WooCommerce, Magento, BigCommerce and custom
+            stores.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/contact">
-              <Button size="lg">Request a Demo</Button>
-            </Link>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Link href="/signup">
+              <Button size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
+                Start free
+              </Button>
+            </Link>
+            <Link href="/contact">
               <Button size="lg" variant="outline">
-                Start Now
+                Request a demo
               </Button>
             </Link>
           </div>
-          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-fg-muted">
+          <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-fg-muted">
             {['No code required', 'Works with any store', 'Every module included'].map((t) => (
               <li key={t} className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-accent" />
@@ -96,24 +101,15 @@ function Hero() {
               </li>
             ))}
           </ul>
-          <a
-            href="#shade"
-            className="group mt-10 inline-flex items-center gap-1.5 text-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-accent"
-          >
-            What are you talking about? I&rsquo;m just here for the Shade Analyzer
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
         </div>
 
-        {/* Hero visual: lifestyle photo with floating activity cards */}
-        <div className="relative mx-auto w-full max-w-lg">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/marketing/hero-beauty.jpg"
-            alt="Beauty products from an Avori-powered store"
-            className="aspect-[4/3.4] w-full rounded-3xl object-cover shadow-card ring-1 ring-border"
+        {/* The actual product, not an illustration */}
+        <div className="relative mx-auto mt-16 max-w-5xl">
+          <Shot
+            src="/marketing/overview.png"
+            alt="The Avori dashboard: revenue, orders, reviews and loyalty in one view"
           />
-          <div className="absolute -left-4 bottom-8 hidden w-52 rounded-xl border border-border bg-surface p-3 shadow-card sm:block">
+          <div className="absolute -left-5 -top-5 hidden w-52 rounded-xl border border-border bg-surface p-3 shadow-card lg:block">
             <div className="flex items-center gap-1 text-warning">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-current" />
@@ -126,22 +122,52 @@ function Hero() {
               <BadgeCheck className="h-3 w-3 text-accent" /> Verified buyer
             </div>
           </div>
-          <div className="absolute -right-3 bottom-24 hidden items-center gap-2.5 rounded-xl border border-border bg-surface py-2.5 pl-2.5 pr-4 shadow-card sm:flex">
+          <div className="absolute -right-4 top-1/3 hidden items-center gap-2.5 rounded-xl border border-border bg-surface py-2.5 pl-2.5 pr-4 shadow-card lg:flex">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-subtle">
               <Crown className="h-4 w-4 text-accent" />
             </span>
             <span>
               <span className="block text-xs font-semibold text-fg">Order #1042 placed</span>
-              <span className="block text-2xs text-fg-muted">Maya earned 240 points + $3.80 cashback</span>
+              <span className="block text-2xs text-fg-muted">
+                Maya earned 240 points + $3.80 cashback
+              </span>
             </span>
           </div>
-          <div className="absolute -top-4 left-8 hidden items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-card sm:flex">
+          <div className="absolute -bottom-4 left-10 hidden items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 shadow-card lg:flex">
             <TrendingUp className="h-3.5 w-3.5 text-success" />
             <span className="text-2xs font-semibold text-fg">Repeat purchases up 3.4x</span>
           </div>
         </div>
+
+        <p className="mt-12 text-center">
+          <a
+            href="#shade"
+            className="group inline-flex items-center gap-1.5 text-sm font-semibold text-fg-muted transition-colors hover:text-accent"
+          >
+            Just here for the AI Shade Analyzer? Jump straight to it
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </p>
       </div>
     </section>
+  );
+}
+
+/* A real product screenshot in a browser frame with the marketing glow. */
+function Shot({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="screenshot-glow overflow-hidden rounded-xl border border-border bg-surface">
+      <div className="flex items-center gap-1.5 border-b border-border bg-surface-2/60 px-3.5 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-danger/60" />
+        <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
+        <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
+        <span className="ml-3 hidden rounded-md bg-bg/60 px-2.5 py-0.5 text-2xs text-fg-subtle sm:block">
+          app.avori.com/dashboard
+        </span>
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} className="block w-full" loading="lazy" />
+    </figure>
   );
 }
 
@@ -187,7 +213,7 @@ function StatsBand() {
             key={s.label}
             className="hover-pop rounded-xl border border-border bg-surface p-6 text-center shadow-soft"
           >
-            <div className="text-3xl font-bold tracking-tight text-accent">{s.value}</div>
+            <div className="font-display text-5xl font-bold tracking-tight text-accent">{s.value}</div>
             <div className="mt-2 text-sm leading-snug text-fg-muted">{s.label}</div>
           </div>
         ))}
@@ -233,7 +259,7 @@ function FeatureRow({
           <Icon className="h-3.5 w-3.5" />
           {eyebrow}
         </div>
-        <h3 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">{title}</h3>
+        <h3 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</h3>
         <p className="mt-3 text-base leading-relaxed text-fg-muted">{copy}</p>
         <ul className="mt-5 space-y-2.5">
           {bullets.map((b) => (
@@ -410,7 +436,10 @@ function Platform() {
           ]}
           visual={
             <div className="relative">
-              <ReviewsMock />
+              <Shot
+                src="/marketing/reviews.png"
+                alt="The Avori reviews moderation queue with verified badges and AI summaries"
+              />
               <div className="absolute -bottom-6 -left-4 w-56 rounded-lg border border-border bg-surface p-3 shadow-card">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-warning">
@@ -662,7 +691,12 @@ function Platform() {
             'One-click AI insight reports with concrete recommendations',
             'Chat assistant grounded in your live store data',
           ]}
-          visual={<AnalyticsMock />}
+          visual={
+            <Shot
+              src="/marketing/analytics.png"
+              alt="Avori analytics: unified funnel and per-module revenue attribution"
+            />
+          }
         />
       </div>
     </section>
@@ -701,7 +735,7 @@ function Integrations() {
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-border bg-fg p-5 shadow-card">
+          <div className="rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
               Embed a widget, one line
             </div>
@@ -712,7 +746,7 @@ function Integrations() {
      data-mode="floating"></div>`}
             </pre>
           </div>
-          <div className="rounded-xl border border-border bg-fg p-5 shadow-card">
+          <div className="rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
               Push an order, one request
             </div>

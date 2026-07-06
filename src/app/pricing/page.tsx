@@ -28,7 +28,7 @@ function Cell({ value }: { value: boolean | string }) {
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         {/* Rise-style headline */}
@@ -57,7 +57,7 @@ export default function PricingPage() {
           <PricingTiers plans={plans} />
 
           {/* Enterprise, Rise-style wide card */}
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-fg/15 bg-fg p-8 text-white shadow-card">
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-6 band-midnight rounded-2xl border border-border p-8 text-white shadow-card">
             <div className="flex items-start gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10">
                 <Building2 className="h-6 w-6 text-accent-bright" />

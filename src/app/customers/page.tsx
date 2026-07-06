@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function CustomersPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero

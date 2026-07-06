@@ -70,7 +70,7 @@ export default function SolutionPage({ params }: { params: { slug: string } }) {
   const related = relatedSolutions(s.slug);
 
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         {/* Hero: copy left, live-style mock right */}
@@ -82,7 +82,7 @@ export default function SolutionPage({ params }: { params: { slug: string } }) {
                 <Icon className="h-3.5 w-3.5" />
                 {s.category} · {s.name}
               </div>
-              <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+              <h1 className="mt-5 font-display text-4xl font-bold leading-[1.02] tracking-tight sm:text-6xl">
                 {s.headline}
               </h1>
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-muted">{s.sub}</p>
@@ -150,7 +150,7 @@ export default function SolutionPage({ params }: { params: { slug: string } }) {
                 </div>
               ))}
             </div>
-            <div className="mx-auto mt-8 max-w-5xl rounded-xl border border-border bg-fg p-5 shadow-card">
+            <div className="mx-auto mt-8 max-w-5xl rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
               <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
                 For developers
               </div>

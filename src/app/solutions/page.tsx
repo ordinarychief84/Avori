@@ -61,7 +61,7 @@ const CATEGORY_ORDER = [
 
 export default function SolutionsIndexPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero

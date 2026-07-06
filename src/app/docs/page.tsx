@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 function Code({ children }: { children: string }) {
   return (
-    <pre className="mt-3 overflow-x-auto rounded-lg bg-fg p-4 font-mono text-xs leading-relaxed text-stone-200">
+    <pre className="mt-3 overflow-x-auto rounded-lg border border-border bg-surface-2/70 p-4 font-mono text-xs leading-relaxed text-stone-200">
       {children}
     </pre>
   );
@@ -75,7 +75,7 @@ const ENDPOINTS: Array<[string, string, string]> = [
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero

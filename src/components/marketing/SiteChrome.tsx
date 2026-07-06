@@ -23,7 +23,7 @@ export function SectionHeading({
   return (
     <div className="mx-auto max-w-2xl text-center">
       <div className="text-2xs font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
+      <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl">{title}</h2>
       {sub && <p className="mt-4 text-lg leading-relaxed text-fg-muted">{sub}</p>}
     </div>
   );
@@ -45,7 +45,7 @@ export function PageHero({
         <div className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent-subtle px-3 py-1 text-2xs font-semibold uppercase tracking-[0.18em] text-accent">
           {eyebrow}
         </div>
-        <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{title}</h1>
+        <h1 className="mt-5 font-display text-4xl font-bold leading-[1.02] tracking-tight sm:text-6xl">{title}</h1>
         {sub && <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted">{sub}</p>}
       </div>
     </section>
@@ -74,7 +74,7 @@ export function CtaBand({ title, sub }: { title: string; sub?: string }) {
   return (
     <section className="band-midnight">
       <div className="mx-auto max-w-4xl px-6 py-16 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{title}</h2>
+        <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">{title}</h2>
         {sub && <p className="mx-auto mt-4 max-w-xl text-lg text-stone-300">{sub}</p>}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link href="/signup">
@@ -109,6 +109,18 @@ export function MarketingFooter() {
       ],
     },
     {
+      heading: 'Solutions',
+      links: [
+        { label: 'Reviews', href: '/solutions/reviews' },
+        { label: 'UGC Gallery', href: '/solutions/ugc-gallery' },
+        { label: 'Shoppable Video', href: '/solutions/shoppable-video' },
+        { label: 'Loyalty Program', href: '/solutions/loyalty' },
+        { label: 'Bundles', href: '/solutions/bundles' },
+        { label: 'Analytics', href: '/solutions/analytics' },
+        { label: 'All solutions', href: '/solutions' },
+      ],
+    },
+    {
       heading: 'Resources',
       links: [
         { label: 'Help Center', href: '/help' },
@@ -126,7 +138,7 @@ export function MarketingFooter() {
   ];
   return (
     <footer className="border-t border-border bg-surface/60">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.2fr_repeat(3,1fr)]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.2fr_repeat(4,1fr)]">
         <div>
           <Logo size="md" />
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-fg-muted">
