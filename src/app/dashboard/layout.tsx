@@ -2,6 +2,7 @@ import { pageBrandSession, signOut } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import AuthSessionProvider from '@/components/SessionProvider';
 import { AppShell } from '@/components/AppShell';
+import ModuleSetupGuide from '@/components/ModuleSetupGuide';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { brandId, email } = await pageBrandSession();
@@ -24,6 +25,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         role="BRAND"
         signOutAction={handleSignOut}
       >
+        <ModuleSetupGuide
+          brandId={brandId}
+          appUrl={process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}
+        />
         {children}
       </AppShell>
     </AuthSessionProvider>
