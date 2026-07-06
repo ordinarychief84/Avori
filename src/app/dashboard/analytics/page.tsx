@@ -209,7 +209,7 @@ export default async function AnalyticsPage() {
           {topItems.length === 0 ? (
             <p className="px-5 pb-5 text-sm text-fg-muted">No sales yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {topItems.map((t, i) => (
                   <tr key={t.name} className="border-t border-border/60">
@@ -219,7 +219,7 @@ export default async function AnalyticsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

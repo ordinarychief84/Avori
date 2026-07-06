@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 function Code({ children }: { children: string }) {
   return (
-    <pre className="mt-3 overflow-x-auto rounded-lg border border-border bg-surface-2/70 p-4 font-mono text-xs leading-relaxed text-stone-200">
+    <pre className="mt-3 max-w-full overflow-x-auto rounded-lg border border-border bg-surface-2/70 p-4 font-mono text-xs leading-relaxed text-stone-200">
       {children}
     </pre>
   );
@@ -90,7 +90,7 @@ export default function DocsPage() {
           sub="Everything the dashboard does, the API does. Bearer keys, predictable JSON, cursor pagination, signed webhooks, and a widget when you don’t want to build UI."
         />
 
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[200px_1fr]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[200px_minmax(0,1fr)]">
           <nav className="top-24 hidden self-start lg:sticky lg:block">
             <div className="text-2xs font-semibold uppercase tracking-[0.18em] text-fg-subtle">
               On this page

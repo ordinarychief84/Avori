@@ -153,7 +153,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
             {customer.orders.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-fg-muted">No orders yet.</p>
             ) : (
-              <table className="w-full text-sm">
+              <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <tbody>
                   {customer.orders.map((o) => (
                     <tr key={o.id} className="border-t border-border/60">
@@ -175,7 +175,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </CardBody>
         </Card>
@@ -188,7 +188,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
             {!customer.loyaltyMember || customer.loyaltyMember.transactions.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-fg-muted">No points activity yet.</p>
             ) : (
-              <table className="w-full text-sm">
+              <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <tbody>
                   {customer.loyaltyMember.transactions.map((t) => (
                     <tr key={t.id} className="border-t border-border/60">
@@ -204,7 +204,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </CardBody>
         </Card>

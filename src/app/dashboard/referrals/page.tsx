@@ -105,7 +105,7 @@ export default async function ReferralsPage() {
         />
       ) : (
         <Card className="overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
             <thead>
               <tr className="border-b border-border bg-surface-2/40 text-left text-2xs uppercase tracking-[0.15em] text-fg-subtle">
                 <th className="px-5 py-3">Referrer</th>
@@ -138,7 +138,7 @@ export default async function ReferralsPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </Card>
       )}
 
@@ -148,7 +148,7 @@ export default async function ReferralsPage() {
             <CardTitle>Fraud protection, flagged conversions</CardTitle>
           </CardHeader>
           <CardBody className="p-0">
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {flagged.map((f) => (
                   <tr key={f.id} className="border-t border-border/60">
@@ -160,7 +160,7 @@ export default async function ReferralsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </CardBody>
         </Card>
       )}

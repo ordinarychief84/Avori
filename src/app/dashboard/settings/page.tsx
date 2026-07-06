@@ -272,7 +272,7 @@ export default async function SettingsPage({
           {apiKeys.length === 0 ? (
             <p className="px-5 pb-5 text-sm text-fg-muted">No API keys yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {apiKeys.map((k) => (
                   <tr key={k.id} className="border-t border-border/60">
@@ -301,7 +301,7 @@ export default async function SettingsPage({
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>
@@ -330,7 +330,7 @@ export default async function SettingsPage({
           {webhooks.length === 0 ? (
             <p className="px-5 pb-5 text-sm text-fg-muted">No webhook endpoints yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {webhooks.map((w) => (
                   <tr key={w.id} className="border-t border-border/60">
@@ -352,7 +352,7 @@ export default async function SettingsPage({
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>
@@ -389,7 +389,7 @@ export default async function SettingsPage({
           )}
         </CardHeader>
         <CardBody className="p-0">
-          <table className="w-full text-sm">
+          <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
             <tbody>
               {team.map((m) => (
                 <tr key={m.id} className="border-t border-border/60">
@@ -415,7 +415,7 @@ export default async function SettingsPage({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </CardBody>
       </Card>
 
@@ -446,7 +446,7 @@ export default async function SettingsPage({
           {auditLogs.length === 0 ? (
             <p className="px-5 pb-5 text-sm text-fg-muted">No activity yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {auditLogs.map((a) => (
                   <tr key={a.id} className="border-t border-border/60">
@@ -460,7 +460,7 @@ export default async function SettingsPage({
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

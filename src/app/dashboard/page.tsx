@@ -149,7 +149,7 @@ export default async function DashboardOverview() {
                 No orders yet, they arrive from Shopify or POST /api/v1/orders.
               </p>
             ) : (
-              <table className="w-full text-sm">
+              <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <tbody>
                   {recentOrders.map((o) => (
                     <tr key={o.id} className="border-t border-border/60">
@@ -166,7 +166,7 @@ export default async function DashboardOverview() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </CardBody>
         </Card>

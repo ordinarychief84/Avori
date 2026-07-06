@@ -109,7 +109,7 @@ export default async function LoyaltyPage() {
                 No tiers yet, members earn at the base rate.
               </p>
             ) : (
-              <table className="w-full text-sm">
+              <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <tbody>
                   {program.tiers.map((t) => (
                     <tr key={t.id} className="border-t border-border/60">
@@ -143,7 +143,7 @@ export default async function LoyaltyPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </CardBody>
         </Card>
@@ -180,7 +180,7 @@ export default async function LoyaltyPage() {
             {rewards.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-fg-muted">No rewards yet, add what points redeem for.</p>
             ) : (
-              <table className="w-full text-sm">
+              <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
                 <tbody>
                   {rewards.map((r) => (
                     <tr key={r.id} className="border-t border-border/60">
@@ -228,7 +228,7 @@ export default async function LoyaltyPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
           </CardBody>
         </Card>
@@ -248,7 +248,7 @@ export default async function LoyaltyPage() {
               />
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-2/40 text-left text-2xs uppercase tracking-[0.15em] text-fg-subtle">
                   <th className="px-5 py-3">Member</th>
@@ -273,7 +273,7 @@ export default async function LoyaltyPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

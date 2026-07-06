@@ -124,7 +124,7 @@ export default async function QuizBuilderPage({ params }: { params: { id: string
               No responses yet. Serve this quiz with GET /api/v1/quizzes/{quiz.slug} and submit answers back to the same endpoint.
             </p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {quiz.responses.map((r) => (
                   <tr key={r.id} className="border-t border-border/60">
@@ -142,7 +142,7 @@ export default async function QuizBuilderPage({ params }: { params: { id: string
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

@@ -154,7 +154,7 @@ export default function SolutionPage({ params }: { params: { slug: string } }) {
               <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
                 For developers
               </div>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-stone-200">{s.apiNote}</p>
+              <p className="mt-2 break-words font-mono text-xs leading-relaxed text-stone-200">{s.apiNote}</p>
               <Link
                 href="/docs"
                 className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-accent-bright hover:text-white"

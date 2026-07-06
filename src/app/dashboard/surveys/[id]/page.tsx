@@ -87,7 +87,7 @@ export default async function SurveyDetailPage({ params }: { params: { id: strin
           {survey.responses.length === 0 ? (
             <p className="px-5 pb-5 text-sm text-fg-muted">No responses yet.</p>
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {survey.responses.map((r) => (
                   <tr key={r.id} className="border-t border-border/60">
@@ -106,7 +106,7 @@ export default async function SurveyDetailPage({ params }: { params: { id: strin
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

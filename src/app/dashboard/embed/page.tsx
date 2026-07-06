@@ -45,7 +45,7 @@ export default async function EmbedPage() {
               description="Once your widget loads on a customer-facing page, the domain will show up here."
             />
           ) : (
-            <table className="w-full text-sm">
+            <div className="-mx-px overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-2xs uppercase tracking-wide text-fg-subtle">
                   <th className="py-2 font-normal">Domain</th>
@@ -68,7 +68,7 @@ export default async function EmbedPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
         </CardBody>
       </Card>

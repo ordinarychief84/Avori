@@ -735,22 +735,22 @@ function Integrations() {
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
+          <div className="min-w-0 rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
               Embed a widget, one line
             </div>
-            <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
+            <pre className="mt-3 max-w-full overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
               {`<script src="https://app.avori.com/widget.js" async></script>
 <div class="shop-video-widget"
      data-brand-id="YOUR_BRAND_ID"
      data-mode="floating"></div>`}
             </pre>
           </div>
-          <div className="rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
+          <div className="min-w-0 rounded-xl border border-border bg-surface-2/70 p-5 shadow-card">
             <div className="text-2xs font-semibold uppercase tracking-[0.16em] text-accent-bright">
               Push an order, one request
             </div>
-            <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
+            <pre className="mt-3 max-w-full overflow-x-auto font-mono text-xs leading-relaxed text-stone-200">
               {`curl -X POST https://app.avori.com/api/v1/orders \\
   -H "Authorization: Bearer avk_..." \\
   -d '{ "email": "maya@example.com",

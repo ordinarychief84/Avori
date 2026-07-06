@@ -83,7 +83,7 @@ export default function ModuleSetupGuide({
           </div>
         )}
         {guide.apiNote && (
-          <p className="mt-3 font-mono text-2xs text-fg-subtle">
+          <p className="mt-3 break-words font-mono text-2xs text-fg-subtle">
             {guide.apiNote.replace('{brandId}', brandId)}
           </p>
         )}

@@ -165,7 +165,7 @@ export default function MarketingNav() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-border bg-surface px-6 py-4 lg:hidden">
+        <div className="max-h-[calc(100vh-3.5rem)] overflow-y-auto border-t border-border bg-surface px-6 py-4 lg:hidden">
           <div className="text-2xs font-semibold uppercase tracking-[0.18em] text-fg-subtle">
             Solutions
           </div>
@@ -175,7 +175,7 @@ export default function MarketingNav() {
                 key={i.label}
                 href={i.href}
                 onClick={() => setMobileOpen(false)}
-                className="py-1.5 text-sm text-fg"
+                className="flex min-h-[44px] items-center text-sm text-fg"
               >
                 {i.label}
               </Link>
@@ -196,7 +196,7 @@ export default function MarketingNav() {
                 key={i.label}
                 href={i.href}
                 onClick={() => setMobileOpen(false)}
-                className="py-1.5 text-sm text-fg"
+                className="flex min-h-[44px] items-center text-sm text-fg"
               >
                 {i.label}
               </Link>
