@@ -18,6 +18,11 @@ export const signupSchema = z.object({
   name: z.string().min(1).max(80).optional(),
   brandName: z.string().min(1).max(80),
   domain: z.string().min(1).max(200).optional().or(z.literal('')),
+  // GDPR: consent must be an affirmative act, so the API refuses signups
+  // that don't carry it. The acceptance timestamp is stored on the user.
+  acceptTerms: z.boolean().refine((v) => v === true, {
+    message: 'You must agree to the Terms of Service and Privacy Policy',
+  }),
 });
 
 const HEX_COLOR = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
@@ -441,8 +446,25 @@ export const apiKeyCreateSchema = z.object({
   name: z.string().min(1).max(80),
 });
 
+// Outbound webhooks must point at public https endpoints. Loopback, private
+// ranges and cloud metadata addresses are refused so a merchant (or a stolen
+// session) cannot aim signed deliveries at internal services (SSRF).
+const PRIVATE_HOST =
+  /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.|0\.|\[?::1|metadata\.google|.*\.internal)$|^\[?f[cd]/i;
+
 export const webhookEndpointSchema = z.object({
-  url: z.string().url().max(500),
+  url: z
+    .string()
+    .url()
+    .max(500)
+    .refine((u) => {
+      try {
+        const parsed = new URL(u);
+        return parsed.protocol === 'https:' && !PRIVATE_HOST.test(parsed.hostname);
+      } catch {
+        return false;
+      }
+    }, 'Webhook URLs must be public https endpoints'),
   topics: z.array(z.string().min(1).max(60)).max(20).optional(),
   active: z.boolean().optional(),
 });

@@ -13,7 +13,12 @@ export const dynamic = 'force-dynamic';
 // `npm run worker` loops the same work.
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
+  if (!secret) {
+    // Never run an unauthenticated job tick in production.
+    if (process.env.NODE_ENV === 'production') {
+      return new Response('CRON_SECRET is not configured', { status: 503 });
+    }
+  } else {
     const header = req.headers.get('authorization');
     if (header !== `Bearer ${secret}`) return new Response('unauthorized', { status: 401 });
   }

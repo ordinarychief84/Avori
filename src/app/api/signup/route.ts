@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
         data: {
           email: data.email,
           name: data.name ?? null,
+          termsAcceptedAt: new Date(),
           passwordHash,
           role: 'BRAND',
           brandId: brand.id,

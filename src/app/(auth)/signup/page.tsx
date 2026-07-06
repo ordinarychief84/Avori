@@ -19,6 +19,7 @@ export default function SignupPage() {
     name: '',
     brandName: '',
     domain: '',
+    acceptTerms: false,
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,10 @@ export default function SignupPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!form.acceptTerms) {
+      setError('Please agree to the Terms of Service and Privacy Policy to continue.');
+      return;
+    }
     setLoading(true);
     const res = await fetch('/api/signup', {
       method: 'POST',
@@ -137,6 +142,26 @@ export default function SignupPage() {
               placeholder="shop.example.com"
             />
           </FormField>
+          <label className="flex items-start gap-2.5 rounded-lg border border-border bg-surface-2/40 p-3 text-sm text-fg-muted">
+            <input
+              type="checkbox"
+              checked={form.acceptTerms}
+              onChange={(e) => setForm({ ...form, acceptTerms: e.target.checked })}
+              required
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[rgb(var(--accent))]"
+            />
+            <span>
+              I agree to the{' '}
+              <Link href="/terms" target="_blank" className="font-medium text-accent hover:text-accent-hover">
+                Terms of Service
+              </Link>{' '}
+              and the{' '}
+              <Link href="/privacy" target="_blank" className="font-medium text-accent hover:text-accent-hover">
+                Privacy Policy
+              </Link>
+              , and I consent to Avori processing my account data as described there.
+            </span>
+          </label>
           {error && <p className="text-xs text-danger">{error}</p>}
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => setStep('account')}>

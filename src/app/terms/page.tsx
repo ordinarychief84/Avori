@@ -8,45 +8,104 @@ export const metadata: Metadata = {
 
 const SECTIONS: Array<{ h: string; p: string[] }> = [
   {
-    h: 'The service',
+    h: '1. Agreement to these terms',
     p: [
-      'Avori provides ecommerce experience tools: reviews, shoppable video, AI shade analysis, quizzes, surveys, loyalty, referrals, gift cards, bundles, upsells, analytics and related APIs.',
-      'During early access all modules are included free. Paid plans, when introduced, will be announced 30 days in advance.',
+      'These Terms of Service ("Terms") are a binding agreement between Avori ("Avori", "we", "us") and the business or person creating an account ("you", the "merchant"). By checking the agreement box at signup, or by accessing or using the platform, you accept these Terms and our Privacy Policy.',
+      'If you accept on behalf of a company, you confirm you have authority to bind that company. If you do not agree, do not use the service.',
     ],
   },
   {
-    h: 'Your responsibilities',
+    h: '2. The service',
     p: [
-      'Keep your credentials and API keys secret. Actions taken with your keys are your actions.',
-      'Only upload content you have the right to use, and only send marketing to customers who have consented under the laws that apply to you.',
-      'Do not attempt to access other workspaces, probe the service for vulnerabilities, or use the platform for unlawful products.',
+      'Avori provides ecommerce growth tools: reviews and Q&A, UGC galleries, shoppable video, social feeds, AI quizzes and shade analysis, surveys, loyalty, cashback, store credit, gift cards, referrals, bundles, upsells, free gifts, discounts, analytics, an AI assistant, and related widgets, SDKs and APIs.',
+      'We may improve or modify features over time. We will not materially reduce the core functionality of a paid plan during a paid term without notice.',
     ],
   },
   {
-    h: 'Your data',
+    h: '3. Accounts and security',
     p: [
-      'You own your store data. Export it any time through the dashboard and the REST API.',
-      'You grant Avori the limited rights needed to operate the service on your behalf, as described in the Privacy Policy.',
+      'You must provide accurate information and keep your credentials and API keys secret. Actions taken with your account or keys are your actions; tell us immediately at the first sign of unauthorized use.',
+      'Team roles (Owner, Manager, Staff) control what members can do; you are responsible for who you invite and the role you give them.',
+      'You must be at least 16 years old and using Avori for business purposes.',
     ],
   },
   {
-    h: 'AI features',
+    h: '4. Your data and your shoppers (GDPR roles)',
     p: [
-      'AI outputs (summaries, insights, shade analyses) are generated automatically and can be imperfect. Review them before relying on them for business decisions.',
+      'You retain all rights to the data you bring to Avori: your catalog, customers, orders, reviews and other store content ("Merchant Data"). You grant us the limited license needed to host, process and display it in order to provide the service.',
+      'For Merchant Data about your shoppers, you are the data controller and Avori is your processor under Article 28 GDPR. We process shopper data only on your documented instructions as expressed through your configuration of the platform; the processor commitments in our Privacy Policy (section 5) form part of these Terms as the data processing terms between us.',
+      'You are responsible for complying with data protection law in your own use of the platform: having a lawful basis for the shopper data you collect, publishing your own privacy notice on your storefront, obtaining any consent required for marketing messages you trigger through connected destinations, and honoring shopper rights requests. Avori provides deletion and export tooling to help you do this.',
     ],
   },
   {
-    h: 'Availability and liability',
+    h: '5. Acceptable use',
     p: [
-      'The service is provided as-is during early access. We work hard on uptime but do not yet offer an SLA.',
-      'To the maximum extent permitted by law, Avori’s liability is limited to the amounts you paid in the twelve months before a claim.',
+      'Do not use Avori to: violate any law or third-party right; send spam or messages without a lawful basis; publish reviews or UGC you know to be fake or misleading; upload malware or content that is unlawful, infringing or harmful; probe, overload or circumvent security or rate limits; or resell the service without an agreement with us.',
+      'Review authenticity matters: tools like verified-purchase badges exist to reflect reality. Fabricating social proof breaches these Terms and may breach consumer protection law.',
+      'We may suspend workspaces that present a security risk, harm the platform or other merchants, or plainly breach this section. We will notify you and, where practical, give you a chance to fix the issue first.',
     ],
   },
   {
-    h: 'Changes and contact',
+    h: '6. Fees and billing',
     p: [
-      'We may update these terms; material changes will be announced in the dashboard.',
-      'Questions: hello@avori.com.',
+      'During early access all modules are included free. Paid plans, when introduced, will be announced at least 30 days in advance, with pricing as published on our pricing page at that time.',
+      'When billing launches: fees are charged in advance per billing period, are non-refundable except where the law requires otherwise, and plan limits (such as monthly orders) apply as described on the pricing page. Shopify merchants will be billed through the Shopify Billing API; all other platforms through Stripe.',
+      'You can cancel anytime; paid features remain available until the end of the period already paid for.',
+    ],
+  },
+  {
+    h: '7. Intellectual property',
+    p: [
+      'The platform, including its software, design and documentation, belongs to Avori and its licensors. These Terms grant you a non-exclusive, non-transferable right to use it for your business while your account is in good standing.',
+      'Feedback you send us may be used to improve the product without obligation to you.',
+    ],
+  },
+  {
+    h: '8. AI features',
+    p: [
+      'Review summaries, survey summaries, insights, the assistant and shade analysis are generated by AI models provided by Anthropic. Output is generated for your workspace only and your content is not used to train shared models.',
+      'AI output can be imperfect. Shade recommendations are cosmetic suggestions, not medical or dermatological advice, and you should review AI-generated text before publishing it commercially.',
+    ],
+  },
+  {
+    h: '9. Third-party platforms',
+    p: [
+      'Connections to Shopify, WooCommerce, Magento, BigCommerce and marketing destinations (Google, Klaviyo, Meta, Attentive) depend on those services and their terms. You authorize the exchange of data with a platform when you connect it, and can disconnect at any time in Settings.',
+      'We are not responsible for changes those platforms make to their APIs or terms, though we work to keep connectors current.',
+    ],
+  },
+  {
+    h: '10. Availability and support',
+    p: [
+      'We aim for high availability but the service is provided "as is" and "as available" without warranties of uninterrupted or error-free operation. Planned maintenance and factors outside our control (including third-party platform outages) may affect availability.',
+      'Support is provided per your plan as described on the pricing page.',
+    ],
+  },
+  {
+    h: '11. Liability',
+    p: [
+      'To the maximum extent permitted by law: neither party is liable for indirect, incidental, special or consequential damages, or lost profits, revenue or data; and Avori’s total liability under these Terms is limited to the amounts you paid us in the 12 months before the event giving rise to the claim (or 100 EUR if you have paid nothing).',
+      'Nothing in these Terms limits liability that cannot be limited by law, including liability for willful misconduct or gross negligence.',
+    ],
+  },
+  {
+    h: '12. Termination and data export',
+    p: [
+      'You may close your workspace at any time. We may terminate for material breach that remains uncured 14 days after notice, or immediately for serious abuse under section 5.',
+      'On closure you can export your data (CSV exports in the dashboard, full data via the API) before deletion. We delete workspace data within 30 days of closure as described in the Privacy Policy.',
+    ],
+  },
+  {
+    h: '13. Changes to these terms',
+    p: [
+      'We may update these Terms as the product evolves. Material changes will be announced by email or in the dashboard at least 30 days before they take effect; continued use after that date is acceptance. The current version always lives at this page.',
+    ],
+  },
+  {
+    h: '14. Governing law and contact',
+    p: [
+      'These Terms are governed by the laws applicable at Avori’s place of establishment, without affecting mandatory consumer or data protection rights that apply to you. Disputes will first be attempted to be resolved informally; contact us before filing anything.',
+      'Questions about these Terms: the contact form at /contact or hello@avori.com.',
     ],
   },
 ];
@@ -56,7 +115,7 @@ export default function TermsPage() {
     <div className="dark-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
-        <PageHero eyebrow="Legal" title="Terms of Service" sub="Last updated July 2026." />
+        <PageHero eyebrow="Legal" title="Terms of Service" sub="Last updated July 6, 2026." />
         <section className="mx-auto max-w-3xl space-y-8 px-6 py-14">
           {SECTIONS.map((s) => (
             <div key={s.h}>

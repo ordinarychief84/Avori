@@ -101,6 +101,10 @@ export async function claimShadeProfile(brandId: string, profileId: string, emai
   if (!profile) throw new HttpError(404, 'Analysis not found');
 
   const normalized = email.trim().toLowerCase();
+  // One claim per profile (see claimQuizResponse).
+  if (profile.email && profile.email !== normalized) {
+    throw new HttpError(409, 'This analysis is already saved to another email');
+  }
   const existing = await prisma.customer.findUnique({
     where: { brandId_email: { brandId, email: normalized } },
     select: { id: true },

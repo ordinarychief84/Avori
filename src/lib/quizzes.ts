@@ -141,6 +141,11 @@ export async function claimQuizResponse(brandId: string, responseId: string, ema
   if (!response) throw new HttpError(404, 'Quiz response not found');
 
   const normalized = email.trim().toLowerCase();
+  // One claim per response: a public caller must not re-link someone else's
+  // result to a different address.
+  if (response.email && response.email !== normalized) {
+    throw new HttpError(409, 'This result is already saved to another email');
+  }
   const existing = await prisma.customer.findUnique({
     where: { brandId_email: { brandId, email: normalized } },
     select: { id: true },
