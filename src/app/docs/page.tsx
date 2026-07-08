@@ -75,7 +75,7 @@ const ENDPOINTS: Array<[string, string, string]> = [
 
 export default function DocsPage() {
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero

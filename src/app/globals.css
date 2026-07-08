@@ -77,12 +77,18 @@ body {
 }
 
 /*
- * Dark marketing canvas (Okendo-style): near-black bands with hairline
- * borders, bright magenta accent, deep pink tints. Scoped so the dashboard
- * app keeps its light theme; every token-driven class flips automatically
- * inside this wrapper.
+ * Marketing canvas. BRIGHT by default (inherits the :root palette). The dark
+ * "mood" is opt-in: the nav toggle adds `dark` to <html> (persisted in
+ * localStorage), which swaps the tokens below to the near-black Okendo palette.
+ * Scoped to marketing pages, so the dashboard app keeps its own light theme
+ * regardless of the toggle.
  */
-.dark-canvas {
+.marketing-canvas {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+html.dark .marketing-canvas {
   --bg: 9 9 14;                 /* #09090E */
   --surface: 16 16 24;          /* #101018 */
   --surface-2: 24 24 35;        /* #181823 */
@@ -99,18 +105,16 @@ body {
   --success: 74 222 128;
   --warning: 251 191 36;
   --danger: 248 113 113;
-  background-color: rgb(var(--bg));
-  color: rgb(var(--fg));
 }
-.dark-canvas ::selection {
+html.dark .marketing-canvas ::selection {
   background: rgb(var(--accent) / 0.35);
   color: #fff;
 }
-.dark-canvas .glass {
+html.dark .marketing-canvas .glass {
   background: linear-gradient(180deg, rgb(9 9 14 / 0.85), rgb(9 9 14 / 0.65));
   backdrop-filter: blur(12px);
 }
-.dark-canvas .hover-pop:hover {
+html.dark .marketing-canvas .hover-pop:hover {
   box-shadow:
     0 0 0 1px rgb(242 36 242 / 0.35),
     0 12px 40px -12px rgb(242 36 242 / 0.25),

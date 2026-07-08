@@ -39,7 +39,7 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero
@@ -108,7 +108,7 @@ export default function AboutPage() {
               ['4', 'marketing destinations built in'],
             ].map(([v, l]) => (
               <div key={l} className="rounded-xl border border-border bg-surface p-6 shadow-soft">
-                <div className="text-3xl font-bold tracking-tight text-accent">{v}</div>
+                <div className="font-display text-3xl font-bold tracking-tight text-accent">{v}</div>
                 <div className="mt-2 text-sm text-fg-muted">{l}</div>
               </div>
             ))}

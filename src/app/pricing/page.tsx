@@ -28,14 +28,14 @@ function Cell({ value }: { value: boolean | string }) {
 
 export default function PricingPage() {
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         {/* Rise-style headline */}
         <section className="relative overflow-hidden border-b border-border">
           <div className="grid-radial absolute inset-x-0 top-0 h-full" aria-hidden />
           <div className="relative mx-auto max-w-4xl px-6 py-16 text-center lg:py-20">
-            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
               Your Time to <span className="text-gradient-brand">Grow</span> is Now
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted">
@@ -166,7 +166,7 @@ export default function PricingPage() {
         {/* Rise-style closing CTA */}
         <section className="band-midnight">
           <div className="mx-auto max-w-4xl px-6 py-16 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Ready to transform your customer experience?
             </h2>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

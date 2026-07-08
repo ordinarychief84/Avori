@@ -70,7 +70,7 @@ export default function SolutionPage({ params }: { params: { slug: string } }) {
   const related = relatedSolutions(s.slug);
 
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         {/* Hero: copy left, live-style mock right */}

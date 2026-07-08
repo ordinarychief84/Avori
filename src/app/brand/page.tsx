@@ -31,7 +31,7 @@ const COLORS = [
 
 export default function BrandPage() {
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero
@@ -106,18 +106,19 @@ export default function BrandPage() {
 
         {/* Typography */}
         <section className="mx-auto max-w-7xl px-6 py-16">
-          <SectionHeading eyebrow="Typography" title="Inter, everywhere" />
+          <SectionHeading eyebrow="Typography" title="Fraunces for headlines, Inter for the rest" />
           <div className="mx-auto mt-10 max-w-3xl space-y-4 rounded-xl border border-border bg-surface p-8 shadow-soft">
-            <div className="text-5xl font-bold tracking-tight">Aa · Bold headlines</div>
-            <div className="text-2xl font-semibold tracking-tight text-fg">
-              SemiBold section titles
+            <div className="font-display text-5xl font-bold tracking-tight">Aa · Display headlines</div>
+            <div className="font-display text-2xl font-semibold tracking-tight text-fg">
+              Section titles in Fraunces
             </div>
-            <div className="text-base text-fg">Regular body copy for reading comfort.</div>
+            <div className="text-base text-fg">Inter for body copy and reading comfort.</div>
             <div className="text-sm text-fg-muted">Muted secondary text for support lines.</div>
             <div className="font-mono text-sm text-fg">JetBrains Mono for code: avk_key_</div>
             <p className="border-t border-border pt-4 text-sm leading-relaxed text-fg-muted">
-              Clean, modern and highly readable typography that reflects clarity and confidence.
-              Headlines are tight (-1.5% letter-spacing); labels use wide uppercase tracking.
+              A warm display serif (Fraunces) carries the marketing headlines for an editorial,
+              confident voice; Inter handles UI and body for clarity. Headlines are tight
+              (-1.5% letter-spacing); labels use wide uppercase tracking.
             </p>
           </div>
         </section>

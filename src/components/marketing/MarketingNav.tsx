@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
+import ThemeToggle from '@/components/marketing/ThemeToggle';
 import { cn } from '@/lib/cn';
 
 type Item = { label: string; href: string; hint?: string };
@@ -149,19 +150,23 @@ export default function MarketingNav() {
           <Link href="/login" className="text-sm text-fg-muted transition-colors hover:text-fg">
             Log in
           </Link>
+          <ThemeToggle />
           <Link href="/contact">
             <Button size="sm">Request a Demo</Button>
           </Link>
         </div>
 
-        <button
-          type="button"
-          aria-label="Toggle navigation"
-          className="rounded-md p-2 hover:bg-surface-2 lg:hidden"
-          onClick={() => setMobileOpen((v) => !v)}
-        >
+        <div className="flex items-center gap-1.5 lg:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            aria-label="Toggle navigation"
+            className="rounded-md p-2 hover:bg-surface-2"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (

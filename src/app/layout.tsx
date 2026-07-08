@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google';
+import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 import './globals.css';
 
@@ -15,7 +15,9 @@ const jetbrains = JetBrains_Mono({
   variable: '--font-jetbrains',
 });
 
-const bricolage = Bricolage_Grotesque({
+// Fraunces: a warm, contemporary display serif — the closest free stand-in for
+// Rise.ai's commercial Cambon, used on marketing headlines.
+const fraunces = Fraunces({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-display',
@@ -49,8 +51,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrains.variable} ${bricolage.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrains.variable} ${fraunces.variable}`}>
       <body className="min-h-screen font-sans antialiased">
+        {/* Apply the saved marketing theme before paint (default light) so
+            dark-mode users don't see a flash of the bright theme. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('avori-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
+          }}
+        />
         {children}
         <Toaster
           position="bottom-right"

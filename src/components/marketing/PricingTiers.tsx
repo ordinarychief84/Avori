@@ -54,7 +54,7 @@ export default function PricingTiers({ plans }: { plans: Plan[] }) {
                 {p.name}
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-4xl font-bold tracking-tight text-fg">
+                <span className="font-display text-4xl font-bold tracking-tight text-fg">
                   {price === 0 ? '$0' : `$${price}`}
                 </span>
                 <span className="text-sm text-fg-muted">

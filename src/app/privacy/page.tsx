@@ -107,7 +107,7 @@ const SECTIONS: Array<{ h: string; p: string[] }> = [
 
 export default function PrivacyPage() {
   return (
-    <div className="dark-canvas min-h-screen bg-bg text-fg">
+    <div className="marketing-canvas min-h-screen bg-bg text-fg">
       <MarketingHeader />
       <main>
         <PageHero eyebrow="Legal" title="Privacy Policy" sub="Last updated July 6, 2026." />
