@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
-import { HttpError } from './auth';
+import { HttpError } from './errors';
 
 export function fail(error: unknown): NextResponse {
   if (error instanceof HttpError) {

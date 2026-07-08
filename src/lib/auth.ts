@@ -1,5 +1,8 @@
 import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import GitHub from 'next-auth/providers/github';
+import type { Provider } from 'next-auth/providers';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { headers } from 'next/headers';
@@ -7,6 +10,41 @@ import { redirect } from 'next/navigation';
 import { prisma } from './prisma';
 import { authConfig } from './auth.config';
 import { rateLimit } from './ratelimit';
+import { upsertOAuthUser, requiresConsentGate } from './oauth';
+// HttpError lives in ./errors (no heavy imports) so it's usable from unit tests
+// and edge code; imported for local use here and re-exported for existing importers.
+import { HttpError } from './errors';
+
+export { HttpError };
+
+// Social login is optional: providers are only registered when their secrets
+// exist, so the app runs fine without OAuth configured (buttons hide via
+// oauthProviders()). Secrets are server-only env vars.
+const socialProviders: Provider[] = [];
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  socialProviders.push(
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+}
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  socialProviders.push(
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    })
+  );
+}
+
+/** Which social providers are configured on this deploy (for the login UI). */
+export function oauthProviders(): Array<'google' | 'github'> {
+  const out: Array<'google' | 'github'> = [];
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) out.push('google');
+  if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) out.push('github');
+  return out;
+}
 
 declare module 'next-auth' {
   interface Session {
@@ -54,9 +92,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!allowed) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-          // Equalize timing, always run a bcrypt round so absent vs present
-          // accounts can't be distinguished by response time.
+        // No account, or an OAuth-only account (null passwordHash) that can't
+        // password-login. Always spend a bcrypt round so timing can't tell the
+        // two apart from a real account.
+        if (!user || !user.passwordHash) {
           await bcrypt.compare(password, DUMMY_HASH);
           return null;
         }
@@ -71,16 +110,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
+    ...socialProviders,
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    // OAuth sign-in: resolve the tenant (find-or-create) and stamp our own
+    // user id / role / brandId onto the user object so the shared jwt callback
+    // (in auth.config) puts them on the token. Returning false denies sign-in
+    // (unverified email, no email, or disabled workspace).
+    async signIn({ user, account, profile }) {
+      if (!account || account.provider === 'credentials') return true;
+      if (account.provider !== 'google' && account.provider !== 'github') return true;
+      try {
+        const email = ((profile?.email as string | undefined) ?? user.email) || null;
+        // Google reports email_verified explicitly. GitHub only returns the
+        // account's primary email, which GitHub itself verifies, so treat a
+        // present GitHub email as verified.
+        const emailVerified =
+          account.provider === 'google' ? profile?.email_verified === true : Boolean(email);
+        const res = await upsertOAuthUser({
+          provider: account.provider,
+          email,
+          emailVerified,
+          name: (user.name as string | undefined) ?? (profile?.name as string | undefined) ?? null,
+        });
+        user.id = res.userId;
+        (user as { role?: string }).role = res.role;
+        (user as { brandId?: string | null }).brandId = res.brandId;
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  },
 });
 
-export class HttpError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
 
 export async function requireBrand() {
   const session = await auth();
@@ -106,6 +170,16 @@ export async function pageBrandSession() {
   if (!session?.user) redirect('/login');
   if (session.user.role === 'ADMIN') redirect('/admin');
   if (session.user.role !== 'BRAND' || !session.user.brandId) redirect('/login');
+  // GDPR consent gate, scoped to OAuth signups (passwordHash null). Credentials
+  // signups accept terms up front, and pre-existing credential users are
+  // grandfathered, so we don't force them through a consent wall. Only an
+  // OAuth-only account that hasn't consented yet is redirected. Cheap indexed
+  // lookup; reads live state so it can't go stale like a token flag would.
+  const consent = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { termsAcceptedAt: true, passwordHash: true },
+  });
+  if (consent && requiresConsentGate(consent)) redirect('/complete-signup');
   return {
     userId: session.user.id,
     brandId: session.user.brandId,

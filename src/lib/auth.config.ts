@@ -1,9 +1,10 @@
 import type { NextAuthConfig } from 'next-auth';
+import { SESSION_STRATEGY } from './auth-policy';
 
 // Edge-safe shared config, no Node-only deps (bcrypt, Prisma).
 // Used by middleware. The full credentials provider lives in auth.ts.
 export const authConfig: NextAuthConfig = {
-  session: { strategy: 'jwt' },
+  session: { strategy: SESSION_STRATEGY },
   pages: { signIn: '/login' },
   providers: [],
   callbacks: {

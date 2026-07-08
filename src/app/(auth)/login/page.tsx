@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input, FormField } from '@/components/ui/Input';
+import OAuthButtons from '@/components/OAuthButtons';
 
 export default function LoginPage() {
   return (
@@ -59,7 +60,11 @@ function LoginForm() {
       <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
       <p className="mt-1 text-sm text-fg-muted">Log in to your Avori dashboard.</p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <div className="mt-8">
+        <OAuthButtons mode="login" />
+      </div>
+
+      <form onSubmit={onSubmit} className="space-y-4">
         <FormField label="Email" required>
           <Input
             type="email"

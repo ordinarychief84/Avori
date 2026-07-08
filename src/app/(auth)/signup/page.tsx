@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input, FormField } from '@/components/ui/Input';
+import OAuthButtons from '@/components/OAuthButtons';
 
 type Step = 'account' | 'brand';
 
@@ -88,7 +89,11 @@ export default function SignupPage() {
       </p>
 
       {step === 'account' && (
-        <form onSubmit={onAccountNext} className="mt-8 space-y-4">
+        <>
+          <div className="mt-8">
+            <OAuthButtons mode="signup" />
+          </div>
+          <form onSubmit={onAccountNext} className="space-y-4">
           <FormField label="Your name">
             <Input
               value={form.name}
@@ -123,7 +128,8 @@ export default function SignupPage() {
           <Button type="submit" className="w-full">
             Continue
           </Button>
-        </form>
+          </form>
+        </>
       )}
 
       {step === 'brand' && (
