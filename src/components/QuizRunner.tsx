@@ -1,8 +1,10 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Mail, ShoppingBag, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import type { QuizConfig } from '@/lib/quizzes';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/cn';
@@ -20,8 +22,36 @@ export type PublicQuiz = {
   title: string;
   description: string | null;
   leadCapture: boolean;
+  config: QuizConfig | null;
   questions: Question[];
 };
+
+// Derive the accent token overrides from a merchant hex color. All quiz UI is
+// token-driven (text-accent, bg-accent, bg-accent-subtle, from-accent…), so
+// setting these CSS variables on the wrapper re-skins the whole quiz to the
+// merchant's brand without touching any component class.
+function hexToRgb(hex: string): [number, number, number] | null {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function mix(a: number[], b: number[], t: number): string {
+  return a.map((x, i) => Math.round(x + (b[i] - x) * t)).join(' ');
+}
+function accentVars(hex?: string): CSSProperties {
+  const rgb = hex ? hexToRgb(hex) : null;
+  if (!rgb) return {};
+  const WHITE = [255, 255, 255];
+  const BLACK = [0, 0, 0];
+  return {
+    '--accent': rgb.join(' '),
+    '--accent-bright': mix(rgb, WHITE, 0.18),
+    '--accent-hover': mix(rgb, BLACK, 0.12),
+    '--accent-deep': mix(rgb, BLACK, 0.28),
+    '--accent-subtle': mix(rgb, WHITE, 0.88),
+  } as CSSProperties;
+}
 type Recommendation = { id: string; name: string; price: number; imageUrl: string; productUrl: string };
 
 type Step = 'intro' | 'questions' | 'submitting' | 'results';
@@ -49,6 +79,10 @@ export default function QuizRunner({
   const [email, setEmail] = useState('');
   const [claimed, setClaimed] = useState(false);
   const [claiming, setClaiming] = useState(false);
+
+  // Merchant branding + copy, with Avori defaults where unset.
+  const c = quiz.config ?? {};
+  const styleVars = accentVars(c.accent);
 
   const order = useMemo(() => quiz.questions.map((q) => q.id), [quiz.questions]);
   const byId = useMemo(() => new Map(quiz.questions.map((q) => [q.id, q])), [quiz.questions]);
@@ -134,7 +168,7 @@ export default function QuizRunner({
   };
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
+    <div className="mx-auto w-full max-w-2xl" style={styleVars}>
       <div className="mb-6 h-1.5 overflow-hidden rounded-full bg-surface-2">
         <div
           className="h-full rounded-full bg-gradient-to-r from-accent to-accent-bright transition-all duration-300"
@@ -150,7 +184,7 @@ export default function QuizRunner({
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-fg sm:text-3xl">{quiz.title}</h1>
           {quiz.description && <p className="mt-3 text-fg-muted">{quiz.description}</p>}
           <p className="mt-2 text-xs text-fg-subtle">
-            {quiz.questions.length} quick questions, product matches at the end.
+            {c.introSubtext || `${quiz.questions.length} quick questions, product matches at the end.`}
           </p>
           <Button
             size="lg"
@@ -158,7 +192,7 @@ export default function QuizRunner({
             onClick={() => setStep('questions')}
             rightIcon={<ArrowRight className="h-4 w-4" />}
           >
-            Start
+            {c.introButton || 'Start'}
           </Button>
         </div>
       )}
@@ -219,7 +253,7 @@ export default function QuizRunner({
                     className={cn(
                       'flex items-center gap-3 rounded-xl border p-3.5 text-left text-sm font-medium transition-all',
                       selected
-                        ? 'border-accent bg-accent-subtle text-fg shadow-glow'
+                        ? 'border-accent bg-accent-subtle text-fg ring-1 ring-accent/40'
                         : 'border-border bg-surface text-fg hover:border-accent/40'
                     )}
                   >
@@ -272,11 +306,13 @@ export default function QuizRunner({
               <Sparkles className="h-6 w-6 text-accent" />
             </div>
             <h2 className="mt-3 text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-              {recommendations.length > 0 ? 'Made for you' : 'Thanks for taking the quiz'}
+              {recommendations.length > 0
+                ? c.resultHeading || 'Made for you'
+                : c.noResultHeading || 'Thanks for taking the quiz'}
             </h2>
             <p className="mt-1 text-sm text-fg-muted">
               {recommendations.length > 0
-                ? 'Based on your answers, these are your best matches.'
+                ? c.resultSubtext || 'Based on your answers, these are your best matches.'
                 : 'We received your answers.'}
             </p>
           </div>
@@ -296,7 +332,7 @@ export default function QuizRunner({
                     <img src={p.imageUrl} alt={p.name} className="aspect-square w-full object-cover" />
                     {i === 0 && (
                       <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-white">
-                        Top match
+                        {c.topMatchLabel || 'Top match'}
                       </span>
                     )}
                   </div>
@@ -307,7 +343,7 @@ export default function QuizRunner({
                     </div>
                     <a href={p.productUrl} target="_blank" rel="noreferrer" onClick={() => shopClick(p.id)}>
                       <Button className="w-full" leftIcon={<ShoppingBag className="h-4 w-4" />}>
-                        Shop now
+                        {c.shopButton || 'Shop now'}
                       </Button>
                     </a>
                   </div>
@@ -320,7 +356,7 @@ export default function QuizRunner({
             <div className="rounded-2xl border border-border bg-surface p-5 shadow-soft">
               <div className="flex items-center gap-2 text-sm font-semibold text-fg">
                 <Mail className="h-4 w-4 text-accent" />
-                Not ready to buy? We&apos;ll email your matches.
+                {c.leadPrompt || "Not ready to buy? We'll email your matches."}
               </div>
               <form
                 className="mt-3 flex flex-col gap-2 sm:flex-row"
@@ -338,7 +374,7 @@ export default function QuizRunner({
                   className="flex-1"
                 />
                 <Button type="submit" loading={claiming} variant="secondary">
-                  Email my results
+                  {c.leadButton || 'Email my results'}
                 </Button>
               </form>
             </div>

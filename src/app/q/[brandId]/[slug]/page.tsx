@@ -39,13 +39,23 @@ export default async function HostedQuizPage({ params }: { params: Params }) {
     })),
   };
 
+  const cfg = quiz.config ?? {};
+
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <header className="border-b border-border bg-surface/70">
+    <div
+      className="flex min-h-screen flex-col bg-bg"
+      style={cfg.background ? { backgroundColor: cfg.background } : undefined}
+    >
+      <header className="border-b border-border bg-surface/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-center px-6">
-          <span className="text-sm font-bold tracking-[0.14em] text-fg">
-            {brand.name.toUpperCase()}
-          </span>
+          {cfg.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={cfg.logoUrl} alt={brand.name} className="h-8 w-auto max-w-[160px] object-contain" />
+          ) : (
+            <span className="text-sm font-bold tracking-[0.14em] text-fg">
+              {brand.name.toUpperCase()}
+            </span>
+          )}
         </div>
       </header>
       <main className="flex-1 px-4 py-10 sm:px-6">
@@ -56,14 +66,16 @@ export default async function HostedQuizPage({ params }: { params: Params }) {
           claimPath={`/api/public/brand/${brand.id}/quizzes/${params.slug}/claim`}
         />
       </main>
-      <footer className="border-t border-border py-4">
-        <Link
-          href="/"
-          className="mx-auto flex w-fit items-center gap-1.5 text-2xs text-fg-subtle transition-colors hover:text-fg"
-        >
-          Powered by <Logo size="sm" />
-        </Link>
-      </footer>
+      {!cfg.hideBranding && (
+        <footer className="py-4">
+          <Link
+            href="/"
+            className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-surface/80 px-3 py-1 text-2xs text-fg-subtle backdrop-blur transition-colors hover:text-fg"
+          >
+            Powered by <Logo size="sm" />
+          </Link>
+        </footer>
+      )}
     </div>
   );
 }

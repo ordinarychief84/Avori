@@ -271,6 +271,29 @@ export const quizOptionSchema = z.object({
   nextQuestionId: z.string().nullable().optional(),
 });
 
+// Merchant-controlled branding + copy for the hosted quiz. Flat so it maps
+// cleanly to a form; every field optional so a quiz with no config falls back
+// to Avori defaults. Colors are validated hex, the logo URL is scheme-checked
+// (no javascript:/data:), copy is sanitized. Lets any merchant, in any
+// vertical, brand the quiz to their store and reword it for their product.
+export const quizConfigSchema = z.object({
+  // Theme
+  accent: z.string().regex(HEX_COLOR, 'Use a hex color like #7C3AED').optional().or(z.literal('')),
+  background: z.string().regex(HEX_COLOR, 'Use a hex color like #0D0D0D').optional().or(z.literal('')),
+  logoUrl: z.string().refine(isSafeUrl, 'Must be an http(s) URL or a /path').optional().or(z.literal('')),
+  hideBranding: z.boolean().optional(),
+  // Copy (reword for any product / use case)
+  introButton: cleanText(40).optional(),
+  introSubtext: cleanText(160).optional(),
+  resultHeading: cleanText(80).optional(),
+  resultSubtext: cleanText(160).optional(),
+  noResultHeading: cleanText(80).optional(),
+  topMatchLabel: cleanText(24).optional(),
+  shopButton: cleanText(24).optional(),
+  leadPrompt: cleanText(160).optional(),
+  leadButton: cleanText(40).optional(),
+});
+
 export const quizSchema = z.object({
   title: z.string().min(1).max(150),
   slug: z
@@ -282,6 +305,7 @@ export const quizSchema = z.object({
   description: z.string().max(1000).optional().or(z.literal('')),
   status: z.enum(['DRAFT', 'ACTIVE', 'ARCHIVED']).optional(),
   leadCapture: z.boolean().optional(),
+  config: quizConfigSchema.optional(),
 });
 
 export const quizQuestionSchema = z.object({

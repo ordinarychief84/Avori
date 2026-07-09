@@ -25,6 +25,24 @@ export type QuizRecommendation = {
   productUrl: string;
 };
 
+// Merchant branding + copy, stored on Quiz.config. Every field optional; the
+// runner falls back to Avori defaults when unset.
+export type QuizConfig = {
+  accent?: string;
+  background?: string;
+  logoUrl?: string;
+  hideBranding?: boolean;
+  introButton?: string;
+  introSubtext?: string;
+  resultHeading?: string;
+  resultSubtext?: string;
+  noResultHeading?: string;
+  topMatchLabel?: string;
+  shopButton?: string;
+  leadPrompt?: string;
+  leadButton?: string;
+};
+
 export async function findActiveQuiz(brandId: string, slug: string) {
   const quiz = await prisma.quiz.findFirst({
     where: { brandId, slug, status: 'ACTIVE' },
@@ -46,6 +64,7 @@ export async function getPublicQuiz(brandId: string, slug: string, countView = t
     title: quiz.title,
     description: quiz.description,
     leadCapture: quiz.leadCapture,
+    config: (quiz.config as QuizConfig | null) ?? null,
     questions: quiz.questions.map((q) => ({
       id: q.id,
       type: q.type,

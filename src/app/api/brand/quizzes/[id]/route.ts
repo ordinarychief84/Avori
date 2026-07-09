@@ -51,6 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         ...(data.description !== undefined ? { description: data.description || null } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.leadCapture !== undefined ? { leadCapture: data.leadCapture } : {}),
+        ...(data.config !== undefined ? { config: data.config } : {}),
       },
     });
     return ok({ quiz });

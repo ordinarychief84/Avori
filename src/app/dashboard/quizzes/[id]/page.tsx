@@ -3,11 +3,13 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Download } from 'lucide-react';
 import { pageBrandSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import type { QuizConfig } from '@/lib/quizzes';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardBody } from '@/components/ui/Card';
 import { Stat } from '@/components/ui/Stat';
 import { PageHeader } from '@/components/AppShell';
 import EntityDialog from '@/components/EntityDialog';
+import QuizBranding from '@/components/QuizBranding';
 import RowAction from '@/components/RowAction';
 import QuizBuilder from '@/components/QuizBuilder';
 import { fmtDateTime } from '@/lib/format';
@@ -69,6 +71,13 @@ export default async function QuizBuilderPage({ params }: { params: { id: string
                 { name: 'description', label: 'Description', type: 'textarea' },
                 { name: 'leadCapture', label: 'Lead capture', type: 'toggle', placeholder: 'Ask for email before results' },
               ]}
+            />
+            <QuizBranding
+              quizId={quiz.id}
+              brandId={quiz.brandId}
+              slug={quiz.slug}
+              appUrl={process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}
+              initial={quiz.config as QuizConfig | null}
             />
             <RowAction
               endpoint={`/api/brand/quizzes/${quiz.id}`}
